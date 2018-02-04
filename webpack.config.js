@@ -3,6 +3,7 @@ const CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
+// const CompressionPlugin = require('compression-webpack-plugin');
 const webpack = require('webpack');
 const package = require('./package.json');
 
@@ -10,6 +11,7 @@ module.exports = {
   entry: {
     framework: [
       './src/vendor-plugins/framework.sass',
+      'babel-polyfill',
       './src/vendor-plugins/framework.js'
     ],
     main: [
@@ -39,6 +41,9 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.jsx', '.css', '.sass', '.scss']
   },
+  externals: {
+    progressively: "progressively"
+  },
   module: {
     rules: [
       {
@@ -50,23 +55,27 @@ module.exports = {
         }
       },
       {
-        test: /\.css$/,
+        test: /\.(css|sass|scss)$/,
         include: [
+          path.resolve(__dirname, 'src/vendor-plugins'),
           path.resolve(__dirname, 'src/css')
         ],
         use: ExtractTextPlugin.extract({
             fallback: 'style-loader',
-            use: ['css-loader'],
-        })
-      },
-      {
-        test: /\.(sass|scss)$/,
-        include:[
-          path.resolve(__dirname, 'src/vendor-plugins')
-        ],
-        use: ExtractTextPlugin.extract({
-            fallback: 'style-loader',
-            use: ['css-loader', 'sass-loader'],
+            use: [
+              {
+                loader: 'css-loader',
+                options: {
+                  minimize: true
+                }
+              },
+              {
+                loader: 'postcss-loader'
+              },
+              {
+                loader: 'sass-loader'
+              }
+            ],
         })
       },
       {
@@ -119,11 +128,13 @@ module.exports = {
       filename: '../templates/login.html',
       chunks: ['login'],
       inject: false
-    }),
-    new webpack.ProvidePlugin({
-      $: "jquery",
-      jQuery: "jquery",
-      progressively: "progressively"
     })
+    // new CompressionPlugin({
+    //   asset: "[path].gz[query]",
+    //   algorithm: "gzip",
+    //   test: /\.js$|\.css$|\.html$/,
+    //   threshold: 10240,
+    //   minRatio: 0.8
+    // })
   ]
 };

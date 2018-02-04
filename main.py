@@ -1,5 +1,6 @@
 from flask import Flask, request, redirect, render_template, url_for, session, flash, jsonify, Markup, abort
 from flask_sqlalchemy import SQLAlchemy
+from whitenoise import WhiteNoise
 from hashutils import *
 import re
 from faker import Faker
@@ -22,6 +23,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", 'mysql+py
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 app.secret_key = "246Pass"
+
+app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/')
 
 EXTERNAL_VENDOR_IDS = [1, 2, 3, 4, 5, 6, 7]
 VENDOR_TYPES = {"venue": 1,
@@ -399,7 +402,6 @@ def bookExternal(vendor_type):
         booking.enabled = True
         db.session.commit()
     else:
-
         new_Booking = UserVendor(vendor_id, user_id, eventDate, eventStartTime, eventEndTime, enabled)
         db.session.add(new_Booking)
         db.session.commit()
@@ -423,10 +425,12 @@ def vendor():
         return jsonify(bookedVendors)
 
     vendor_type = request.args.get("type")
+
     if vendor_type == "all":
         query = Vendor.query.all()
     else:
         query = Vendor.query.filter_by(vendorType=vendor_type)
+
     vendors = []
     for vendor in query:
         if vendor.id in EXTERNAL_VENDOR_IDS:
@@ -711,7 +715,7 @@ def genData():
       fake.street_address(),
       fake.city(),
       fake.zipcode(),
-      random.randrange(1, 6),
+      random.randrange(0, 6),
       random.choice(vendorTypes),
       random.randrange(1, 1000),
       make_pw_hash(fake.password(length=10, digits=True, upper_case=True, lower_case=True)),

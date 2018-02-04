@@ -2,12 +2,12 @@
 
 {% block head %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='vendorlist.b74ef1277eaf29af1a2ecaa67f1e2001.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='vendorlist.3903260a5e9132de5aa68786511515a3.css') }}">
 
 {% endblock %}
 
 {% block body %}
-<div class="container is-fluid">
+<div class="container is-fluid list-container">
   <section class="section">
     <div id="bookingModal" class="modal">
       <div id="modalCloseLayer" class="modal-background"></div>
@@ -112,7 +112,7 @@
           </p>
           <div class="field">
             <div class="control has-icons-left">
-              <input id="vendorSearch" class="input is-small" type="text" placeholder="Name, type, location...">
+              <input id="vendorSearch" class="input is-small vendor-search" type="text" placeholder="Name, type, location...">
               <span class="icon is-left">
                 <i class="mdi mdi-magnify"></i>
               </span>
@@ -185,18 +185,21 @@
           </ul>
         </aside>
       </div>
-      <div class="column is-narrow"></div>
+      <div class="column is-narrow spacer-column"></div>
       <div class="column loading-container">
         <div class="overlay-container">
           <div class="ajax-loader">
             <svg class="circular">
-              <circle class="path" cx="50" cy="50" r="40" fill="none" stroke-width="6" stroke-miterlimit="10"/>
+              <circle class="path" cx="50" cy="50" r="40" fill="none" stroke-width="6" stroke-miterlimit="10"></circle>
             </svg>
           </div>
         </div>
-        <div class="tile is-ancestor vendor-list-card-wrapper">
+        <p class="results-count">
+          Viewing <span class="results-increment">1 - 18</span> of <span id="vendorTotal">1</span> vendors
+        </p>
+        <ul class="vendor-list-card-wrapper">
           <!-- Populated with vendors through AJAX calls -->
-        </div>
+        </ul>
       </div>
     </div>
   </section>
@@ -205,6 +208,6 @@
 
 {% block scripts %}
 
-<script type="text/javascript" src="{{ url_for('static', filename='vendorlist.c709cc0049404c913e35.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='vendorlist.2f7e0709feffffc6036e.js') }}"></script>
 
 {% endblock %}

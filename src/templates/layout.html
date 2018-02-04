@@ -4,14 +4,14 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://unpkg.com/progressively/dist/progressively.min.css">
     <% for (var css in htmlWebpackPlugin.files.css) { %>
     <link rel="stylesheet" href="{{ url_for('static', filename='<%= htmlWebpackPlugin.files.css[css] %>') }}">
     <% } %>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/progressively/dist/progressively.min.js"></script> -->
     {% block head %} {% endblock %}
   </head>
   <body>
-    <nav class="navbar is-fixed-top" role="navigation" aria-label="dropdown navigation">
+    <nav class="navbar is-fixed-top has-shadow" role="navigation" aria-label="dropdown navigation">
       <div class="container">
         <div class="navbar-brand">
           <a href="/" class="navbar-item">
@@ -55,6 +55,11 @@
           <div class="navbar-item">
             <a href="/gendata">
               Generate Data
+            </a>
+          </div>
+          <div id="addVendors" class="navbar-item">
+            <a>
+              Add Vendors
             </a>
           </div>
           <div class="navbar-end">
@@ -149,6 +154,7 @@
         </div>
       </div>
     </footer>
+    <script src="https://unpkg.com/progressively/dist/progressively.min.js"></script>
     <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
     <script type="text/javascript" src="{{ url_for('static', filename='<%= htmlWebpackPlugin.files.chunks[chunk].entry %>') }}"></script>
     <% } %>

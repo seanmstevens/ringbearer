@@ -2,7 +2,7 @@
 
 {% block head %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='vendorlist.3903260a5e9132de5aa68786511515a3.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='vendorlist.fdf55d111bb5feb75b7db0de9a29adb5.css') }}">
 
 {% endblock %}
 
@@ -194,9 +194,19 @@
             </svg>
           </div>
         </div>
-        <p class="results-count">
-          Viewing <span class="results-increment">1 - 18</span> of <span id="vendorTotal">1</span> vendors
-        </p>
+        <div class="level vl-header">
+          <div class="level-left">
+            <div class="level-item">
+              <p class="results-count">
+                Viewing <span class="results-increment">1 - 18</span> of <span id="vendorTotal">1</span> vendors
+              </p>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="level-item pagination-container">
+            </div>
+          </div>
+        </div>
         <ul class="vendor-list-card-wrapper">
           <!-- Populated with vendors through AJAX calls -->
         </ul>
@@ -208,6 +218,6 @@
 
 {% block scripts %}
 
-<script type="text/javascript" src="{{ url_for('static', filename='vendorlist.2f7e0709feffffc6036e.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='vendorlist.279098eef3a2d73bb192.js') }}"></script>
 
 {% endblock %}

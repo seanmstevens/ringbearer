@@ -104,10 +104,13 @@
 
 /* General card styles */
 
+.vl-header {
+  margin-bottom: 1.5em;
+}
+
 .results-count {
   font-size: 0.75rem;
   color: #888888;
-  margin-bottom: 1.5em;
 }
 
 .results-increment {
@@ -124,6 +127,7 @@
 
 .tile.is-child.card {
   border-radius: 6px;
+  box-shadow: none;
 }
 
 .tile .overlay {

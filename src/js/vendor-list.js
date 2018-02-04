@@ -101,6 +101,7 @@ function addAjaxListeners() {
     }
 
     API_CALL_MADE = true;
+    CURRENT_VENDORS_TOTAL = 0;
     $('.sortVendors').removeClass('is-active');
     makeSidelinkActive(type);
     getVendorByType(type);

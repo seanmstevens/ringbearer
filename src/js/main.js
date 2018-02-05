@@ -1,5 +1,7 @@
 $(function () {
-  getSessionDetails();
+  if (!localStorage.getItem("logged-in")) {
+    getSessionDetails();
+  }
   addDismissNotificationListeners();
   addMobileMenuListener();
   addSignupListener();
@@ -75,7 +77,7 @@ function getSessionDetails() {
       "source": "ajax"
     }
   }).done(data => {
-    window.sessionDetails = data;
+    localStorage.setItem("logged-in", true);
     console.log(data);
   });
 }

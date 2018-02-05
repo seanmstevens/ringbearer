@@ -228,7 +228,7 @@ function getVendorByType(type) {
     },
     success: data => {
       var t1 = performance.now();
-      console.log("Call to get vendors took " + (t1 - t0) + " milliseconds.")
+      console.log("Time to success " + (t1 - t0) + " milliseconds.")
       updateResultsCount(data);
       VENDORS = [];
       // Convert JSON into an array
@@ -238,6 +238,8 @@ function getVendorByType(type) {
     }
   })
   .done(json => {
+    var t1 = performance.now();
+    console.log("Time to finish request " + (t1 - t0) + " milliseconds.")
     $(".vendor-list-card-wrapper").empty().hide(); // Empty out vendor list display
     let query = $("#vendorSearch").val();
 
@@ -323,7 +325,8 @@ function displayVendors(arr) {
   };
 
   while (CURRENT_VENDORS_TOTAL < stoppingPoint && arr[CURRENT_VENDORS_TOTAL] !== undefined) {
-    let $vendorCardWrapper = $("<li />", {"class": "vendor-list-card"});
+    let promoted = Math.random();
+    let $vendorCardWrapper = $("<li />", {"class": `vendor-list-card ${promoted < 0.10 ? "promoted" : ""}`});
     let value = arr[CURRENT_VENDORS_TOTAL];
     const $level = $(
       `<nav class="level is-mobile box">
@@ -353,35 +356,43 @@ function displayVendors(arr) {
     const $card = $(`<article class="tile is-child card card-${value.vendorType}" data-vendor-id=${value.id}></article>`);
 
     const $cardHeader = $(
-      `<div class="tile-header card-header-${value.vendorType}">
-        <div class="icon card-icon-container">
-          ${icons[value.vendorType]}
-        </div>
-        <div class="book-button shortcut tooltip" data-tooltip="Book">
-          <div class="icon has-text-white book-icon">
-            <i class="mdi mdi-plus-circle"></i>
+      `<div class="level is-mobile tile-header card-header-${value.vendorType}">
+        <div class="level-left">
+          <div class="level-item icon">
+            ${icons[value.vendorType]}
           </div>
         </div>
-        <div class="dropdown is-right card-dropdown tooltip" data-tooltip="More actions">
-          <div class="dropdown-trigger">
-            <a class="card-header-icon" aria-controls="dropdown-menu">
-              <span class="icon">
-                <i class="mdi mdi-24px mdi-chevron-down" aria-hidden="true"></i>
-              </span>
-            </a>
+        <div class="level-right">
+          <div class="level-item">
+            <div class="book-button shortcut tooltip" data-tooltip="Book">
+              <div class="icon has-text-white book-icon">
+                <i class="mdi mdi-plus-circle"></i>
+              </div>
+            </div>
           </div>
-          <div id="extra-actions" class="dropdown-menu" role="menu">
-            <div class="dropdown-content">
-              <a class="dropdown-item book-button">
-                <span class="icon">
-                  <i class="mdi mdi-plus-circle"></i>
-                </span> Book
-              </a>
-              <a class="dropdown-item" href="/portfolio">
-                <span class="icon">
-                  <i class="mdi mdi-treasure-chest"></i>
-                </span> Portfolio
-              </a>
+          <div class="level-item">
+            <div class="dropdown is-right card-dropdown tooltip" data-tooltip="More actions">
+              <div class="dropdown-trigger">
+                <a class="card-header-icon" aria-controls="dropdown-menu">
+                  <span class="icon">
+                    <i class="mdi mdi-24px mdi-chevron-down" aria-hidden="true"></i>
+                  </span>
+                </a>
+              </div>
+              <div id="extra-actions" class="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                  <a class="dropdown-item book-button">
+                    <span class="icon">
+                      <i class="mdi mdi-plus-circle"></i>
+                    </span> Book
+                  </a>
+                  <a class="dropdown-item" href="/portfolio">
+                    <span class="icon">
+                      <i class="mdi mdi-treasure-chest"></i>
+                    </span> Portfolio
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -403,7 +414,7 @@ function displayVendors(arr) {
           </div>
           <div class="media-content">
             <div class="profile-info-container">
-              <p class="title is-4 vendor-name has-text-weight-light">
+              <p class="title is-4 vendor-name has-text-weight-normal">
                 ${value.contactName}
               </p>
               <div class="vendor-location">
@@ -450,7 +461,6 @@ function generateRatingStars(rating) {
 
   for (let i = 0; i < 5; i++) {
     starClass = i < rating ? "filled-star" : "empty-star";
-
     container += `<span class="icon is-small"><i class="mdi mdi-star ${starClass}"></i></span>`;
   }
 
@@ -463,7 +473,7 @@ function generateRatingStars(rating) {
 
 function addBookingListeners() {
   $(document).on('click', '.book-button', e => {
-    if (window.sessionDetails.session == false) {
+    if (!localStorage.getItem("logged-in")) {
       alert("You must be logged in to book a vendor.");
     } else {
       $('#bookingModal').fadeIn(125);

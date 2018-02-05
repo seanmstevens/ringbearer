@@ -130,22 +130,23 @@
   box-shadow: none;
 }
 
+.vendor-list-card.promoted {
+  width: 66.67%;
+}
+
 .tile .overlay {
   opacity: 0.8;
 }
 
-.tile-header {
-  display: flex;
-  justify-content: flex-end;
+.level.is-mobile.tile-header {
+  margin-bottom: 0;
   padding: .5rem .7rem;
   border-radius: 6px 6px 0 0;
   background-color: #03a9f4;
 }
 
-.icon.card-icon-container {
-  position: relative;
-  justify-content: flex-start;
-  margin-right: auto;
+.level.is-mobile.tile-header .level-item {
+  margin: 0;
 }
 
 .card-header-icon {
@@ -326,31 +327,31 @@
 
 /* HEADERS */
 
-.card-header-videographer {
+.level.is-mobile.tile-header.card-header-videographer {
   background-color: #80DEEA;
 }
 
-.card-header-photographer {
+.level.is-mobile.tile-header.card-header-photographer {
   background-color: #f48fb1;
 }
 
-.card-header-tailor {
+.level.is-mobile.tile-header.card-header-tailor {
   background-color: #80cbc4;
 }
 
-.card-header-caterer {
+.level.is-mobile.tile-header.card-header-caterer {
   background-color: #b39ddb;
 }
 
-.card-header-venue {
+.level.is-mobile.tile-header.card-header-venue {
   background-color: #676c86;
 }
 
-.card-header-music {
+.level.is-mobile.tile-header.card-header-music {
   background-color: #aed581;
 }
 
-.card-header-cosmetics {
+.level.is-mobile.tile-header.card-header-cosmetics {
   background-color: #ffab91;
 }
 

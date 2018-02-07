@@ -262,11 +262,12 @@
 .level.box {
   position: relative;
   padding: 0.85rem;
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.08), 
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.08),
               0 3px 3px -2px rgba(0, 0, 0, .12);
 }
 
 .level.box .heading {
+  font-size: 10px;
   color: #9b9b9b;
 }
 

@@ -1,7 +1,7 @@
-@import url("https://fonts.googleapis.com/css?family=Playfair+Display|Roboto");
+@import url("https://fonts.googleapis.com/css?family=Playfair+Display|Nunito");
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Helvetica Neue', sans-serif;
   height: 100%;
   margin: 0;
 }

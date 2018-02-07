@@ -21,9 +21,17 @@
   width: 33.33%;
 }
 
+.vendor-list-card.promoted {
+  width: 66.67%;
+}
+
 @media screen and (max-width: 1280px) {
   .vendor-list-card {
     width: 50%;
+  }
+  
+  .vendor-list-card.promoted {
+    width: 100%;
   }
 }
 
@@ -128,10 +136,6 @@
 .tile.is-child.card {
   border-radius: 6px;
   box-shadow: none;
-}
-
-.vendor-list-card.promoted {
-  width: 66.67%;
 }
 
 .tile .overlay {

@@ -144,7 +144,7 @@
 
 .level.is-mobile.tile-header {
   margin-bottom: 0;
-  padding: .5rem .7rem;
+  padding: .275rem .5rem;
   border-radius: 6px 6px 0 0;
   background-color: #03a9f4;
 }
@@ -402,7 +402,7 @@
   right: 0;
   bottom: 0;
   background-color: white;
-  z-index: 101;
+  z-index: 25;
 }
 
 .datepicker .calendar .calendar-header .calendar-date,
@@ -471,7 +471,7 @@
   bottom: 0;
   display: flex;
   justify-content: center;
-  z-index: 1000;
+  z-index: 28;
 }
 
 .ajax-loader {

@@ -14,7 +14,7 @@
     <nav class="navbar is-fixed-top has-shadow" role="navigation" aria-label="dropdown navigation">
       <div class="container">
         <div class="navbar-brand">
-          <a href="/" class="navbar-item">
+          <a href="/" class="navbar-item navbar-brand-logo">
             <span>ringbearer</span>
           </a>
           <div class="navbar-burger" data-target="vendorTypeMenu">
@@ -53,16 +53,12 @@
               </a>
             </div>
           </div>
-          <div class="navbar-item">
-            <a href="/gendata">
-              Generate Data
-            </a>
-          </div>
-          <div id="addVendors" class="navbar-item">
-            <a>
-              Add Vendors
-            </a>
-          </div>
+          <a class="navbar-item" href="/gendata">
+            Generate Data
+          </a>
+          <a id="addVendors" class="navbar-item">
+            Add Vendors
+          </a>
           {% if session['email'] %}
             <div class="navbar-item has-dropdown is-hoverable">
               {% if session['userType'] == 'vendor'%}

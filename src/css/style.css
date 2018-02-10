@@ -6,9 +6,33 @@ body {
   margin: 0;
 }
 
-.navbar-brand {
-  font-family: 'Abril Fatface', serif;
+.navbar-brand-logo {
+  color: #4a4a4a;
   font-size: 1.5em;
+  font-family: 'Abril Fatface', serif;
+}
+
+a.navbar-item:not(.navbar-brand-logo),
+a.navbar-link:not(.navbar-brand-logo) {
+  font-size: 14px;
+  color: #7a7a7a;
+  text-transform: uppercase;
+}
+
+.button {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+a.navbar-item.is-active, 
+a.navbar-item:hover, 
+a.navbar-link.is-active, 
+a.navbar-link:hover {
+  color: #222;
+}
+
+.navbar-dropdown a.navbar-item {
+  text-transform: none;
 }
 
 .brand-color {

@@ -8,7 +8,7 @@
     
     <link rel="stylesheet" href="{{ url_for('static', filename='framework.986ba359e4af5d1071001a88ba2b1aab.css') }}">
     
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.51b25bc5c16c1db49caf965f236ee9f1.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.bfdaf50881ecb4aa71df0cfcb69917f1.css') }}">
     
     {% block head %} {% endblock %}
   </head>
@@ -16,8 +16,8 @@
     <nav class="navbar is-fixed-top has-shadow" role="navigation" aria-label="dropdown navigation">
       <div class="container">
         <div class="navbar-brand">
-          <a href="/" class="navbar-item">
-            <span>My Wedding Planner</span>
+          <a href="/" class="navbar-item navbar-brand-logo">
+            <span>ringbearer</span>
           </a>
           <div class="navbar-burger" data-target="vendorTypeMenu">
             <span></span>
@@ -26,7 +26,8 @@
           </div>
         </div>
         <div id="vendorTypeMenu" class="navbar-menu">
-          <div class="navbar-item has-dropdown is-hoverable">
+          <div class="navbar-end">
+            <div class="navbar-item has-dropdown is-hoverable">
             <a href="/vendor-list" class="navbar-link">
               Vendors
             </a>
@@ -54,17 +55,12 @@
               </a>
             </div>
           </div>
-          <div class="navbar-item">
-            <a href="/gendata">
-              Generate Data
-            </a>
-          </div>
-          <div id="addVendors" class="navbar-item">
-            <a>
-              Add Vendors
-            </a>
-          </div>
-          <div class="navbar-end">
+          <a class="navbar-item" href="/gendata">
+            Generate Data
+          </a>
+          <a id="addVendors" class="navbar-item">
+            Add Vendors
+          </a>
           {% if session['email'] %}
             <div class="navbar-item has-dropdown is-hoverable">
               {% if session['userType'] == 'vendor'%}
@@ -158,9 +154,9 @@
     </footer>
     <script src="https://unpkg.com/progressively/dist/progressively.min.js"></script>
     
-    <script type="text/javascript" src="{{ url_for('static', filename='framework.50d5d09227aad27debfe.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='framework.21f75908da5692aec492.js') }}"></script>
     
-    <script type="text/javascript" src="{{ url_for('static', filename='main.50d5d09227aad27debfe.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='main.21f75908da5692aec492.js') }}"></script>
     
     {% block scripts %}{% endblock %}
   </body>

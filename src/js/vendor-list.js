@@ -325,9 +325,11 @@ function displayVendors(arr) {
   };
 
   while (CURRENT_VENDORS_TOTAL < stoppingPoint && arr[CURRENT_VENDORS_TOTAL] !== undefined) {
-    let promoted = Math.random();
-    let $vendorCardWrapper = $("<li />", {"class": `vendor-list-card ${promoted < 0.10 ? "promoted" : ""}`});
+    const promoted = Math.random() < 0.07 ? "promoted" : "";
     let value = arr[CURRENT_VENDORS_TOTAL];
+    
+    const $vendorCardWrapper = $("<li />", {"class": `vendor-list-card ${promoted}`});
+
     const $level = $(
       `<nav class="level is-mobile box">
         <div class="level-item has-text-centered">
@@ -350,8 +352,6 @@ function displayVendors(arr) {
         </div>
       </nav>`
     );
-
-    // let $card = $("<article />", {"class": "tile is-child card card-" + value.vendorType}).attr("data-vendor-id", value.id);
 
     const $card = $(`<article class="tile is-child card card-${value.vendorType}" data-vendor-id=${value.id}></article>`);
 

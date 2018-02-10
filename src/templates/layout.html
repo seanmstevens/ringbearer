@@ -24,7 +24,8 @@
           </div>
         </div>
         <div id="vendorTypeMenu" class="navbar-menu">
-          <div class="navbar-item has-dropdown is-hoverable">
+          <div class="navbar-end">
+            <div class="navbar-item has-dropdown is-hoverable">
             <a href="/vendor-list" class="navbar-link">
               Vendors
             </a>
@@ -62,7 +63,6 @@
               Add Vendors
             </a>
           </div>
-          <div class="navbar-end">
           {% if session['email'] %}
             <div class="navbar-item has-dropdown is-hoverable">
               {% if session['userType'] == 'vendor'%}

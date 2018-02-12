@@ -26,40 +26,40 @@
         <div id="vendorTypeMenu" class="navbar-menu">
           <div class="navbar-end">
             <div class="navbar-item has-dropdown is-hoverable">
-            <a href="/vendor-list" class="navbar-link">
-              Vendors
-            </a>
-            <div class="navbar-dropdown is-boxed">
-              <a class="navbar-item" href="/vendor-list#venue">
-                Venues
+              <a href="/vendor-list" class="navbar-link">
+                Vendors
               </a>
-              <a class="navbar-item" href="/vendor-list#photographer">
-                Photographers
-              </a>
-              <a class="navbar-item" href="/vendor-list#videographer">
-                Videographers
-              </a>
-              <a class="navbar-item" href="/vendor-list#caterer">
-                Caterers
-              </a>
-              <a class="navbar-item" href="/vendor-list#music">
-                Music
-              </a>
-              <a class="navbar-item" href="/vendor-list#cosmetics">
-                Cosmetics
-              </a>
-              <a class="navbar-item" href="/vendor-list#tailor">
-                Tailors
-              </a>
+              <div class="navbar-dropdown is-boxed">
+                <a class="navbar-item" href="/vendor-list#venue">
+                  Venues
+                </a>
+                <a class="navbar-item" href="/vendor-list#photographer">
+                  Photographers
+                </a>
+                <a class="navbar-item" href="/vendor-list#videographer">
+                  Videographers
+                </a>
+                <a class="navbar-item" href="/vendor-list#caterer">
+                  Caterers
+                </a>
+                <a class="navbar-item" href="/vendor-list#music">
+                  Music
+                </a>
+                <a class="navbar-item" href="/vendor-list#cosmetics">
+                  Cosmetics
+                </a>
+                <a class="navbar-item" href="/vendor-list#tailor">
+                  Tailors
+                </a>
+              </div>
             </div>
-          </div>
-          <a class="navbar-item" href="/gendata">
-            Generate Data
-          </a>
-          <a id="addVendors" class="navbar-item">
-            Add Vendors
-          </a>
-          {% if session['email'] %}
+            <a class="navbar-item" href="/gendata">
+              Generate Data
+            </a>
+            <a id="addVendors" class="navbar-item">
+              Add Vendors
+            </a>
+            {% if session['email'] %}
             <div class="navbar-item has-dropdown is-hoverable">
               {% if session['userType'] == 'vendor'%}
               <a href="/profile" class="navbar-link">
@@ -70,11 +70,11 @@
                   <i class="mdi mdi-account-circle mdi-24px"></i>
                 </span>
               </a>
-              <div class="navbar-dropdown is-boxed">
+              <div class="navbar-dropdown is-right is-boxed user-actions-menu">
                 <div class="navbar-item">
                   <small>Logged in as <strong>{{ session['name'] }}</strong></small>
                 </div>
-                <hr class="navbar-divider">
+                <hr class="navbar-divider"></hr>
                 {% if session['userType'] == 'vendor' %}
                 <a class="navbar-item" href="/profile#bookings">
                   <span class="icon">
@@ -108,24 +108,26 @@
                   Account
                 </a>
                 {% endif %}
+                <hr class="navbar-divider"></hr>
+                <a class="navbar-item" href="/logout">
+                  <span class="icon">
+                    <i class="mdi mdi-logout"></i>
+                  </span>
+                  Logout
+                </a>
               </div>
             </div>
-          {% endif %}
+            {% else %}
             <div class="navbar-item">
               <div class="field is-grouped">
                 <p class="control">
-                {% if not session['email'] %}
                   <a class="button is-info is-outlined" href="/login">
                     <span><i class="mdi mdi-login-variant"></i> Login</span>
                   </a>
-                {% else %}
-                  <a class="button is-info is-outlined" href="/logout">
-                    <span><i class="mdi mdi-logout-variant"></i> Logout</span>
-                  </a>
-                {% endif %}
                 </p>
               </div>
             </div>
+            {% endif %}
           </div>
         </div>
       </div>

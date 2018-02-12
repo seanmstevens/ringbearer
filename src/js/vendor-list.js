@@ -219,7 +219,7 @@ function getVendorByType(type) {
 
   makeSidelinkActive(type);
 
-  var t0 = performance.now();
+  var t0 = Date.now();
   $.ajax({
     method: 'GET',
     url: '/getvendors',
@@ -227,7 +227,7 @@ function getVendorByType(type) {
       "type": type
     },
     success: data => {
-      var t1 = performance.now();
+      var t1 = Date.now();
       console.log("Time to success " + (t1 - t0) + " milliseconds.")
       updateResultsCount(data);
       VENDORS = [];
@@ -238,7 +238,7 @@ function getVendorByType(type) {
     }
   })
   .done(json => {
-    var t1 = performance.now();
+    var t1 = Date.now();
     console.log("Time to finish request " + (t1 - t0) + " milliseconds.")
     $(".vendor-list-card-wrapper").empty().hide(); // Empty out vendor list display
     let query = $("#vendorSearch").val();

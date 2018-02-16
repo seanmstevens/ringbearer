@@ -45,13 +45,24 @@
 
 .column.is-2 {
   min-width: 228px;
+  padding: 0;
+}
+
+.column.is-2 > div:first-child {
+  padding: 0.75em;
+  background-color: white;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 
+              0 1px 2px rgba(0,0,0,0.20);
 }
 
 .vendor-search {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 15px;
+  font-weight: 500;
   box-shadow: none;
-  border: 1px solid #f9eef6;
-  font-size: 0.85rem;
-  border-radius: 4px;
+  border: none;
+  outline: none;
 }
 
 .menu-list a {
@@ -62,23 +73,30 @@
   background-color: #555555;
 }
 
-.vendor-search::placeholder {
-  color: #adadad;
+.vendor-search::placeholder,
+.vendor-search ~ .icon.is-left {
+  color: #7a7a7a;
 }
 
-.vendor-search ~ .icon {
-  font-size: 0.85rem;
-  color: #adadad;
+.field.menu-search-nonscrollable {
+  position: absolute;
+  background-color: #fff;
+  z-index: 28;
+  top: 0;
+  left: 0;
+  padding: .75em;
+  width: 100%;
+  margin-bottom: 0;
 }
 
-.vendor-search:focus ~ .icon {
-  color: #4e4e4e;
+div.menu-categories-scrollable {
+  margin-top: 3.6em;
 }
 
 .menu {
-  max-height: 82.5vh;
-  overflow-y: auto;
-  padding-right: 1rem;
+  max-height: calc(90vh - 67px);
+  overflow: auto;
+  padding-right: .75em;
 }
 
 /* Webkit Scrollbar Styling */
@@ -133,8 +151,9 @@
 }
 
 .tile.is-child.card {
-  border-radius: 6px;
-  box-shadow: none;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 
+              0 1px 2px rgba(0,0,0,0.20);
 }
 
 .tile .overlay {
@@ -143,8 +162,8 @@
 
 .level.is-mobile.tile-header {
   margin-bottom: 0;
-  padding: .275rem .5rem;
-  border-radius: 6px 6px 0 0;
+  padding: .25rem .5rem;
+  border-radius: 2px 2px 0 0;
   background-color: #03a9f4;
 }
 

@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://unpkg.com/progressively/dist/progressively.min.css">
     
-    <link rel="stylesheet" href="{{ url_for('static', filename='framework.986ba359e4af5d1071001a88ba2b1aab.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='framework.8c14f0585079575e0ca6129abffc19ae.css') }}">
     
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.bfdaf50881ecb4aa71df0cfcb69917f1.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.897597f32cb8b01cdcbd28f313a1def7.css') }}">
     
     {% block head %} {% endblock %}
   </head>
@@ -28,40 +28,40 @@
         <div id="vendorTypeMenu" class="navbar-menu">
           <div class="navbar-end">
             <div class="navbar-item has-dropdown is-hoverable">
-            <a href="/vendor-list" class="navbar-link">
-              Vendors
-            </a>
-            <div class="navbar-dropdown is-boxed">
-              <a class="navbar-item" href="/vendor-list#venue">
-                Venues
+              <a href="/vendor-list" class="navbar-link">
+                Vendors
               </a>
-              <a class="navbar-item" href="/vendor-list#photographer">
-                Photographers
-              </a>
-              <a class="navbar-item" href="/vendor-list#videographer">
-                Videographers
-              </a>
-              <a class="navbar-item" href="/vendor-list#caterer">
-                Caterers
-              </a>
-              <a class="navbar-item" href="/vendor-list#music">
-                Music
-              </a>
-              <a class="navbar-item" href="/vendor-list#cosmetics">
-                Cosmetics
-              </a>
-              <a class="navbar-item" href="/vendor-list#tailor">
-                Tailors
-              </a>
+              <div class="navbar-dropdown is-boxed">
+                <a class="navbar-item" href="/vendor-list#venue">
+                  Venues
+                </a>
+                <a class="navbar-item" href="/vendor-list#photographer">
+                  Photographers
+                </a>
+                <a class="navbar-item" href="/vendor-list#videographer">
+                  Videographers
+                </a>
+                <a class="navbar-item" href="/vendor-list#caterer">
+                  Caterers
+                </a>
+                <a class="navbar-item" href="/vendor-list#music">
+                  Music
+                </a>
+                <a class="navbar-item" href="/vendor-list#cosmetics">
+                  Cosmetics
+                </a>
+                <a class="navbar-item" href="/vendor-list#tailor">
+                  Tailors
+                </a>
+              </div>
             </div>
-          </div>
-          <a class="navbar-item" href="/gendata">
-            Generate Data
-          </a>
-          <a id="addVendors" class="navbar-item">
-            Add Vendors
-          </a>
-          {% if session['email'] %}
+            <a class="navbar-item" href="/gendata">
+              Generate Data
+            </a>
+            <a id="addVendors" class="navbar-item">
+              Add Vendors
+            </a>
+            {% if session['email'] %}
             <div class="navbar-item has-dropdown is-hoverable">
               {% if session['userType'] == 'vendor'%}
               <a href="/profile" class="navbar-link">
@@ -72,11 +72,11 @@
                   <i class="mdi mdi-account-circle mdi-24px"></i>
                 </span>
               </a>
-              <div class="navbar-dropdown is-boxed">
+              <div class="navbar-dropdown is-right is-boxed user-actions-menu">
                 <div class="navbar-item">
                   <small>Logged in as <strong>{{ session['name'] }}</strong></small>
                 </div>
-                <hr class="navbar-divider">
+                <hr class="navbar-divider"></hr>
                 {% if session['userType'] == 'vendor' %}
                 <a class="navbar-item" href="/profile#bookings">
                   <span class="icon">
@@ -110,24 +110,26 @@
                   Account
                 </a>
                 {% endif %}
+                <hr class="navbar-divider"></hr>
+                <a class="navbar-item" href="/logout">
+                  <span class="icon">
+                    <i class="mdi mdi-logout"></i>
+                  </span>
+                  Logout
+                </a>
               </div>
             </div>
-          {% endif %}
+            {% else %}
             <div class="navbar-item">
               <div class="field is-grouped">
                 <p class="control">
-                {% if not session['email'] %}
                   <a class="button is-info is-outlined" href="/login">
                     <span><i class="mdi mdi-login-variant"></i> Login</span>
                   </a>
-                {% else %}
-                  <a class="button is-info is-outlined" href="/logout">
-                    <span><i class="mdi mdi-logout-variant"></i> Logout</span>
-                  </a>
-                {% endif %}
                 </p>
               </div>
             </div>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -154,9 +156,9 @@
     </footer>
     <script src="https://unpkg.com/progressively/dist/progressively.min.js"></script>
     
-    <script type="text/javascript" src="{{ url_for('static', filename='framework.21f75908da5692aec492.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='framework.00b53e280afa40428457.js') }}"></script>
     
-    <script type="text/javascript" src="{{ url_for('static', filename='main.21f75908da5692aec492.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='main.00b53e280afa40428457.js') }}"></script>
     
     {% block scripts %}{% endblock %}
   </body>

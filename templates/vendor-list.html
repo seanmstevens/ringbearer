@@ -2,7 +2,7 @@
 
 {% block head %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='vendorlist.1240a80e53e54035a8cb8d0eb361a090.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='vendorlist.3c355d5eef83caa4ecc9d03b9e1cdfc9.css') }}">
 
 {% endblock %}
 
@@ -106,84 +106,85 @@
     </div>
     <div class="columns">
       <div class="column is-2">
-        <aside class="menu vendor-search-menu sticky">
-          <p class="menu-label">
-            Vendor Search
-          </p>
-          <div class="field">
-            <div class="control has-icons-left">
-              <input id="vendorSearch" class="input is-small vendor-search" type="text" placeholder="Name, type, location...">
-              <span class="icon is-left">
-                <i class="mdi mdi-magnify"></i>
-              </span>
+        <div class="sticky">
+          <aside class="menu vendor-search-menu">
+            <div class="field menu-search-nonscrollable">
+              <div class="control has-icons-left">
+                <input id="vendorSearch" class="input is-normal vendor-search" type="text" placeholder="Search">
+                <span class="icon is-left">
+                  <i class="mdi mdi-magnify"></i>
+                </span>
+              </div>
             </div>
-          </div>
-          <p class="menu-label">
-            Vendor Types
-          </p>
-          <ul class="menu-list">
-            <li>
-              <a class="getVendorByType" data-type="all">
-                All Vendors
-              </a>
-            </li>
-            <li>
-              <a href="#venue" class="getVendorByType" data-type="venue">
-                Venues
-              </a>
-            </li>
-            <li>
-              <a href="#photographer" class="getVendorByType" data-type="photographer">
-                Photographers
-              </a>
-            </li>
-            <li>
-              <a href="#videographer" class="getVendorByType" data-type="videographer">
-                Videographers
-              </a>
-            </li>
-            <li>
-              <a href="#caterer" class="getVendorByType" data-type="caterer">
-                Caterers
-              </a>
-            </li>
-            <li>
-              <a href="#music" class="getVendorByType" data-type="music">
-                Bands &amp; DJs
-              </a>
-            </li>
-            <li>
-              <a href="#cosmetics" class="getVendorByType" data-type="cosmetics">
-                Hairstyle &amp; Make Up Artists
-              </a>
-            </li>
-            <li>
-              <a href="#tailor" class="getVendorByType" data-type="tailor">
-                Tailors
-              </a>
-            </li>
-          </ul>
-          <p class="menu-label">
-            Sort By
-          </p>
-          <ul class="menu-list">
-            <li>
-              <a role="button" class="sortVendors" data-type="price" data-order="asc">
-                Price
-              </a>
-            </li>
-            <li>
-              <a role="button" class="sortVendors" data-type="state" data-order="asc">
-                Location
-              </a>
-            </li>
-            <li>
-              <a role="button" class="sortVendors" data-type="rating" data-order="desc">
-                Rating
-              </a>
-            </li>
-          </ul>
-        </aside>
+            <div class="menu-categories-scrollable">
+              <p class="menu-label">
+                Vendor Types
+              </p>
+              <ul class="menu-list">
+                <li>
+                  <a class="getVendorByType" data-type="all">
+                    All Vendors
+                  </a>
+                </li>
+                <li>
+                  <a href="#venue" class="getVendorByType" data-type="venue">
+                    Venues
+                  </a>
+                </li>
+                <li>
+                  <a href="#photographer" class="getVendorByType" data-type="photographer">
+                    Photographers
+                  </a>
+                </li>
+                <li>
+                  <a href="#videographer" class="getVendorByType" data-type="videographer">
+                    Videographers
+                  </a>
+                </li>
+                <li>
+                  <a href="#caterer" class="getVendorByType" data-type="caterer">
+                    Caterers
+                  </a>
+                </li>
+                <li>
+                  <a href="#music" class="getVendorByType" data-type="music">
+                    Bands &amp; DJs
+                  </a>
+                </li>
+                <li>
+                  <a href="#cosmetics" class="getVendorByType" data-type="cosmetics">
+                    Hairstyle &amp; Make Up Artists
+                  </a>
+                </li>
+                <li>
+                  <a href="#tailor" class="getVendorByType" data-type="tailor">
+                    Tailors
+                  </a>
+                </li>
+              </ul>
+              <p class="menu-label">
+                Sort By
+              </p>
+              <ul class="menu-list">
+                <li>
+                  <a role="button" class="sortVendors" data-type="price" data-order="asc">
+                    Price
+                  </a>
+                </li>
+                <li>
+                  <a role="button" class="sortVendors" data-type="state" data-order="asc">
+                    Location
+                  </a>
+                </li>
+                <li>
+                  <a role="button" class="sortVendors" data-type="rating" data-order="desc">
+                    Rating
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </aside>
+        </div>
       </div>
       <div class="column is-narrow spacer-column"></div>
       <div class="column loading-container">
@@ -218,6 +219,6 @@
 
 {% block scripts %}
 
-<script type="text/javascript" src="{{ url_for('static', filename='vendorlist.21f75908da5692aec492.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='vendorlist.00b53e280afa40428457.js') }}"></script>
 
 {% endblock %}

@@ -5,7 +5,7 @@
   "main": "main.js",
   "browserslist": [
     "> 1%",
-    "ie >= 8"
+    "ie >= 9"
   ],
   "scripts": {
     "build": "webpack -p --progress --display-error-details",

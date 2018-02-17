@@ -107,7 +107,7 @@
     <div class="columns">
       <div class="column is-2">
         <div class="sticky">
-          <aside class="menu vendor-search-menu">
+          <div class="sidenav-container">
             <div class="field menu-search-nonscrollable">
               <div class="control has-icons-left">
                 <input id="vendorSearch" class="input is-normal vendor-search" type="text" placeholder="Search">
@@ -116,74 +116,85 @@
                 </span>
               </div>
             </div>
-            <div class="menu-categories-scrollable">
-              <p class="menu-label">
-                Vendor Types
-              </p>
-              <ul class="menu-list">
-                <li>
-                  <a class="getVendorByType" data-type="all">
-                    All Vendors
-                  </a>
-                </li>
-                <li>
-                  <a href="#venue" class="getVendorByType" data-type="venue">
-                    Venues
-                  </a>
-                </li>
-                <li>
-                  <a href="#photographer" class="getVendorByType" data-type="photographer">
-                    Photographers
-                  </a>
-                </li>
-                <li>
-                  <a href="#videographer" class="getVendorByType" data-type="videographer">
-                    Videographers
-                  </a>
-                </li>
-                <li>
-                  <a href="#caterer" class="getVendorByType" data-type="caterer">
-                    Caterers
-                  </a>
-                </li>
-                <li>
-                  <a href="#music" class="getVendorByType" data-type="music">
-                    Bands &amp; DJs
-                  </a>
-                </li>
-                <li>
-                  <a href="#cosmetics" class="getVendorByType" data-type="cosmetics">
-                    Hairstyle &amp; Make Up Artists
-                  </a>
-                </li>
-                <li>
-                  <a href="#tailor" class="getVendorByType" data-type="tailor">
-                    Tailors
-                  </a>
-                </li>
-              </ul>
-              <p class="menu-label">
-                Sort By
-              </p>
-              <ul class="menu-list">
-                <li>
-                  <a role="button" class="sortVendors" data-type="price" data-order="asc">
-                    Price
-                  </a>
-                </li>
-                <li>
-                  <a role="button" class="sortVendors" data-type="state" data-order="asc">
-                    Location
-                  </a>
-                </li>
-                <li>
-                  <a role="button" class="sortVendors" data-type="rating" data-order="desc">
-                    Rating
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </aside>
+            <aside class="menu">
+              <div class="menu-categories-scrollable">
+                <p class="menu-label">
+                  Vendor Types
+                </p>
+                <ul class="menu-list">
+                  <li>
+                    <a class="getVendorByType" data-type="all">
+                      All Vendors
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#venue" class="getVendorByType" data-type="venue">
+                      Venues
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#photographer" class="getVendorByType" data-type="photographer">
+                      Photographers
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#videographer" class="getVendorByType" data-type="videographer">
+                      Videographers
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#caterer" class="getVendorByType" data-type="caterer">
+                      Caterers
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#music" class="getVendorByType" data-type="music">
+                      Bands &amp; DJs
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#cosmetics" class="getVendorByType" data-type="cosmetics">
+                      Hairstyle &amp; Make Up Artists
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#tailor" class="getVendorByType" data-type="tailor">
+                      Tailors
+                    </a>
+                  </li>
+                </ul>
+                <p class="menu-label">
+                  Sort By
+                </p>
+                <ul class="menu-list">
+                  <li>
+                    <a role="button" class="sortVendors" data-type="price" data-order="asc">
+                      <span class="icon is-small">
+                        <i class="mdi mdi-currency-usd"></i>
+                      </span>
+                      Price
+                    </a>
+                  </li>
+                  <li>
+                    <a role="button" class="sortVendors" data-type="state" data-order="asc">
+                      <span class="icon is-small">
+                        <i class="mdi mdi-map-marker"></i>
+                      </span>
+                      Location
+                    </a>
+                  </li>
+                  <li>
+                    <a role="button" class="sortVendors" data-type="rating" data-order="desc">
+                      <span class="icon is-small">
+                        <i class="mdi mdi-thumb-up"></i>
+                      </span>
+                      Rating
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </aside>
+          </div>
         </div>
       </div>
       <div class="column is-narrow spacer-column"></div>

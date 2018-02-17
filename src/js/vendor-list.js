@@ -173,16 +173,22 @@ const delay = (function() {
 })();
 
 function addSearchListener() {
-  $("#vendorSearch").on('keyup', e => {
-    let $self = $(e.currentTarget);
-    $('.overlay-container').show();
-    $('.vendor-list-card .overlay').show();
-    delay(() => {
-      IS_ACTIVE_SEARCH = $self.val() === "" ? false : true;
-      filterArray($self.val());
-      $('.overlay-container').hide();
-      $('.vendor-list-card .overlay').hide();
-    }, 700);
+  $("#vendorSearch").on({
+    'keypress': e => {
+      let $self = $(e.currentTarget);
+      $('.overlay-container').show();
+      $('.vendor-list-card .overlay').show();
+      delay(() => {
+        IS_ACTIVE_SEARCH = $self.val() === "" ? false : true;
+        filterArray($self.val());
+        $('.overlay-container').hide();
+        $('.vendor-list-card .overlay').hide();
+      }, 700);
+    }, 'focus': e => {
+      $(e.currentTarget).parent().addClass("is-active");
+    }, 'blur': e => {
+      $(e.currentTarget).parent().removeClass("is-active");
+    }
   });
 }
 
@@ -414,7 +420,7 @@ function displayVendors(arr) {
           </div>
           <div class="media-content">
             <div class="profile-info-container">
-              <p class="title is-4 vendor-name has-text-weight-normal">
+              <p class="title is-4 vendor-name">
                 ${value.contactName}
               </p>
               <div class="vendor-location">

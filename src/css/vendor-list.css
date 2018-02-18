@@ -165,10 +165,6 @@
 
 /* General card styles */
 
-.vl-header {
-  margin-bottom: 1.5em;
-}
-
 .results-count {
   font-size: 0.75rem;
   color: #888888;
@@ -181,8 +177,9 @@
 .vendor-list-card-wrapper {
   display: none;
   margin: -0.75em;
-  list-style: none;
   position: relative;
+  overflow: hidden;
+  padding-top: 1.5rem;
 }
 
 .tile.is-child.card {
@@ -513,6 +510,9 @@
 
 .loading-container {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  padding-top: 0;
   max-width: 73.1em;
 }
 

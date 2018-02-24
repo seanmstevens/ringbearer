@@ -293,8 +293,9 @@
   max-width: 100%;
   text-overflow: ellipsis;
   overflow: hidden;
+  font-size: 22px;
   font-weight: 500;
-  margin-bottom: 0 !important;
+  margin-bottom: 0;
 }
 
 .rating-container {

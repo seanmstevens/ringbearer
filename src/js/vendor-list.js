@@ -5,22 +5,16 @@ var API_CALL_MADE = false;
 var VENDOR_ID = null;
 var VENDORS = [];
 var BOOKED_VENDORS = [];
+var FILTERED_VENDORS = [];
 var QUERY_RESULTS = [];
 var IS_ACTIVE_SEARCH = false;
 var CURRENT_VENDORS_TOTAL = 0;
 var RESULTS_PER_PAGE = 18;
 
 $(function() {
-  retrieveBookedVendors();
-  addAjaxListeners();
-  addSearchListener();
-  addDropdownMenuListeners();
-  addBookingListeners();
-  addBookFulfillmentListener();
-  addCloseModalListeners();
+  var loc, tag;;
 
-  var loc, tag;
-  
+  retrieveVendors()
   update_tag();
   
   $(window).on('popstate', e => {
@@ -31,11 +25,17 @@ $(function() {
     loc = window.location.href.split('#');
     tag = loc.length > 1 ? loc[1] : '';
     if (tag != '' && !API_CALL_MADE) {
-      getVendorByType(tag);
-    } else if (!tag) {
-      getVendorByType("all");
+      filterByVendorType(tag);
     }
   }
+
+  retrieveBookedVendors();
+  addAjaxListeners();
+  addSearchListener();
+  addDropdownMenuListeners();
+  addBookingListeners();
+  addBookFulfillmentListener();
+  addCloseModalListeners();
   
   // Adding position:sticky polyfill for side menu to make sure it works in older browers
   var elements = $('.sticky');
@@ -92,21 +92,6 @@ function updateBookingNotifiers(json) {
 }
 
 function addAjaxListeners() {
-  $('.getVendorByType').on('click', e => {
-    let $self = $(e.currentTarget);
-    let type = $self.attr('data-type');
-
-    if (type === "all") {
-      history.pushState({}, document.title, window.location.href.split('#')[0]);
-    }
-
-    API_CALL_MADE = true;
-    CURRENT_VENDORS_TOTAL = 0;
-    $('.sortVendors').removeClass('is-active');
-    makeSidelinkActive(type);
-    getVendorByType(type);
-  });
-
   $('.sortVendors').on('click', e => {
     let $self = $(e.currentTarget);
     let type = $self.attr('data-type');
@@ -164,6 +149,41 @@ function sortArray(arr, type, order){
   return arr;
 }
 
+function filterByVendorType() {
+  $(".vendor-filter").on("click", e => {
+    FILTERED_VENDORS = [];
+
+    let type = $(e.currentTarget).attr("data-type");
+    makeSidelinkActive(type);
+
+    $('.overlay-container').show();
+    $('.vendor-list-card .overlay').show();
+
+    if (type === "all") {
+      history.pushState({}, document.title, window.location.href.split('#')[0]);
+    } else {
+      if (VENDORS.length > 0) {
+        $.each(VENDORS, (index, value) => {
+          if (value.vendorType == type) {
+            FILTERED_VENDORS.push(value);
+          }
+        });
+        $(".vendor-list-card-wrapper").empty().hide(); // Empty out vendor list display
+        displayVendors(FILTERED_VENDORS);
+
+        $('.overlay-container').hide();
+        $('.vendor-list-card .overlay').hide();
+      }
+    }
+
+    API_CALL_MADE = true;
+    CURRENT_VENDORS_TOTAL = 0;
+    $('.sortVendors').removeClass('is-active');
+    makeSidelinkActive(type);
+    updateResultsCount(FILTERED_VENDORS.length);
+  });
+}
+
 const delay = (function() {
   var timer = 0;
   return function(callback, ms) {
@@ -217,30 +237,25 @@ function filterArray(query) {
   }
 }
 
-function getVendorByType(type) {
+function retrieveVendors() {
   // Show AJAX loading animation
 
   $('.overlay-container').show();
   $('.vendor-list-card .overlay').show();
 
-  makeSidelinkActive(type);
-
   var t0 = Date.now();
   $.ajax({
     method: 'GET',
     url: '/getvendors',
-    data: {
-      "type": type
-    },
     success: data => {
       var t1 = Date.now();
       console.log("Time to success " + (t1 - t0) + " milliseconds.")
-      updateResultsCount(data);
       VENDORS = [];
       // Convert JSON into an array
-      for(let vendor in data.vendors){
+      for (let vendor in data.vendors) {
         VENDORS.push(data.vendors[vendor]);
       }
+      updateResultsCount(VENDORS.length);
     }
   })
   .done(json => {
@@ -278,25 +293,22 @@ function getVendorByType(type) {
 
 function makeSidelinkActive(type) {
   // Remove all active classes from links
-  $('.getVendorByType').removeClass('is-active');
+  $('.vendor-filter').removeClass('is-active');
   // Add active class to all vendors link (special case)
   if (type === "all") {
-    $('.getVendorByType').eq(0).addClass('is-active');
+    $('.vendor-filter').eq(0).addClass('is-active');
   }
   // Add active class to link with href that corresponds to type passed in to AJAX call
   $('a[href="#' + type + '"]').addClass('is-active');
 }
 
-function updateResultsCount(json) {
-  $('#vendorTotal').text(
-    Object.keys(json.vendors).length
-  );
+function updateResultsCount(length) {
+  $('#vendorTotal').text(length);
 }
 
 function changePage(page) {
   let stoppingPoint = CURRENT_VENDORS_TOTAL + RESULTS_PER_PAGE;
 
-  
 }
 
 function displayVendors(arr) {

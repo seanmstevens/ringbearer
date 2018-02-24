@@ -424,12 +424,7 @@ def vendor():
 
         return jsonify(bookedVendors)
 
-    vendor_type = request.args.get("type")
-
-    if vendor_type == "all":
-        query = Vendor.query.all()
-    else:
-        query = Vendor.query.filter_by(vendorType=vendor_type)
+    query = Vendor.query.all()
 
     vendors = []
     for vendor in query:
@@ -449,7 +444,7 @@ def vendor():
             "vendorType": vendor.vendorType,
             "price": vendor.price,
         })
-    return jsonify(type=vendor_type, vendors=vendors)
+    return jsonify(vendors=vendors)
 
 def verifyVendorInputs(errorObj, name, business_name, vendor_type, email, street_address, city, zipcode, password, verify, price):
     if not email:

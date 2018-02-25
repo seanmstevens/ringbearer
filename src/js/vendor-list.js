@@ -12,10 +12,16 @@ var CURRENT_VENDORS_TOTAL = 0;
 var RESULTS_PER_PAGE = 18;
 
 $(function() {
-  var loc, tag;;
+  var loc, tag;
 
-  retrieveVendors()
   update_tag();
+  retrieveVendors();
+
+  if (tag != '' && !API_CALL_MADE) {
+    filterByVendorType(tag);
+  } else {
+    displayVendors(VENDORS);
+  }
   
   $(window).on('popstate', e => {
     update_tag();
@@ -24,9 +30,6 @@ $(function() {
   function update_tag() {
     loc = window.location.href.split('#');
     tag = loc.length > 1 ? loc[1] : '';
-    if (tag != '' && !API_CALL_MADE) {
-      filterByVendorType(tag);
-    }
   }
 
   retrieveBookedVendors();
@@ -161,6 +164,11 @@ function filterByVendorType() {
 
     if (type === "all") {
       history.pushState({}, document.title, window.location.href.split('#')[0]);
+      $(".vendor-list-card-wrapper").empty().hide(); // Empty out vendor list display
+      displayVendors(VENDORS);
+
+      $('.overlay-container').hide();
+      $('.vendor-list-card .overlay').hide();
     } else {
       if (VENDORS.length > 0) {
         $.each(VENDORS, (index, value) => {
@@ -266,8 +274,6 @@ function retrieveVendors() {
 
     if (query) {
       filterArray(query);
-    } else {
-      displayVendors(VENDORS);
     }
 
     // Infinite Scroll Prototype

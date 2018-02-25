@@ -2,7 +2,7 @@
 
 {% block head %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='vendorlist.a7b874bf6275c8f6dc54b493df23b8e9.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='vendorlist.2db9153b0c50a6832ba054ebf1761d25.css') }}">
 
 {% endblock %}
 
@@ -222,8 +222,12 @@
         <ul class="vendor-list-card-wrapper">
           <!-- Populated with vendors through AJAX calls -->
         </ul>
-        <div class="load-more-container">
-          
+        <div class="field load-more-field is-hidden">
+          <div class="control">
+            <button id="loadMore" class="button is-medium is-dark load-more-button">
+              <span>LOAD MORE</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -233,6 +237,6 @@
 
 {% block scripts %}
 
-<script type="text/javascript" src="{{ url_for('static', filename='vendorlist.3669582a2f6d9395ea94.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='vendorlist.1ffe4424a068b769059b.js') }}"></script>
 
 {% endblock %}

@@ -220,6 +220,7 @@ function filterArray(query) {
 function getVendorByType(type) {
   // Show AJAX loading animation
 
+  $('#loadMore').prop("disabled", true);
   $('.overlay-container').show();
   $('.vendor-list-card .overlay').show();
 
@@ -257,17 +258,19 @@ function getVendorByType(type) {
 
     // Infinite Scroll Prototype
 
-    $(window).scroll(e => {
-      if ($(window).scrollTop() + $(window).height() > $(document).height() - 180) {
-        console.log("near bottom; load more vendors");
-        displayVendors(VENDORS);
-      }
-    });
+    // $(window).scroll(e => {
+    //   if ($(window).scrollTop() + $(window).height() > $(document).height() - 180) {
+    //     console.log("near bottom; load more vendors");
+    //     displayVendors(VENDORS);
+    //   }
+    // });
     
     // Hide AJAX loading animation
 
     $('.overlay-container').hide();
     $('.vendor-list-card .overlay').hide();
+    $(".load-more-field").removeClass("is-hidden");
+    $('#loadMore').prop("disabled", false);
 
     API_CALL_MADE = false;
   })
@@ -300,7 +303,7 @@ function changePage(page) {
 }
 
 function displayVendors(arr) {
-  let $wrapper = $(".vendor-list-card-wrapper");
+  const $wrapper = $(".vendor-list-card-wrapper");
   let stoppingPoint = CURRENT_VENDORS_TOTAL + RESULTS_PER_PAGE;
 
   const icons = {

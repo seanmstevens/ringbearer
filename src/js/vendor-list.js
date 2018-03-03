@@ -2,18 +2,26 @@ import stickybits from "stickybits";
 import { DatePicker } from "./datepicker.js";
 
 var API_CALL_MADE = false;
-var VENDOR_ID = null;
-var VENDORS = [];
-var BOOKED_VENDORS = [];
-var QUERY_RESULTS = [];
+var CURRENT_PAGE = 1;
 var IS_ACTIVE_SEARCH = false;
-var CURRENT_VENDORS_TOTAL = 0;
+var IS_ACTIVE_FILTER = false;
+var VENDOR_DATA = {
+  vendorList: [],
+  bookedVendors: [],
+  filteredResults: [],
+  queryResults: []
+};
+var CURRENT_VENDOR_ID = null;
+var DISPLAY_INCREMENT = 0;
 var RESULTS_PER_PAGE = 18;
+
+VENDOR_DATA.currentList = VENDOR_DATA.vendorList;
 
 $(function() {
   retrieveBookedVendors();
   addAjaxListeners();
   addSearchListener();
+  addLoadListener();
   addDropdownMenuListeners();
   addBookingListeners();
   addBookFulfillmentListener();
@@ -42,6 +50,18 @@ $(function() {
   stickybits(elements, {stickyBitStickyOffset: 67});
 });
 
+function isActiveSearch() {
+  return $("#vendorSearch").val() != null;
+}
+
+function resetVendorIncrement() {
+  DISPLAY_INCREMENT = 0;
+}
+
+function updateCurrentList() {
+  VENDOR_DATA.currentList = IS_ACTIVE_FILTER === true ? "filtered" : "unfiltered";
+}
+
 function retrieveBookedVendors() {
   $.ajax({
     method: "GET",
@@ -52,8 +72,8 @@ function retrieveBookedVendors() {
     global: false
   })
   .done(json => {
-    BOOKED_VENDORS = json;
-    updateBookingNotifiers(BOOKED_VENDORS);
+    VENDOR_DATA.bookedVendors = json;
+    updateBookingNotifiers(VENDOR_DATA.bookedVendors);
   })
   .fail(err => {
     console.log(err);
@@ -92,17 +112,21 @@ function updateBookingNotifiers(json) {
 }
 
 function addAjaxListeners() {
-  $('.getVendorByType').on('click', e => {
+  $('.retrieve-vendors').on('click', e => {
     let $self = $(e.currentTarget);
     let type = $self.attr('data-type');
 
     if (type === "all") {
       history.pushState({}, document.title, window.location.href.split('#')[0]);
+      IS_ACTIVE_FILTER = false;
+    } else {
+      VENDOR_DATA.filteredResults = [];
+      IS_ACTIVE_FILTER = true;
     }
 
     API_CALL_MADE = true;
-    CURRENT_VENDORS_TOTAL = 0;
     $('.sortVendors').removeClass('is-active');
+
     makeSidelinkActive(type);
     getVendorByType(type);
   });
@@ -111,7 +135,7 @@ function addAjaxListeners() {
     let $self = $(e.currentTarget);
     let type = $self.attr('data-type');
     let order = $self.attr('data-order');
-    let sortTarget = QUERY_RESULTS.length === 0 ? VENDORS : QUERY_RESULTS;
+    let sortTarget = QUERY_RESULTS.length === 0 ? VENDOR_DATA.vendorList : VENDOR_DATA.queryResults;
     $('.sortVendors').removeClass('is-active');
     $self.addClass('is-active');
     $('.sortVendors').children().eq(0).remove();
@@ -133,7 +157,7 @@ function addAjaxListeners() {
         )
       );
     }
-    displayVendors(sortTarget);
+    displayVendors();
   });
 }
 
@@ -209,11 +233,11 @@ function filterArray(query) {
         }
       }
     });
-    displayVendors(QUERY_RESULTS);
+    displayVendors(18);
   } else if (!IS_ACTIVE_SEARCH) {
     // Showing all results in selected category if there was once an active search and input is now blank
     QUERY_RESULTS = [];
-    displayVendors(VENDORS);
+    displayVendors();
   }
 }
 
@@ -236,25 +260,21 @@ function getVendorByType(type) {
     success: data => {
       var t1 = Date.now();
       console.log("Time to success " + (t1 - t0) + " milliseconds.")
+      console.log(data);
       updateResultsCount(data);
-      VENDORS = [];
-      // Convert JSON into an array
-      for(let vendor in data.vendors){
-        VENDORS.push(data.vendors[vendor]);
-      }
+
+      VENDOR_DATA.vendorList = data.vendors;
     }
   })
   .done(json => {
     var t1 = Date.now();
     console.log("Time to finish request " + (t1 - t0) + " milliseconds.")
     $(".vendor-list-card-wrapper").empty().hide(); // Empty out vendor list display
-    let query = $("#vendorSearch").val();
 
-    if (query) {
-      filterArray(query);
-    } else {
-      displayVendors(VENDORS);
-    }
+    resetVendorIncrement();
+    CURRENT_PAGE = 0;
+
+    displayVendors();
 
     // Infinite Scroll Prototype
 
@@ -281,10 +301,10 @@ function getVendorByType(type) {
 
 function makeSidelinkActive(type) {
   // Remove all active classes from links
-  $('.getVendorByType').removeClass('is-active');
+  $('.retrieve-vendors').removeClass('is-active');
   // Add active class to all vendors link (special case)
   if (type === "all") {
-    $('.getVendorByType').eq(0).addClass('is-active');
+    $('.retrieve-vendors').eq(0).addClass('is-active');
   }
   // Add active class to link with href that corresponds to type passed in to AJAX call
   $('a[href="#' + type + '"]').addClass('is-active');
@@ -296,15 +316,22 @@ function updateResultsCount(json) {
   );
 }
 
-function changePage(page) {
-  let stoppingPoint = CURRENT_VENDORS_TOTAL + RESULTS_PER_PAGE;
+function addLoadListener() {
+  let stoppingPoint = DISPLAY_INCREMENT + RESULTS_PER_PAGE;
 
-  
+  $("#loadMore").on("click", e => {
+    const $this = $(e.currentTarget);
+    $this.addClass("is-loading");
+    CURRENT_PAGE++;
+    displayVendors();
+    $this.removeClass("is-loading");
+  });
 }
 
-function displayVendors(arr) {
+function displayVendors() {
+  const { vendorList, filteredResults, queryResults } = VENDOR_DATA;
+  const list = IS_ACTIVE_FILTER ? filteredResults : vendorList;
   const $wrapper = $(".vendor-list-card-wrapper");
-  let stoppingPoint = CURRENT_VENDORS_TOTAL + RESULTS_PER_PAGE;
 
   const icons = {
     "venue": `<svg class="card-icon" viewBox="0 0 20 20" preserveAspectRation="xMinYMin meet">
@@ -333,9 +360,10 @@ function displayVendors(arr) {
                </svg>`
   };
 
-  while (CURRENT_VENDORS_TOTAL < stoppingPoint && arr[CURRENT_VENDORS_TOTAL] !== undefined) {
+  while (DISPLAY_INCREMENT < RESULTS_PER_PAGE * CURRENT_PAGE && list[DISPLAY_INCREMENT] !== undefined) {
+    console.log(DISPLAY_INCREMENT);
     const promoted = Math.random() < 0.07 ? "promoted" : "";
-    let value = arr[CURRENT_VENDORS_TOTAL];
+    let value = list[DISPLAY_INCREMENT];
     
     const $vendorCardWrapper = $("<li />", {"class": `vendor-list-card ${promoted}`});
 
@@ -454,14 +482,13 @@ function displayVendors(arr) {
     $vendorCardWrapper.append($card);
     $wrapper.append($vendorCardWrapper);
 
-    CURRENT_VENDORS_TOTAL++;
-    console.log(CURRENT_VENDORS_TOTAL);
+    DISPLAY_INCREMENT++;
   }
   
   $wrapper.fadeIn(325);
-  updateBookingNotifiers(BOOKED_VENDORS);
+  updateBookingNotifiers(VENDOR_DATA.bookedVendors);
 
-  console.log("Current Total:", CURRENT_VENDORS_TOTAL, "Stopping Point:", stoppingPoint, "Array Length:", arr.length);
+  console.log("Current Total:", DISPLAY_INCREMENT, "Array Length:", list.length);
 }
 
 function generateRatingStars(rating) {
@@ -555,8 +582,8 @@ function displayBookingConfirmation(json, id) {
   $('#vendorNameBox').append($('<p class="subtitle detail">').text(info.vendor_name));
 
   $('.confirmationMessage, #confirmFooter').show();
-  BOOKED_VENDORS.push(id);
-  updateBookingNotifiers(BOOKED_VENDORS);
+  VENDOR_DATA.bookedVendors.push(id);
+  updateBookingNotifiers(VENDOR_DATA.bookedVendors);
 }
 
 function displayErrorMessage(err) {

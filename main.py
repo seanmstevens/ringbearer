@@ -8,7 +8,7 @@ import random
 import sys
 from datetime import datetime
 from sqlalchemy import create_engine
-from globals import statelist, typelist
+from globals import statelist, typelist, vendor_total
 import os
 
 engine = create_engine('sqlite:///association_tables.sqlite')
@@ -410,7 +410,7 @@ def bookExternal(vendor_type):
 @app.route('/vendor-list', methods=['GET', 'POST'])
 def vendorList():
     session['url'] = request.path
-    return render_template('vendor-list.html')
+    return render_template('vendor-list.html', vendor_total=vendor_total)
 
 # AJAX call to return data from the DB as a json array
 @app.route('/getvendors')

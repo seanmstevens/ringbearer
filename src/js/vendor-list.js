@@ -220,17 +220,18 @@ function addSearchListener() {
 }
 
 function filterArray(query) {
+  let queryResults = VENDOR_DATA.queryResults;
   // Checking to see if anything is in the input box
   if (IS_ACTIVE_SEARCH) {
-    QUERY_RESULTS = []
-    $.each(VENDORS, (idx, entry) => {
+    queryResults = [];
+    $.each(CURRENT_LIST, (idx, entry) => {
       // Cycling through entries in each vendor object. If a match is detected in
       // any of the fields (contact name, business name, address) except email,
       // it will be added to the QUERY_RESULTS array, then displayed in the view.
       for (const [key, value] of Object.entries(entry)) {
         if (key != "email" && typeof value == "string") {
           if (value.toLowerCase().indexOf(query.toLowerCase()) > -1) {
-            QUERY_RESULTS.push(entry);
+            queryResults.push(entry);
             break;
           }
         }
@@ -239,7 +240,7 @@ function filterArray(query) {
     displayVendors();
   } else if (!IS_ACTIVE_SEARCH) {
     // Showing all results in selected category if there was once an active search and input is now blank
-    QUERY_RESULTS = [];
+    queryResults = [];
     displayVendors();
   }
 }
@@ -493,6 +494,13 @@ function displayVendors() {
     $wrapper.append($vendorCardWrapper);
 
     DISPLAY_INCREMENT++;
+  }
+
+  // Modifying state of "load more" button based on if there are any more vendors to load
+  if (DISPLAY_INCREMENT === CURRENT_LIST.length) {
+    $("#loadMore").prop("disabled", true).children().eq(0).text("ALL VENDORS LOADED");
+  } else {
+    $("#loadMore").prop("disabled", false).children().eq(0).text("LOAD MORE");
   }
   
   $wrapper.fadeIn(325);

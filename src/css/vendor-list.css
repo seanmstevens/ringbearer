@@ -179,7 +179,7 @@
   margin: 0 -0.75em -0.75em -0.75em;
   position: relative;
   overflow: hidden;
-  padding-top: 1.5rem;
+  padding-top: 0.75rem;
 }
 
 .tile.is-child.card {

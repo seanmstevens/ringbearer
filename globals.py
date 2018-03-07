@@ -11,3 +11,5 @@ typelist = [["venue", "Venue"],
             ["music", "Band/DJ"],
             ["cosmetics", "Hair/Makeup Artist"],
             ["tailor", "Tailor"]]
+
+vendor_total = 244

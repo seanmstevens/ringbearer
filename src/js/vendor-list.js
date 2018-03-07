@@ -12,10 +12,9 @@ var VENDOR_DATA = {
   queryResults: []
 };
 var CURRENT_VENDOR_ID = null;
+var CURRENT_LIST = VENDOR_DATA.vendorList;
 var DISPLAY_INCREMENT = 0;
 var RESULTS_PER_PAGE = 18;
-
-VENDOR_DATA.currentList = VENDOR_DATA.vendorList;
 
 $(function() {
   retrieveBookedVendors();
@@ -39,8 +38,10 @@ $(function() {
     loc = window.location.href.split('#');
     tag = loc.length > 1 ? loc[1] : '';
     if (tag != '' && !API_CALL_MADE) {
+      IS_ACTIVE_FILTER = true;
       getVendorByType(tag);
     } else if (!tag) {
+      IS_ACTIVE_FILTER = false;
       getVendorByType("all");
     }
   }
@@ -54,8 +55,10 @@ function isActiveSearch() {
   return $("#vendorSearch").val() != null;
 }
 
-function resetVendorIncrement() {
+function resetDisplayVariables() {
   DISPLAY_INCREMENT = 0;
+  CURRENT_PAGE = 1;
+
 }
 
 function updateCurrentList() {
@@ -233,7 +236,7 @@ function filterArray(query) {
         }
       }
     });
-    displayVendors(18);
+    displayVendors();
   } else if (!IS_ACTIVE_SEARCH) {
     // Showing all results in selected category if there was once an active search and input is now blank
     QUERY_RESULTS = [];
@@ -259,11 +262,17 @@ function getVendorByType(type) {
     },
     success: data => {
       var t1 = Date.now();
-      console.log("Time to success " + (t1 - t0) + " milliseconds.")
-      console.log(data);
-      updateResultsCount(data);
+      console.log("Time to success " + (t1 - t0) + " milliseconds.");
 
-      VENDOR_DATA.vendorList = data.vendors;
+      let { vendorList, filteredResults, queryResults } = VENDOR_DATA;
+
+      if (IS_ACTIVE_FILTER) {
+        filteredResults = data.vendors;
+        CURRENT_LIST = filteredResults;
+      } else {
+        vendorList = data.vendors;
+        CURRENT_LIST = vendorList;
+      }
     }
   })
   .done(json => {
@@ -271,10 +280,9 @@ function getVendorByType(type) {
     console.log("Time to finish request " + (t1 - t0) + " milliseconds.")
     $(".vendor-list-card-wrapper").empty().hide(); // Empty out vendor list display
 
-    resetVendorIncrement();
-    CURRENT_PAGE = 0;
-
+    resetDisplayVariables();
     displayVendors();
+    updateResultsCount();
 
     // Infinite Scroll Prototype
 
@@ -310,27 +318,29 @@ function makeSidelinkActive(type) {
   $('a[href="#' + type + '"]').addClass('is-active');
 }
 
-function updateResultsCount(json) {
+function updateResultsCount() {
+  $('#resultsIncrement').text(
+    `1 - ${DISPLAY_INCREMENT}`
+  );
   $('#vendorTotal').text(
-    Object.keys(json.vendors).length
+    CURRENT_LIST.length
   );
 }
 
 function addLoadListener() {
-  let stoppingPoint = DISPLAY_INCREMENT + RESULTS_PER_PAGE;
-
   $("#loadMore").on("click", e => {
     const $this = $(e.currentTarget);
     $this.addClass("is-loading");
+
     CURRENT_PAGE++;
     displayVendors();
+    updateResultsCount();
+
     $this.removeClass("is-loading");
   });
 }
 
 function displayVendors() {
-  const { vendorList, filteredResults, queryResults } = VENDOR_DATA;
-  const list = IS_ACTIVE_FILTER ? filteredResults : vendorList;
   const $wrapper = $(".vendor-list-card-wrapper");
 
   const icons = {
@@ -360,10 +370,10 @@ function displayVendors() {
                </svg>`
   };
 
-  while (DISPLAY_INCREMENT < RESULTS_PER_PAGE * CURRENT_PAGE && list[DISPLAY_INCREMENT] !== undefined) {
+  while (DISPLAY_INCREMENT < RESULTS_PER_PAGE * CURRENT_PAGE && CURRENT_LIST[DISPLAY_INCREMENT] !== undefined) {
     console.log(DISPLAY_INCREMENT);
     const promoted = Math.random() < 0.07 ? "promoted" : "";
-    let value = list[DISPLAY_INCREMENT];
+    let value = CURRENT_LIST[DISPLAY_INCREMENT];
     
     const $vendorCardWrapper = $("<li />", {"class": `vendor-list-card ${promoted}`});
 
@@ -488,7 +498,7 @@ function displayVendors() {
   $wrapper.fadeIn(325);
   updateBookingNotifiers(VENDOR_DATA.bookedVendors);
 
-  console.log("Current Total:", DISPLAY_INCREMENT, "Array Length:", list.length);
+  console.log("Current Total:", DISPLAY_INCREMENT, "Array Length:", CURRENT_LIST.length);
 }
 
 function generateRatingStars(rating) {

@@ -170,13 +170,13 @@
   color: #888888;
 }
 
-.results-increment {
+#resultsIncrement {
   color: #2196F3;
 }
 
 .vendor-list-card-wrapper {
   display: none;
-  margin: -0.75em;
+  margin: 0 -0.75em -0.75em -0.75em;
   position: relative;
   overflow: hidden;
   padding-top: 1.5rem;

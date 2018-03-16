@@ -58,7 +58,6 @@ function isActiveSearch() {
 function resetDisplayVariables() {
   DISPLAY_INCREMENT = 0;
   CURRENT_PAGE = 1;
-
 }
 
 function updateCurrentList() {
@@ -116,6 +115,9 @@ function updateBookingNotifiers(json) {
 
 function addAjaxListeners() {
   $('.retrieve-vendors').on('click', e => {
+    goToTop();
+    clearSearchField();
+
     let $self = $(e.currentTarget);
     let type = $self.attr('data-type');
 
@@ -164,6 +166,11 @@ function addAjaxListeners() {
   });
 }
 
+function goToTop() {
+  $('html, body').animate({ scrollTop: 0 });
+  return false; 
+}
+
 function sortArray(arr, type, order){
   arr.sort(function(a, b){
       // a and b will here be two objects from the array
@@ -201,48 +208,59 @@ const delay = (function() {
 
 function addSearchListener() {
   $("#vendorSearch").on({
-    'keypress': e => {
-      let $self = $(e.currentTarget);
-      $('.overlay-container').show();
-      $('.vendor-list-card .overlay').show();
-      delay(() => {
-        IS_ACTIVE_SEARCH = $self.val() === "" ? false : true;
-        filterArray($self.val());
-        $('.overlay-container').hide();
-        $('.vendor-list-card .overlay').hide();
-      }, 700);
-    }, 'focus': e => {
+    'focus': e => {
       $(e.currentTarget).parent().addClass("is-active");
     }, 'blur': e => {
       $(e.currentTarget).parent().removeClass("is-active");
     }
+  }).bind('input', e => {
+    let $self = $(e.currentTarget);
+
+    $('.overlay-container').show();
+    $('.vendor-list-card .overlay').show();
+
+    delay(() => {
+      IS_ACTIVE_SEARCH = $self.val() === "" ? false : true;
+
+      if (IS_ACTIVE_SEARCH) {
+        goToTop();
+        filterArray($self.val());
+      } else {
+        displayVendors();        
+      }
+
+      $('.overlay-container').hide();
+      $('.vendor-list-card .overlay').hide();
+    }, 700);
   });
 }
 
 function filterArray(query) {
   let queryResults = VENDOR_DATA.queryResults;
-  // Checking to see if anything is in the input box
-  if (IS_ACTIVE_SEARCH) {
-    queryResults = [];
-    $.each(CURRENT_LIST, (idx, entry) => {
-      // Cycling through entries in each vendor object. If a match is detected in
-      // any of the fields (contact name, business name, address) except email,
-      // it will be added to the QUERY_RESULTS array, then displayed in the view.
-      for (const [key, value] of Object.entries(entry)) {
-        if (key != "email" && typeof value == "string") {
-          if (value.toLowerCase().indexOf(query.toLowerCase()) > -1) {
-            queryResults.push(entry);
-            break;
-          }
+
+  queryResults = [];
+  $.each(CURRENT_LIST, (idx, entry) => {
+    // Cycling through entries in each vendor object. If a match is detected in
+    // any of the fields (contact name, business name, address) except email,
+    // it will be added to the QUERY_RESULTS array, then displayed in the view.
+    for (const [key, value] of Object.entries(entry)) {
+      if (key != "email" && typeof value == "string") {
+        if (value.toLowerCase().indexOf(query.toLowerCase()) > -1) {
+          queryResults.push(entry);
+          break;
         }
       }
-    });
-    displayVendors();
-  } else if (!IS_ACTIVE_SEARCH) {
-    // Showing all results in selected category if there was once an active search and input is now blank
-    queryResults = [];
-    displayVendors();
-  }
+    }
+  });
+
+  emptyVendorList();
+  resetDisplayVariables();
+  displayVendors(queryResults);
+  updateResultsCount();
+}
+
+function clearSearchField() {
+  $("#vendorSearch").val("");
 }
 
 function getVendorByType(type) {
@@ -279,7 +297,8 @@ function getVendorByType(type) {
   .done(json => {
     var t1 = Date.now();
     console.log("Time to finish request " + (t1 - t0) + " milliseconds.")
-    $(".vendor-list-card-wrapper").empty().hide(); // Empty out vendor list display
+
+    emptyVendorList();
 
     resetDisplayVariables();
     displayVendors();
@@ -341,7 +360,13 @@ function addLoadListener() {
   });
 }
 
-function displayVendors() {
+function emptyVendorList() {
+  $(".vendor-list-card-wrapper").empty().hide();
+}
+
+function displayVendors(search) {
+  let vendorData = search ? search : CURRENT_LIST;
+
   const $wrapper = $(".vendor-list-card-wrapper");
 
   const icons = {
@@ -371,10 +396,10 @@ function displayVendors() {
                </svg>`
   };
 
-  while (DISPLAY_INCREMENT < RESULTS_PER_PAGE * CURRENT_PAGE && CURRENT_LIST[DISPLAY_INCREMENT] !== undefined) {
+  while (DISPLAY_INCREMENT < RESULTS_PER_PAGE * CURRENT_PAGE && vendorData[DISPLAY_INCREMENT] !== undefined) {
     console.log(DISPLAY_INCREMENT);
     const promoted = Math.random() < 0.07 ? "promoted" : "";
-    let value = CURRENT_LIST[DISPLAY_INCREMENT];
+    let value = vendorData[DISPLAY_INCREMENT];
     
     const $vendorCardWrapper = $("<li />", {"class": `vendor-list-card ${promoted}`});
 
@@ -497,7 +522,7 @@ function displayVendors() {
   }
 
   // Modifying state of "load more" button based on if there are any more vendors to load
-  if (DISPLAY_INCREMENT === CURRENT_LIST.length) {
+  if (DISPLAY_INCREMENT === vendorData.length) {
     $("#loadMore").prop("disabled", true).children().eq(0).text("ALL VENDORS LOADED");
   } else {
     $("#loadMore").prop("disabled", false).children().eq(0).text("LOAD MORE");
@@ -506,7 +531,7 @@ function displayVendors() {
   $wrapper.fadeIn(325);
   updateBookingNotifiers(VENDOR_DATA.bookedVendors);
 
-  console.log("Current Total:", DISPLAY_INCREMENT, "Array Length:", CURRENT_LIST.length);
+  console.log("Current Total:", DISPLAY_INCREMENT, "Array Length:", vendorData.length);
 }
 
 function generateRatingStars(rating) {

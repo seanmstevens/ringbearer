@@ -16,6 +16,19 @@ var CURRENT_LIST = VENDOR_DATA.vendorList;
 var DISPLAY_INCREMENT = 0;
 var RESULTS_PER_PAGE = 18;
 
+// Object.entries polyfill from MDN (temporary fix)
+if (!Object.entries) {
+  Object.entries = function( obj ){
+    var ownProps = Object.keys( obj ),
+        i = ownProps.length,
+        resArray = new Array(i); // preallocate the Array
+    while (i--)
+      resArray[i] = [ownProps[i], obj[ownProps[i]]];
+    
+    return resArray;
+  };
+}
+
 $(function() {
   retrieveBookedVendors();
   addAjaxListeners();

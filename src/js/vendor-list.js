@@ -558,7 +558,7 @@ function displayVendors(search) {
     updateBookingNotifiers(VENDOR_DATA.bookedVendors);
 
     if (search) {
-      $wrapper.fadeIn(150, function() {
+      $wrapper.show(0, function() {
         $(".load-more-field").removeClass("is-hidden");
       });
     } else {

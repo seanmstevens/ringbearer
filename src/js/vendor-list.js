@@ -2,32 +2,21 @@ import stickybits from "stickybits";
 import { DatePicker } from "./datepicker.js";
 
 var API_CALL_MADE = false;
-var CURRENT_PAGE = 1;
-var IS_ACTIVE_SEARCH = false;
-var IS_ACTIVE_FILTER = false;
 var VENDOR_DATA = {
   vendorList: [],
   bookedVendors: [],
   filteredResults: [],
   queryResults: []
 };
+window.VENDOR_DATA = VENDOR_DATA;
 var CURRENT_VENDOR_ID = null;
-var CURRENT_LIST = VENDOR_DATA.vendorList;
+
+var IS_ACTIVE_SEARCH = false;
+var IS_ACTIVE_FILTER = false;
+
 var DISPLAY_INCREMENT = 0;
 var RESULTS_PER_PAGE = 18;
-
-// Object.entries polyfill from MDN (temporary fix)
-if (!Object.entries) {
-  Object.entries = function( obj ){
-    var ownProps = Object.keys( obj ),
-        i = ownProps.length,
-        resArray = new Array(i); // preallocate the Array
-    while (i--)
-      resArray[i] = [ownProps[i], obj[ownProps[i]]];
-    
-    return resArray;
-  };
-}
+var CURRENT_PAGE = 1;
 
 $(function() {
   retrieveBookedVendors();
@@ -73,8 +62,14 @@ function resetDisplayVariables() {
   CURRENT_PAGE = 1;
 }
 
-function updateCurrentList() {
-  VENDOR_DATA.currentList = IS_ACTIVE_FILTER === true ? "filtered" : "unfiltered";
+function getCurrentList() {
+  if (IS_ACTIVE_SEARCH) {
+    return VENDOR_DATA.queryResults;
+  } else if (IS_ACTIVE_FILTER) {
+    return VENDOR_DATA.filteredResults;
+  }
+
+  return VENDOR_DATA.vendorList;
 }
 
 function retrieveBookedVendors() {
@@ -138,7 +133,6 @@ function addAjaxListeners() {
       history.pushState({}, document.title, window.location.href.split('#')[0]);
       IS_ACTIVE_FILTER = false;
     } else {
-      VENDOR_DATA.filteredResults = [];
       IS_ACTIVE_FILTER = true;
     }
 
@@ -153,7 +147,7 @@ function addAjaxListeners() {
     let $self = $(e.currentTarget);
     let type = $self.attr('data-type');
     let order = $self.attr('data-order');
-    let sortTarget = QUERY_RESULTS.length === 0 ? VENDOR_DATA.vendorList : VENDOR_DATA.queryResults;
+    let sortTarget = getCurrentList();
     $('.sortVendors').removeClass('is-active');
     $self.addClass('is-active');
     $('.sortVendors').children().eq(0).remove();
@@ -211,13 +205,13 @@ function sortArray(arr, type, order){
   return arr;
 }
 
-const delay = (function() {
-  var timer = 0;
-  return function(callback, ms) {
-    clearTimeout(timer);
-    timer = setTimeout(callback, ms);
-  };
-})();
+// const delay = (function() {
+//   var timer = 0;
+//   return function(callback, ms) {
+//     clearTimeout(timer);
+//     timer = setTimeout(callback, ms);
+//   };
+// })();
 
 function addSearchListener() {
   $("#vendorSearch").on({
@@ -227,6 +221,7 @@ function addSearchListener() {
       $(e.currentTarget).parent().removeClass("is-active");
     }, 'input': e => {
       let $self = $(e.currentTarget);
+      let currentList = getCurrentList();
 
       $(".load-more-field").addClass("is-hidden");
 
@@ -235,15 +230,25 @@ function addSearchListener() {
 
       IS_ACTIVE_SEARCH = $self.val() === "" ? false : true;
 
+      emptyVendorList();
+      resetDisplayVariables();
+
       if (IS_ACTIVE_SEARCH) {
-        goToTop();
-        filterArray($self.val());
+        const options = {
+          allowTypo: true,
+          threshold: -999,
+          keys: ['contactName', 'businessName', 'city'],
+          scoreFn(a) { return Math.max(a[0] ? a[0].score : -1000, a[1] ? a[1].score - 75 : -1000, a[2] ? a[2].score - 100 : -1000) }
+        };
+
+        VENDOR_DATA.queryResults = fuzzysort.go($self.val(), currentList, options);
+        console.log(VENDOR_DATA.queryResults);      
       } else {
-        emptyVendorList();
-        resetDisplayVariables();        
-        displayVendors();
-        updateResultsCount(); 
+        VENDOR_DATA.queryResults = []
       }
+
+      displayVendors();
+      updateResultsCount();
 
       // $('.overlay-container').hide();
       // $('.vendor-list-card .overlay').hide();
@@ -299,20 +304,16 @@ function getVendorByType(type) {
       var t1 = Date.now();
       console.log("Time to success " + (t1 - t0) + " milliseconds.");
 
-      let { vendorList, filteredResults, queryResults } = VENDOR_DATA;
-
       if (IS_ACTIVE_FILTER) {
-        filteredResults = data.vendors;
-        CURRENT_LIST = filteredResults;
+        VENDOR_DATA.filteredResults = data.vendors;
       } else {
-        vendorList = data.vendors;
-        CURRENT_LIST = vendorList;
+        VENDOR_DATA.vendorList = data.vendors;
       }
     }
   })
   .done(json => {
     var t1 = Date.now();
-    console.log("Time to finish request " + (t1 - t0) + " milliseconds.")
+    console.log("Time to finish request " + (t1 - t0) + " milliseconds.");
 
     emptyVendorList();
 
@@ -334,7 +335,6 @@ function getVendorByType(type) {
     $('.overlay-container').hide();
     $('.vendor-list-card .overlay').hide();
     $(".load-more-field").removeClass("is-hidden");
-    $('#loadMore').prop("disabled", false);
 
     API_CALL_MADE = false;
   })
@@ -359,7 +359,7 @@ function updateResultsCount() {
     `1 - ${DISPLAY_INCREMENT}`
   );
   $('#vendorTotal').text(
-    CURRENT_LIST.length
+    getCurrentList().length
   );
 }
 
@@ -380,11 +380,11 @@ function emptyVendorList() {
   $(".vendor-list-card-wrapper").empty().hide();
 }
 
-function displayVendors(search) {
-  let vendorData = search ? search : CURRENT_LIST;
+function displayVendors() {
+  let vendorData = getCurrentList();
   const $wrapper = $(".vendor-list-card-wrapper");
 
-  if (vendorData.length === 0 && search) {
+  if (vendorData.length === 0 && IS_ACTIVE_SEARCH) {
     const $noSearchResults = $(
       `<li>
         <div class="no-results has-text-centered">
@@ -395,178 +395,182 @@ function displayVendors(search) {
 
     $wrapper.append($noSearchResults);
     $wrapper.show();
-  } else {
-    const icons = {
-      "venue": `<svg class="card-icon" viewBox="0 0 20 20" preserveAspectRation="xMinYMin meet">
-                  <path fill="#FFFFFF" d="m10,18a8,8 0 0 1 -8,-8a8,8 0 0 1 8,-8a8,8 0 0 1 8,8a8,8 0 0 1 -8,8m0,-18a10,10 0 0 0 -10,10a10,10 0 0 0 10,10a10,10 0 0 0 10,-10a10,10 0 0 0 -10,-10m0,10.5a1.5,1.5 0 0 1 -1.5,-1.5a1.5,1.5 0 0 1 1.5,-1.5a1.5,1.5 0 0 1 1.5,1.5a1.5,1.5 0 0 1 -1.5,1.5m0,-5.3c-2.1,0 -3.8,1.7 -3.8,3.8c0,3 3.8,6.5 3.8,6.5c0,0 3.8,-3.5 3.8,-6.5c0,-2.1 -1.7,-3.8 -3.8,-3.8z"></path>
+
+    return false;
+  }
+
+  const icons = {
+    "venue": `<svg class="card-icon" viewBox="0 0 20 20" preserveAspectRation="xMinYMin meet">
+                <path fill="#FFFFFF" d="m10,18a8,8 0 0 1 -8,-8a8,8 0 0 1 8,-8a8,8 0 0 1 8,8a8,8 0 0 1 -8,8m0,-18a10,10 0 0 0 -10,10a10,10 0 0 0 10,10a10,10 0 0 0 10,-10a10,10 0 0 0 -10,-10m0,10.5a1.5,1.5 0 0 1 -1.5,-1.5a1.5,1.5 0 0 1 1.5,-1.5a1.5,1.5 0 0 1 1.5,1.5a1.5,1.5 0 0 1 -1.5,1.5m0,-5.3c-2.1,0 -3.8,1.7 -3.8,3.8c0,3 3.8,6.5 3.8,6.5c0,0 3.8,-3.5 3.8,-6.5c0,-2.1 -1.7,-3.8 -3.8,-3.8z"></path>
+              </svg>`,
+    "photographer": `<svg class="card-icon" viewBox="0 0 20 18" preserveAspectRatio="xMinYMid meet">
+                        <path fill="#FFFFFF" d="m2,2l3,0l2,-2l6,0l2,2l3,0a2,2 0 0 1 2,2l0,12a2,2 0 0 1 -2,2l-16,0a2,2 0 0 1 -2,-2l0,-12a2,2 0 0 1 2,-2m8,3a5,5 0 0 0 -5,5a5,5 0 0 0 5,5a5,5 0 0 0 5,-5a5,5 0 0 0 -5,-5m0,2a3,3 0 0 1 3,3a3,3 0 0 1 -3,3a3,3 0 0 1 -3,-3a3,3 0 0 1 3,-3z"></path>
+                      </svg>`,
+    "videographer": `<svg class="card-icon" viewBox="0 0 18 12" preserveAspectRatio="xMinYMid meet">
+                        <path fill="#FFFFFF" d="m14,4.5l0,-3.5a1,1 0 0 0 -1,-1l-12,0a1,1 0 0 0 -1,1l0,10a1,1 0 0 0 1,1l12,0a1,1 0 0 0 1,-1l0,-3.5l4,4l0,-11l-4,4z"></path>
+                      </svg>`,
+    "caterer": `<svg class="card-icon" viewBox="0 0 22 22">
+                  <path fill="#FFFFFF" d="m20,20l0,-4c0,-1.11 -0.9,-2 -2,-2l-1,0l0,-3c0,-1.11 -0.9,-2 -2,-2l-3,0l0,-2l-2,0l0,2l-3,0c-1.11,0 -2,0.89 -2,2l0,3l-1,0c-1.11,0 -2,0.89 -2,2l0,4l-2,0l0,2l22,0l0,-2m-11,-14a2,2 0 0 0 2,-2c0,-0.38 -0.1,-0.73 -0.29,-1.03l-1.71,-2.97l-1.72,2.97c-0.18,0.3 -0.28,0.65 -0.28,1.03a2,2 0 0 0 2,2z"></path>
                 </svg>`,
-      "photographer": `<svg class="card-icon" viewBox="0 0 20 18" preserveAspectRatio="xMinYMid meet">
-                         <path fill="#FFFFFF" d="m2,2l3,0l2,-2l6,0l2,2l3,0a2,2 0 0 1 2,2l0,12a2,2 0 0 1 -2,2l-16,0a2,2 0 0 1 -2,-2l0,-12a2,2 0 0 1 2,-2m8,3a5,5 0 0 0 -5,5a5,5 0 0 0 5,5a5,5 0 0 0 5,-5a5,5 0 0 0 -5,-5m0,2a3,3 0 0 1 3,3a3,3 0 0 1 -3,3a3,3 0 0 1 -3,-3a3,3 0 0 1 3,-3z"></path>
-                       </svg>`,
-      "videographer": `<svg class="card-icon" viewBox="0 0 18 12" preserveAspectRatio="xMinYMid meet">
-                         <path fill="#FFFFFF" d="m14,4.5l0,-3.5a1,1 0 0 0 -1,-1l-12,0a1,1 0 0 0 -1,1l0,10a1,1 0 0 0 1,1l12,0a1,1 0 0 0 1,-1l0,-3.5l4,4l0,-11l-4,4z"></path>
-                       </svg>`,
-      "caterer": `<svg class="card-icon" viewBox="0 0 22 22">
-                    <path fill="#FFFFFF" d="m20,20l0,-4c0,-1.11 -0.9,-2 -2,-2l-1,0l0,-3c0,-1.11 -0.9,-2 -2,-2l-3,0l0,-2l-2,0l0,2l-3,0c-1.11,0 -2,0.89 -2,2l0,3l-1,0c-1.11,0 -2,0.89 -2,2l0,4l-2,0l0,2l22,0l0,-2m-11,-14a2,2 0 0 0 2,-2c0,-0.38 -0.1,-0.73 -0.29,-1.03l-1.71,-2.97l-1.72,2.97c-0.18,0.3 -0.28,0.65 -0.28,1.03a2,2 0 0 0 2,2z"></path>
+    "music": `<svg class="card-icon" viewBox="0 0 19 18" preserveAspectRatio="xMinYMid meet">
+                <path fill="#FFFFFF" d="m19,0l0,12.5a3.5,3.5 0 0 1 -3.5,3.5a3.5,3.5 0 0 1 -3.5,-3.5a3.5,3.5 0 0 1 3.5,-3.5c0.54,0 1.05,0.12 1.5,0.34l0,-5.87l-10,2.13l0,8.9a3.5,3.5 0 0 1 -3.5,3.5a3.5,3.5 0 0 1 -3.5,-3.5a3.5,3.5 0 0 1 3.5,-3.5c0.54,0 1.05,0.12 1.5,0.34l0,-8.34l14,-3z"></path>
+              </svg>`,
+    "cosmetics": `<svg class="card-icon" viewBox="0 0 364 433" preserveAspectRatio="xMinYMid meet">
+                    <g>
+                      <path fill="#FFFFFF" d="m284.888,117.03c-43.62,0 -79.106,35.487 -79.106,79.106l0,216.397c0,11.028 8.972,20 20,20l118.213,0c11.028,0 20,-8.972 20,-20l0,-216.396c0,-43.62 -35.487,-79.107 -79.107,-79.107z"></path>
+                      <path fill="#FFFFFF" d="m155.888,293.783l-4.621,-127.843c-0.493,-13.627 -10.22,-25.117 -22.937,-28.461l0.079,-59.77c0.013,-9.725 -5.824,-22.225 -13.289,-28.459l-54.237,-45.287c-3.15,-2.63 -6.307,-3.963 -9.385,-3.963c-3.246,0 -6.166,1.575 -8.011,4.32c-1.536,2.285 -2.313,5.27 -2.309,8.871l0.116,124.28c-12.733,3.334 -22.474,14.832 -22.968,28.47l-4.621,127.843c-7.95,2.646 -13.705,10.142 -13.705,18.969l0,99.781c0,11.028 8.972,20 20,20l129.594,0c11.028,0 20,-8.972 20,-20l0,-99.781c-0.001,-8.827 -5.756,-16.324 -13.706,-18.97zm-117.922,-1.03l4.026,-111.364c0.248,-6.855 6.063,-12.464 12.923,-12.464l59.764,0c6.86,0 12.675,5.609 12.923,12.464l4.026,111.364l-93.662,0"></path>
+                    </g>
                   </svg>`,
-      "music": `<svg class="card-icon" viewBox="0 0 19 18" preserveAspectRatio="xMinYMid meet">
-                  <path fill="#FFFFFF" d="m19,0l0,12.5a3.5,3.5 0 0 1 -3.5,3.5a3.5,3.5 0 0 1 -3.5,-3.5a3.5,3.5 0 0 1 3.5,-3.5c0.54,0 1.05,0.12 1.5,0.34l0,-5.87l-10,2.13l0,8.9a3.5,3.5 0 0 1 -3.5,3.5a3.5,3.5 0 0 1 -3.5,-3.5a3.5,3.5 0 0 1 3.5,-3.5c0.54,0 1.05,0.12 1.5,0.34l0,-8.34l14,-3z"></path>
-                </svg>`,
-      "cosmetics": `<svg class="card-icon" viewBox="0 0 364 433" preserveAspectRatio="xMinYMid meet">
-                      <g>
-                        <path fill="#FFFFFF" d="m284.888,117.03c-43.62,0 -79.106,35.487 -79.106,79.106l0,216.397c0,11.028 8.972,20 20,20l118.213,0c11.028,0 20,-8.972 20,-20l0,-216.396c0,-43.62 -35.487,-79.107 -79.107,-79.107z"></path>
-                        <path fill="#FFFFFF" d="m155.888,293.783l-4.621,-127.843c-0.493,-13.627 -10.22,-25.117 -22.937,-28.461l0.079,-59.77c0.013,-9.725 -5.824,-22.225 -13.289,-28.459l-54.237,-45.287c-3.15,-2.63 -6.307,-3.963 -9.385,-3.963c-3.246,0 -6.166,1.575 -8.011,4.32c-1.536,2.285 -2.313,5.27 -2.309,8.871l0.116,124.28c-12.733,3.334 -22.474,14.832 -22.968,28.47l-4.621,127.843c-7.95,2.646 -13.705,10.142 -13.705,18.969l0,99.781c0,11.028 8.972,20 20,20l129.594,0c11.028,0 20,-8.972 20,-20l0,-99.781c-0.001,-8.827 -5.756,-16.324 -13.706,-18.97zm-117.922,-1.03l4.026,-111.364c0.248,-6.855 6.063,-12.464 12.923,-12.464l59.764,0c6.86,0 12.675,5.609 12.923,12.464l4.026,111.364l-93.662,0"></path>
-                      </g>
-                    </svg>`,
-      "tailor": `<svg class="card-icon" viewBox="0 0 159.63 218.31" preserveAspectRatio="xMinYMin meet">
-                   <path fill="#FFFFFF" d="m147.2832,126.225c-13.701,-34.254 -36.034,-54.336 -45.563,-61.749l2.815,-10.558c2.356,-2.014 6.079,-5.628 9.272,-10.646c5.866,-9.217 3.786,-16.223 3.309,-17.535c-0.587,-1.617 -1.714,-2.983 -3.19,-3.869c-0.222,-0.133 -0.686,-0.398 -1.361,-0.721l0,-13.647c0,-4.143 -3.358,-7.5 -7.5,-7.5c-4.142,0 -7.5,3.357 -7.5,7.5l0,11.501c-2.746,0.439 -5.407,1.328 -7.945,2.681c-4.035,2.152 -7.288,4.871 -9.806,7.484c-2.518,-2.613 -5.77,-5.332 -9.805,-7.483c-2.538,-1.354 -5.198,-2.243 -7.944,-2.682l0,-11.501c0,-4.143 -3.358,-7.5 -7.5,-7.5c-4.142,0 -7.5,3.357 -7.5,7.5l0,13.646c-0.677,0.324 -1.141,0.589 -1.363,0.723c-1.475,0.885 -2.601,2.251 -3.189,3.868c-0.476,1.311 -2.556,8.318 3.309,17.535c3.193,5.018 6.916,8.632 9.272,10.646l2.815,10.558c-9.529,7.413 -31.862,27.495 -45.563,61.749c-17.274,43.183 -11.458,83.978 -11.202,85.694c0.548,3.674 3.704,6.393 7.418,6.393l142.506,0c3.714,0 6.869,-2.719 7.417,-6.393c0.256,-1.715 6.071,-42.51 -11.202,-85.694z"></path>
-                 </svg>`
-    };
-  
-    while (DISPLAY_INCREMENT < RESULTS_PER_PAGE * CURRENT_PAGE && vendorData[DISPLAY_INCREMENT] !== undefined) {
-      console.log(DISPLAY_INCREMENT);
-      const promoted = Math.random() < 0.07 ? "promoted" : "";
-      let value = vendorData[DISPLAY_INCREMENT];
-      
-      const $vendorCardWrapper = $("<li />", {"class": `vendor-list-card ${promoted}`});
-  
-      const $level = $(
-        `<nav class="level is-mobile box">
-          <div class="level-item has-text-centered">
-            <div>
-              <p class="heading">Rate</p>
-              <p class="title is-6 has-text-weight-light">$${value.price}/hr</p>
-            </div>
+    "tailor": `<svg class="card-icon" viewBox="0 0 159.63 218.31" preserveAspectRatio="xMinYMin meet">
+                  <path fill="#FFFFFF" d="m147.2832,126.225c-13.701,-34.254 -36.034,-54.336 -45.563,-61.749l2.815,-10.558c2.356,-2.014 6.079,-5.628 9.272,-10.646c5.866,-9.217 3.786,-16.223 3.309,-17.535c-0.587,-1.617 -1.714,-2.983 -3.19,-3.869c-0.222,-0.133 -0.686,-0.398 -1.361,-0.721l0,-13.647c0,-4.143 -3.358,-7.5 -7.5,-7.5c-4.142,0 -7.5,3.357 -7.5,7.5l0,11.501c-2.746,0.439 -5.407,1.328 -7.945,2.681c-4.035,2.152 -7.288,4.871 -9.806,7.484c-2.518,-2.613 -5.77,-5.332 -9.805,-7.483c-2.538,-1.354 -5.198,-2.243 -7.944,-2.682l0,-11.501c0,-4.143 -3.358,-7.5 -7.5,-7.5c-4.142,0 -7.5,3.357 -7.5,7.5l0,13.646c-0.677,0.324 -1.141,0.589 -1.363,0.723c-1.475,0.885 -2.601,2.251 -3.189,3.868c-0.476,1.311 -2.556,8.318 3.309,17.535c3.193,5.018 6.916,8.632 9.272,10.646l2.815,10.558c-9.529,7.413 -31.862,27.495 -45.563,61.749c-17.274,43.183 -11.458,83.978 -11.202,85.694c0.548,3.674 3.704,6.393 7.418,6.393l142.506,0c3.714,0 6.869,-2.719 7.417,-6.393c0.256,-1.715 6.071,-42.51 -11.202,-85.694z"></path>
+                </svg>`
+  };
+
+  while (DISPLAY_INCREMENT < RESULTS_PER_PAGE * CURRENT_PAGE && vendorData[DISPLAY_INCREMENT] !== undefined) {
+    console.log(vendorData);
+
+    const promoted = Math.random() < 0.07 ? "promoted" : "";
+    const value = IS_ACTIVE_SEARCH ? vendorData[DISPLAY_INCREMENT].obj : vendorData[DISPLAY_INCREMENT];
+    
+    const $vendorCardWrapper = $("<li />", {"class": `vendor-list-card ${promoted}`});
+
+    const $level = $(
+      `<nav class="level is-mobile box">
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Rate</p>
+            <p class="title is-6 has-text-weight-light">$${value.price}/hr</p>
           </div>
-          <div class="level-item has-text-centered">
-            <div>
-              <p class="heading">Following</p>
-              <p class="title is-6 has-text-weight-light">123</p>
-            </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Following</p>
+            <p class="title is-6 has-text-weight-light">123</p>
           </div>
-          <div class="level-item has-text-centered">
-            <div>
-              <p class="heading">Followers</p>
-              <p class="title is-6 has-text-weight-light">456K</p>
-            </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Followers</p>
+            <p class="title is-6 has-text-weight-light">456K</p>
           </div>
-        </nav>`
-      );
-  
-      const $card = $(`<article class="tile is-child card card-${value.vendorType}" data-vendor-id=${value.id}></article>`);
-  
-      const $cardHeader = $(
-        `<div class="level is-mobile tile-header card-header-${value.vendorType}">
-          <div class="level-left">
-            <div class="level-item icon">
-              ${icons[value.vendorType]}
-            </div>
+        </div>
+      </nav>`
+    );
+
+    const $card = $(`<article class="tile is-child card card-${value.vendorType}" data-vendor-id=${value.id}></article>`);
+
+    const $cardHeader = $(
+      `<div class="level is-mobile tile-header card-header-${value.vendorType}">
+        <div class="level-left">
+          <div class="level-item icon">
+            ${icons[value.vendorType]}
           </div>
-          <div class="level-right">
-            <div class="level-item">
-              <div class="book-button shortcut tooltip" data-tooltip="Book">
-                <div class="icon has-text-white book-icon">
-                  <i class="mdi mdi-plus-circle"></i>
-                </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <div class="book-button shortcut tooltip" data-tooltip="Book">
+              <div class="icon has-text-white book-icon">
+                <i class="mdi mdi-plus-circle"></i>
               </div>
             </div>
-            <div class="level-item">
-              <div class="dropdown is-right card-dropdown tooltip" data-tooltip="More actions">
-                <div class="dropdown-trigger">
-                  <a class="card-header-icon" aria-controls="dropdown-menu">
+          </div>
+          <div class="level-item">
+            <div class="dropdown is-right card-dropdown tooltip" data-tooltip="More actions">
+              <div class="dropdown-trigger">
+                <a class="card-header-icon" aria-controls="dropdown-menu">
+                  <span class="icon">
+                    <i class="mdi mdi-24px mdi-chevron-down" aria-hidden="true"></i>
+                  </span>
+                </a>
+              </div>
+              <div id="extra-actions" class="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                  <a class="dropdown-item book-button">
                     <span class="icon">
-                      <i class="mdi mdi-24px mdi-chevron-down" aria-hidden="true"></i>
-                    </span>
+                      <i class="mdi mdi-plus-circle"></i>
+                    </span> Book
+                  </a>
+                  <a class="dropdown-item" href="/portfolio">
+                    <span class="icon">
+                      <i class="mdi mdi-treasure-chest"></i>
+                    </span> Portfolio
                   </a>
                 </div>
-                <div id="extra-actions" class="dropdown-menu" role="menu">
-                  <div class="dropdown-content">
-                    <a class="dropdown-item book-button">
-                      <span class="icon">
-                        <i class="mdi mdi-plus-circle"></i>
-                      </span> Book
-                    </a>
-                    <a class="dropdown-item" href="/portfolio">
-                      <span class="icon">
-                        <i class="mdi mdi-treasure-chest"></i>
-                      </span> Portfolio
-                    </a>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
-        </div>`
-      );
-  
-      const $overlay = $('<div class="overlay"></div>');
-  
-      $card.append($cardHeader, $overlay);
-  
-      const $ratingStars = generateRatingStars(value.rating);
-  
-      const $cardContent = $(
-        `<div class="card-content">
-          <div class="header"></div>
-          <div class="media">
-            <div class="media-left">
-              <div class="image is-64x64 profile-picture-container"></div>
-            </div>
-            <div class="media-content">
-              <div class="profile-info-container">
-                <p class="title is-4 vendor-name">
-                  ${value.contactName}
-                </p>
-                <div class="vendor-location">
-                  ${value.city}, ${value.state}
-                </div>
-                ${$ratingStars}
-              </div>
-            </div>
-          </div>
-        </div>`
-      );
-  
-      const $vendorBlurb = $(
-        `<div class="content">
-          <p class="vendor-blurb">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-          </p>
-          <a class="is-size-7" href="/portfolio">
-            More...
-          </a>
-        </div>`
-      );
-  
-      $cardContent.append($level, $vendorBlurb);
-      $card.append($cardContent);
-       
-      $vendorCardWrapper.append($card);
-      $wrapper.append($vendorCardWrapper);
-  
-      DISPLAY_INCREMENT++;
-    }
-  
-    // Modifying state of "load more" button based on if there are any more vendors to load
-    if (DISPLAY_INCREMENT === vendorData.length) {
-      $("#loadMore").prop("disabled", true).children().eq(0).text("ALL VENDORS LOADED");
-    } else {
-      $("#loadMore").prop("disabled", false).children().eq(0).text("LOAD MORE");
-    }
-    
-    updateBookingNotifiers(VENDOR_DATA.bookedVendors);
+        </div>
+      </div>`
+    );
 
-    if (search) {
-      $wrapper.show(0, function() {
-        $(".load-more-field").removeClass("is-hidden");
-      });
-    } else {
-      $wrapper.fadeIn(325, function() {
-        $(".load-more-field").removeClass("is-hidden");
-      });
-    }
+    const $overlay = $('<div class="overlay"></div>');
+
+    $card.append($cardHeader, $overlay);
+
+    const $ratingStars = generateRatingStars(value.rating);
+
+    const $cardContent = $(
+      `<div class="card-content">
+        <div class="header"></div>
+        <div class="media">
+          <div class="media-left">
+            <div class="image is-64x64 profile-picture-container"></div>
+          </div>
+          <div class="media-content">
+            <div class="profile-info-container">
+              <p class="title is-4 vendor-name">
+                ${value.contactName}
+              </p>
+              <div class="vendor-location">
+                ${value.city}, ${value.state}
+              </div>
+              ${$ratingStars}
+            </div>
+          </div>
+        </div>
+      </div>`
+    );
+
+    const $vendorBlurb = $(
+      `<div class="content">
+        <p class="vendor-blurb">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        </p>
+        <a class="is-size-7" href="/portfolio">
+          More...
+        </a>
+      </div>`
+    );
+
+    $cardContent.append($level, $vendorBlurb);
+    $card.append($cardContent);
+      
+    $vendorCardWrapper.append($card);
+    $wrapper.append($vendorCardWrapper);
+
+    DISPLAY_INCREMENT++;
   }
+
+  // Modifying state of "load more" button based on if there are any more vendors to load
+  if (DISPLAY_INCREMENT === vendorData.length) {
+    $("#loadMore").prop("disabled", true).children().eq(0).text("ALL VENDORS LOADED");
+  } else {
+    $("#loadMore").prop("disabled", false).children().eq(0).text("LOAD MORE");
+  }
+  
+  updateBookingNotifiers(VENDOR_DATA.bookedVendors);
+
+  if (IS_ACTIVE_SEARCH) {
+    $wrapper.show(0, function() {
+      $(".load-more-field").removeClass("is-hidden");
+    });
+  } else {
+    $wrapper.fadeIn(325, function() {
+      $(".load-more-field").removeClass("is-hidden");
+    });
+  }
+
   console.log("Current Total:", DISPLAY_INCREMENT, "Array Length:", vendorData.length);
 }
 

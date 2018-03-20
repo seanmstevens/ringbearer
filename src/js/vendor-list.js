@@ -8,7 +8,6 @@ var VENDOR_DATA = {
   filteredResults: [],
   queryResults: []
 };
-window.VENDOR_DATA = VENDOR_DATA;
 var CURRENT_VENDOR_ID = null;
 
 var IS_ACTIVE_SEARCH = false;
@@ -53,6 +52,8 @@ $(function() {
   stickybits(elements, {stickyBitStickyOffset: 67});
 });
 
+// UTILITIES //
+
 function isActiveSearch() {
   return $("#vendorSearch").val() != null;
 }
@@ -62,6 +63,32 @@ function resetDisplayVariables() {
   CURRENT_PAGE = 1;
 }
 
+function emptyVendorList() {
+  $(".vendor-list-card-wrapper").empty().hide();
+}
+
+function makeSidelinkActive(type) {
+  // Remove all active classes from links
+  $('.retrieve-vendors').removeClass('is-active');
+  // Add active class to all vendors link (special case)
+  if (type === "all") {
+    $('.retrieve-vendors').eq(0).addClass('is-active');
+  }
+  // Add active class to link with href that corresponds to type passed in to AJAX call
+  $('a[href="#' + type + '"]').addClass('is-active');
+}
+
+function updateResultsCount() {
+  let arr = IS_ACTIVE_SEARCH ? VENDOR_DATA.queryResults : getCurrentList();
+
+  $('#resultsIncrement').text(
+    `1 - ${DISPLAY_INCREMENT}`
+  );
+  $('#vendorTotal').text(
+    arr.length
+  );
+}
+
 function getCurrentList() {
   if (IS_ACTIVE_FILTER) {
     return VENDOR_DATA.filteredResults;
@@ -69,6 +96,22 @@ function getCurrentList() {
 
   return VENDOR_DATA.vendorList;
 }
+
+function clearSearchField() {
+  $("#vendorSearch").val("");
+  IS_ACTIVE_SEARCH = false;
+}
+
+function closeDropdowns() {
+  $(".card-dropdown").removeClass("is-active");
+}
+
+function goToTop() {
+  $('html, body').animate({ scrollTop: 0 });
+  return false; 
+}
+
+// PRIMARY FUNCTIONS //
 
 function retrieveBookedVendors() {
   $.ajax({
@@ -97,10 +140,6 @@ function addDropdownMenuListeners() {
   $(document).on("click", e => {
     closeDropdowns();
   });
-}
-
-function closeDropdowns() {
-  $(".card-dropdown").removeClass("is-active");
 }
 
 function updateBookingNotifiers(json) {
@@ -169,11 +208,6 @@ function addAjaxListeners() {
     }
     displayVendors();
   });
-}
-
-function goToTop() {
-  $('html, body').animate({ scrollTop: 0 });
-  return false; 
 }
 
 function sortArray(arr, type, order){
@@ -278,10 +312,6 @@ function addSearchListener() {
 //   updateResultsCount();
 // }
 
-function clearSearchField() {
-  $("#vendorSearch").val("");
-}
-
 function getVendorByType(type) {
   // Show AJAX loading animation
 
@@ -341,28 +371,6 @@ function getVendorByType(type) {
   });
 }
 
-function makeSidelinkActive(type) {
-  // Remove all active classes from links
-  $('.retrieve-vendors').removeClass('is-active');
-  // Add active class to all vendors link (special case)
-  if (type === "all") {
-    $('.retrieve-vendors').eq(0).addClass('is-active');
-  }
-  // Add active class to link with href that corresponds to type passed in to AJAX call
-  $('a[href="#' + type + '"]').addClass('is-active');
-}
-
-function updateResultsCount() {
-  let arr = IS_ACTIVE_SEARCH ? VENDOR_DATA.queryResults : getCurrentList();
-
-  $('#resultsIncrement').text(
-    `1 - ${DISPLAY_INCREMENT}`
-  );
-  $('#vendorTotal').text(
-    arr.length
-  );
-}
-
 function addLoadListener() {
   $("#loadMore").on("click", e => {
     const $this = $(e.currentTarget);
@@ -374,10 +382,6 @@ function addLoadListener() {
 
     $this.removeClass("is-loading");
   });
-}
-
-function emptyVendorList() {
-  $(".vendor-list-card-wrapper").empty().hide();
 }
 
 function displayVendors() {

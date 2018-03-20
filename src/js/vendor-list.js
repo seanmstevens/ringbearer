@@ -63,9 +63,7 @@ function resetDisplayVariables() {
 }
 
 function getCurrentList() {
-  if (IS_ACTIVE_SEARCH) {
-    return VENDOR_DATA.queryResults;
-  } else if (IS_ACTIVE_FILTER) {
+  if (IS_ACTIVE_FILTER) {
     return VENDOR_DATA.filteredResults;
   }
 
@@ -355,11 +353,13 @@ function makeSidelinkActive(type) {
 }
 
 function updateResultsCount() {
+  let arr = IS_ACTIVE_SEARCH ? VENDOR_DATA.queryResults : getCurrentList();
+
   $('#resultsIncrement').text(
     `1 - ${DISPLAY_INCREMENT}`
   );
   $('#vendorTotal').text(
-    getCurrentList().length
+    arr.length
   );
 }
 
@@ -381,7 +381,14 @@ function emptyVendorList() {
 }
 
 function displayVendors() {
-  let vendorData = getCurrentList();
+  let vendorData;
+
+  if (IS_ACTIVE_SEARCH) {
+    vendorData = VENDOR_DATA.queryResults;
+  } else {
+    vendorData = getCurrentList();
+  }
+
   const $wrapper = $(".vendor-list-card-wrapper");
 
   if (vendorData.length === 0 && IS_ACTIVE_SEARCH) {

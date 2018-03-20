@@ -251,29 +251,29 @@ function addSearchListener() {
   });
 }
 
-function filterArray(query) {
-  let queryResults = VENDOR_DATA.queryResults;
+// function filterArray(query) {
+//   let queryResults = VENDOR_DATA.queryResults;
 
-  queryResults = [];
-  $.each(CURRENT_LIST, (idx, entry) => {
-    // Cycling through entries in each vendor object. If a match is detected in
-    // any of the fields (contact name, business name, address) except email,
-    // it will be added to the QUERY_RESULTS array, then displayed in the view.
-    for (const [key, value] of Object.entries(entry)) {
-      if (key != "email" && typeof value == "string") {
-        if (value.toLowerCase().indexOf(query.toLowerCase()) > -1) {
-          queryResults.push(entry);
-          break;
-        }
-      }
-    }
-  });
+//   queryResults = [];
+//   $.each(CURRENT_LIST, (idx, entry) => {
+//     // Cycling through entries in each vendor object. If a match is detected in
+//     // any of the fields (contact name, business name, address) except email,
+//     // it will be added to the QUERY_RESULTS array, then displayed in the view.
+//     for (const [key, value] of Object.entries(entry)) {
+//       if (key != "email" && typeof value == "string") {
+//         if (value.toLowerCase().indexOf(query.toLowerCase()) > -1) {
+//           queryResults.push(entry);
+//           break;
+//         }
+//       }
+//     }
+//   });
 
-  emptyVendorList();
-  resetDisplayVariables();
-  displayVendors(queryResults);
-  updateResultsCount();
-}
+//   emptyVendorList();
+//   resetDisplayVariables();
+//   displayVendors(queryResults);
+//   updateResultsCount();
+// }
 
 function clearSearchField() {
   $("#vendorSearch").val("");

@@ -106,9 +106,13 @@ function closeDropdowns() {
   $(".card-dropdown").removeClass("is-active");
 }
 
+function resetSorts() {
+  $('.sortVendors').removeClass('is-active').children(".order-indicator").remove();
+}
+
 function goToTop() {
-  $('html, body').animate({ scrollTop: 0 });
-  return false; 
+  $('html, body').animate({ scrollTop: 0 }, 300);
+  return false;
 }
 
 // PRIMARY FUNCTIONS //
@@ -162,77 +166,77 @@ function addAjaxListeners() {
   $('.retrieve-vendors').on('click', e => {
     goToTop();
     clearSearchField();
+    resetSorts();
 
     let $self = $(e.currentTarget);
     let type = $self.attr('data-type');
 
     if (type === "all") {
       history.pushState({}, document.title, window.location.href.split('#')[0]);
+      VENDOR_DATA.filteredResults = [];
       IS_ACTIVE_FILTER = false;
     } else {
+      VENDOR_DATA.vendorList = [];
       IS_ACTIVE_FILTER = true;
     }
 
     API_CALL_MADE = true;
-    $('.sortVendors').removeClass('is-active');
 
     makeSidelinkActive(type);
     getVendorByType(type);
   });
 
   $('.sortVendors').on('click', e => {
-    let $self = $(e.currentTarget);
-    let type = $self.attr('data-type');
-    let order = $self.attr('data-order');
-    let sortTarget = getCurrentList();
-    $('.sortVendors').removeClass('is-active');
-    $self.addClass('is-active');
-    $('.sortVendors').children().eq(0).remove();
+    const $self = $(e.currentTarget);
+    const type = $self.attr('data-type');
+    const order = $self.attr('data-order');
+    const iconName = order == 'asc' ? 'mdi-arrow-up' : 'mdi-arrow-down';
+    let sortTarget = IS_ACTIVE_SEARCH ? VENDOR_DATA.queryResults : getCurrentList();
 
-    if (order == 'asc') {
-      sortTarget = sortArray(sortTarget, type, 'asc')
-      $self.attr("data-order", 'desc');
-      $self.append(
-        $('<span />', {"class": "icon is-small"}).append(
-          $('<i />', {"class": "mdi mdi-arrow-up"})
-        )
-      );
-    } else {
-      sortTarget = sortArray(sortTarget, type, 'desc')
-      $self.attr("data-order", 'asc');
-      $self.append(
-        $('<span />', {"class": "icon is-small"}).append(
-          $('<i />', {"class": "mdi mdi-arrow-down"})
-        )
-      );
-    }
-    displayVendors();
+    resetSorts();
+    $self.addClass('is-active');
+
+    sortTarget = sortArray(sortTarget, type, order);
+
+    $self.attr('data-order', order == 'asc' ? 'desc': 'asc');
+
+    $self.append(
+      $('<span />', {"class": "icon is-small order-indicator"}).append(
+        $('<i />', {"class": `mdi ${iconName}`})
+      )
+    );
+
+    emptyVendorList();
+    resetDisplayVariables();    
+    displayVendors(sortTarget);
   });
 }
 
-function sortArray(arr, type, order){
-  arr.sort(function(a, b){
-      // a and b will here be two objects from the array
-      // thus a[1] and b[1] will equal the names
-      // if they are equal, return 0 (no sorting)
-      if (a[type] == b[type]) {
-        return 0;
-      }
-      if (a[type] > b[type]) {
-        // if a should come after b, return 1
-        if (order == 'asc') {
-          return 1;
-        } else {
-          return -1;
-        }
+function sortArray(arr, type, order) {
+  arr.sort(function(a, b) {
+    // Controlling for different structure of query results
+    if (IS_ACTIVE_SEARCH) { a = a.obj; b = b.obj }
+    // a and b will here be two objects from the array
+    // thus a[1] and b[1] will equal the names
+    // if they are equal, return 0 (no sorting)
+    if (a[type] == b[type]) {
+      return 0;
+    }
+    if (a[type] > b[type]) {
+      // if a should come after b, return 1
+      if (order == 'asc') {
+        return 1;
       } else {
-        // if b should come after a, return -1
-        if (order == 'asc') {
-          return -1;
-        } else {
-          return 1;
-        }
+        return -1;
       }
+    } else {
+      // if b should come after a, return -1
+      if (order == 'asc') {
+        return -1;
+      } else {
+        return 1;
+      }
+    }
   });
   return arr;
 }
@@ -264,6 +268,8 @@ function addSearchListener() {
 
       emptyVendorList();
       resetDisplayVariables();
+      goToTop();
+      resetSorts();
 
       if (IS_ACTIVE_SEARCH) {
         const options = {
@@ -274,12 +280,14 @@ function addSearchListener() {
         };
 
         VENDOR_DATA.queryResults = fuzzysort.go($self.val(), currentList, options);
-        console.log(VENDOR_DATA.queryResults);      
+        displayVendors(VENDOR_DATA.queryResults);
+
+        return false;
       } else {
         VENDOR_DATA.queryResults = []
       }
 
-      displayVendors();
+      displayVendors(currentList);
       updateResultsCount();
 
       // $('.overlay-container').hide();
@@ -329,9 +337,6 @@ function getVendorByType(type) {
       "type": type
     },
     success: data => {
-      var t1 = Date.now();
-      console.log("Time to success " + (t1 - t0) + " milliseconds.");
-
       if (IS_ACTIVE_FILTER) {
         VENDOR_DATA.filteredResults = data.vendors;
       } else {
@@ -344,19 +349,9 @@ function getVendorByType(type) {
     console.log("Time to finish request " + (t1 - t0) + " milliseconds.");
 
     emptyVendorList();
-
     resetDisplayVariables();
-    displayVendors();
+    displayVendors(getCurrentList());
     updateResultsCount();
-
-    // Infinite Scroll Prototype
-
-    // $(window).scroll(e => {
-    //   if ($(window).scrollTop() + $(window).height() > $(document).height() - 180) {
-    //     console.log("near bottom; load more vendors");
-    //     displayVendors(VENDORS);
-    //   }
-    // });
     
     // Hide AJAX loading animation
 
@@ -377,25 +372,17 @@ function addLoadListener() {
     $this.addClass("is-loading");
 
     CURRENT_PAGE++;
-    displayVendors();
+    displayVendors(getCurrentList());
     updateResultsCount();
 
     $this.removeClass("is-loading");
   });
 }
 
-function displayVendors() {
-  let vendorData;
-
-  if (IS_ACTIVE_SEARCH) {
-    vendorData = VENDOR_DATA.queryResults;
-  } else {
-    vendorData = getCurrentList();
-  }
-
+function displayVendors(arr) {
   const $wrapper = $(".vendor-list-card-wrapper");
 
-  if (vendorData.length === 0 && IS_ACTIVE_SEARCH) {
+  if (arr.length === 0 && IS_ACTIVE_SEARCH) {
     const $noSearchResults = $(
       `<li>
         <div class="no-results has-text-centered">
@@ -437,11 +424,9 @@ function displayVendors() {
                 </svg>`
   };
 
-  while (DISPLAY_INCREMENT < RESULTS_PER_PAGE * CURRENT_PAGE && vendorData[DISPLAY_INCREMENT] !== undefined) {
-    console.log(vendorData);
-
+  while (DISPLAY_INCREMENT < RESULTS_PER_PAGE * CURRENT_PAGE && arr[DISPLAY_INCREMENT] !== undefined) {
     const promoted = Math.random() < 0.07 ? "promoted" : "";
-    const value = IS_ACTIVE_SEARCH ? vendorData[DISPLAY_INCREMENT].obj : vendorData[DISPLAY_INCREMENT];
+    const value = IS_ACTIVE_SEARCH ? arr[DISPLAY_INCREMENT].obj : arr[DISPLAY_INCREMENT];
     
     const $vendorCardWrapper = $("<li />", {"class": `vendor-list-card ${promoted}`});
 
@@ -564,7 +549,7 @@ function displayVendors() {
   }
 
   // Modifying state of "load more" button based on if there are any more vendors to load
-  if (DISPLAY_INCREMENT === vendorData.length) {
+  if (DISPLAY_INCREMENT === arr.length) {
     $("#loadMore").prop("disabled", true).children().eq(0).text("ALL VENDORS LOADED");
   } else {
     $("#loadMore").prop("disabled", false).children().eq(0).text("LOAD MORE");
@@ -581,8 +566,6 @@ function displayVendors() {
       $(".load-more-field").removeClass("is-hidden");
     });
   }
-
-  console.log("Current Total:", DISPLAY_INCREMENT, "Array Length:", vendorData.length);
 }
 
 function generateRatingStars(rating) {

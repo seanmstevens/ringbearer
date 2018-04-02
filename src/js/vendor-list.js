@@ -194,6 +194,7 @@ function addAjaxListeners() {
     let sortTarget = IS_ACTIVE_SEARCH ? VENDOR_DATA.queryResults : getCurrentList();
 
     resetSorts();
+    goToTop();
     $self.addClass('is-active');
 
     sortTarget = sortArray(sortTarget, type, order);

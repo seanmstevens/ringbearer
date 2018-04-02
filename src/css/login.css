@@ -5,22 +5,9 @@ form {
 }
 
 div.wrapper {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
   display: flex;
-  height: -webkit-calc(100vh - 52px);
   height: calc(100vh - 52px);
   flex-flow: column;
-  margin: auto;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-    -ms-flex-pack: center;
-      justify-content: center;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-    -ms-flex-align: center;
-      align-items: center;
 }
 
 div.wrapper h1 {
@@ -28,22 +15,41 @@ div.wrapper h1 {
   margin-bottom: 0;
 }
 
+@media (min-width: 601px) {
+  .wrapper::before,
+  .wrapper::after {
+    -webkit-box-flex: 1;
+    box-flex: 1;
+    -webkit-flex-grow: 1;
+    flex-grow: 1;
+    content: '';
+    display: block;
+    height: 24px;
+  }
+
+  .wrapper::before {
+    min-height: 30px;
+  }
+
+  .wrapper::after {
+    min-height: 64px;
+  }
+}
+
 .signup-container {
-  width: 30%;
+  margin: auto;
+  min-height: 500px;
+  width: 450px;
 }
 
 .form-container-signup {
-  font-family: "Raleway", sans-serif;
   border-left: 4px solid #03a9f4;
   border-radius: 4px;
   padding: 30px;
   background-color: white;
-  -webkit-box-shadow: 0 1px 8px 0 rgba(0,0,0,.2), 
-            0 3px 4px 0 rgba(0,0,0,.14), 
-            0 3px 3px -2px rgba(0,0,0,.12);
-      box-shadow: 0 1px 8px 0 rgba(0,0,0,.2), 
-            0 3px 4px 0 rgba(0,0,0,.14), 
-            0 3px 3px -2px rgba(0,0,0,.12);
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 
+              0 3px 1px -2px rgba(0, 0, 0, 0.12), 
+              0 1px 5px 0 rgba(0, 0, 0, 0.2);
 }
 
 .signup-tabs {
@@ -93,7 +99,6 @@ div.wrapper h1 {
 }
 
 .submit-button {
-  font-family: "Raleway", sans-serif;
   background-color: #03a9f4;
   width: 100%;
   margin: 30px 0 10px;
@@ -134,13 +139,12 @@ div.wrapper h1 {
 }
 
 #create-msg {
-  font-size: 0.8em;
+  font-size: 0.8rem;
   text-align: center;
   text-decoration: none;
 }
 
 #create-account:link, #create-account:visited {
-  font-family: "Raleway", sans-serif;
   font-weight: 500;
   color: #03a9f4;
   text-decoration: none;

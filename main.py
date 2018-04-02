@@ -702,7 +702,7 @@ def portfolio():
 def genData():
   vendorTypes = ['venue', 'photographer', 'videographer', 'caterer', 'music', 'cosmetics', 'tailor']
   fake = Faker()
-  for i in range(25):
+  for i in range(50):
     user = User(
       fake.name(),
       fake.email(),

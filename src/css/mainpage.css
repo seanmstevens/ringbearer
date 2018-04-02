@@ -10,8 +10,17 @@
   overflow: hidden;
 }
 
-.mainpage-title {
+.title.mainpage-title.has-text-white {
   font-family: "Abril Fatface", serif;
+  font-size: 6rem;
+  margin-bottom: 2rem;
+}
+
+.mainpage-signup-entry,
+.mainpage-login-entry,
+.mainpage-user-entry,
+.mainpage-vendor-entry {
+  font-weight: 500;
 }
 
 .bg-container {

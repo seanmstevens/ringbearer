@@ -1,0 +1,76 @@
+<div class="field">
+  {# Street Address Input #}
+  <div class="control has-icons-left is-expanded">
+    <input class="input {% if v_errors['addresserrors'] %}is-danger{% endif %}"
+      type="text" placeholder="Street Address" name="address" value="{{ vendor_info['street_address'] }}">
+    <span class="icon is-left">
+      <i class="mdi mdi-home"></i>
+    </span>
+    <div class="error-msgs-wrapper">
+      {% if v_errors["addresserrors"] %}
+        {% for error in v_errors["addresserrors"] %}
+          <p class="help is-danger">
+            <i class="mdi mdi-alert-circle"></i>
+            {{ error }}
+          </p>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+<div class="field">
+  {# City Input #}
+  <div class="control has-icons-left is-expanded">
+    <input class="input {% if v_errors['cityerrors'] %}is-danger{% endif %}"
+      type="text" placeholder="City" name="city" value="{{ vendor_info['city'] }}">
+    <span class="icon is-left">
+      <i class="mdi mdi-google-maps"></i>
+    </span>
+    <div class="error-msgs-wrapper">
+      {% if v_errors["cityerrors"] %}
+        {% for error in v_errors["cityerrors"] %}
+          <p class="help is-danger">
+            <i class="mdi mdi-alert-circle"></i>
+            {{ error }}
+          </p>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+<div class="field is-grouped state-zip-group">
+  {# State Input #}
+  <div class="control has-icons-left">
+    <span class="select">
+      <select name="state">
+        {% for state in statelist %}
+          {% if state == vendor_info['state'] %}
+            <option value="{{ vendor_info['state'] }}" selected>{{ vendor_info['state'] }}</option>
+          {% endif %}
+          <option value="{{ state }}">{{ state }}</option>
+        {% endfor %}
+      </select>
+    </span>
+    <span class="icon is-left">
+      <i class="mdi mdi-map-marker"></i>
+    </span>
+  </div>
+  {# Zipcode Input #}
+  <div class="control has-icons-left zip-input">
+    <input class="input {% if v_errors['zipcodeerrors'] %}is-danger{% endif %}"
+      type="text" placeholder="Zipcode" name="zipcode" maxlength="5" value="{{ vendor_info['zipcode'] }}">
+    <span class="icon is-left">
+      <i class="mdi mdi-map-marker"></i>
+    </span>
+    <div class="error-msgs-wrapper">
+      {% if v_errors["zipcodeerrors"] %}
+        {% for error in v_errors["zipcodeerrors"] %}
+          <p class="help is-danger">
+            <i class="mdi mdi-alert-circle"></i>
+            {{ error }}
+          </p>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>

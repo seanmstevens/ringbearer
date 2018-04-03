@@ -1,0 +1,62 @@
+<div class="field">
+  {# Email Input #} 
+  <div class="control has-icons-left">
+    <input class="input {% if v_errors['usererrors'] %}is-danger{% endif %}"
+      type="text" placeholder="Email" name="email" value="{{ vendor_info['email'] }}">
+    <span class="icon is-left">
+      <i class="mdi mdi-email-outline"></i>
+    </span>
+    <div class="error-msgs-wrapper">
+      {% if v_errors["usererrors"] %}
+        {% for error in v_errors["usererrors"] %}
+          <p class="help is-danger">
+            <i class="mdi mdi-alert-circle"></i>
+            {{ error }}
+          </p>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="field">
+  {# Password Input #}
+  <div class="control has-icons-left">
+    <input class="input {% if v_errors['passerrors'] %}is-danger{% endif %}"
+      type="password" placeholder="Password" name="password">
+    <span class="icon is-left">
+      <i class="mdi mdi-lock-outline"></i>
+    </span>
+    <div class="error-msgs-wrapper">
+      {% if v_errors["passerrors"] %}
+        {% for error in v_errors["passerrors"] %}
+          <p class="help is-danger">
+            <i class="mdi mdi-alert-circle"></i>
+            {{ error }}
+          </p>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="field">
+  {# Verify Password Input #}
+  <div class="control has-icons-left">
+    <input class="input {% if v_errors['verifyerrors'] %}is-danger{% endif %}"
+      type="password" placeholder="Verify Password" name="verify">
+    <span class="icon is-left">
+      <i class="mdi mdi-checkbox-marked-circle-outline"></i>
+    </span>
+    <div class="error-msgs-wrapper">
+      {% if v_errors["verifyerrors"] %}
+        {% for error in v_errors["verifyerrors"] %}
+          <p class="help is-danger">
+            <i class="mdi mdi-alert-circle"></i>
+            {{ error }}
+          </p>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>

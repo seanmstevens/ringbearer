@@ -30,7 +30,10 @@ module.exports = {
       './src/js/user-account.js',
       './src/css/user-account.css'
     ],
-    login: './src/css/login.css'
+    login: [
+      './src/js/login.js',
+      './src/css/login.css'
+    ]
   },
   output: {
     filename: '[name].[hash].js',

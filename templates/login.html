@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block head %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='login.a1ca351b06193a140801a57c5b902000.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='login.1e78d857164e16f25c9783224107c212.css') }}">
 
 {% endblock %}
 {% block body %}
@@ -11,8 +11,8 @@
         <h1 class="title is-2 is-marginless">Login</h1>
         <hr>
         <form action="{{ url_for('login', next=request.args.get('next')) }}" method='POST'>
-          {% include 'components/register_login_inputs.html' %}
-          <button class="button is-dark" type='submit'>Login</button>
+          {% include 'components/login/register-login-inputs.html' %}
+          <button class="button is-dark is-medium is-wide" type='submit'>Login</button>
         </form>
       </div>
       <p id="create-msg">Don't have an account? <a id="create-account"
@@ -21,7 +21,7 @@
   </div>
 {% endblock %}
 {% block scripts %}
-<script>
-  $("#emailField").select();
-</script>
+
+<script type="text/javascript" src="{{ url_for('static', filename='login.ee3baa12199403ffba3c.js') }}"></script>
+
 {% endblock %}

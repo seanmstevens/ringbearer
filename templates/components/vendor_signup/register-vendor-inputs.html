@@ -1,0 +1,50 @@
+<div class="field">
+  {# Vendor Type Input #}
+  <div class="control has-icons-left">
+    <div class="select {% if v_errors['vendortypeerrors'] %}is-danger{% endif %}">
+      <select name="vendortype">
+        {% for vendortype in typelist %}
+          {% if not vendor_info['vendor_type'] %}
+            <option value="" selected hidden>Vendor Type</option>
+          {% elif vendor_info['vendor_type'] == vendortype[0] %}
+            <option value="{{ vendor_info['vendor_type'] }}" selected>{{ vendortype[1] }}</option>
+          {% endif %}
+          <option value="{{ vendortype[0] }}">{{ vendortype[1] }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <span class="icon is-left">
+      <i class="mdi mdi-camera"></i>
+    </span>
+    <div class="error-msgs-wrapper">
+      {% if v_errors["vendortypeerrors"] %}
+        {% for error in v_errors["vendortypeerrors"] %}
+          <p class="help is-danger">
+            <i class="mdi mdi-alert-circle"></i>
+            {{ error }}
+          </p>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+<div class="field">
+  {# Rate Input #}
+  <div class="control has-icons-left">
+    <input class="input {% if v_errors['priceerrors'] %}is-danger{% endif %}"
+      type="text" placeholder="Price/Rate" name="price", value="{{ vendor_info['price'] }}">
+    <span class="icon is-left">
+      <i class="mdi mdi-currency-usd"></i>
+    </span>
+    <div class="error-msgs-wrapper">
+      {% if v_errors["priceerrors"] %}
+        {% for error in v_errors["priceerrors"] %}
+          <p class="help is-danger">
+            <i class="mdi mdi-alert-circle"></i>
+            {{ error }}
+          </p>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>

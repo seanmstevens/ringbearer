@@ -11,8 +11,8 @@
         <h1 class="title is-2 is-marginless">Login</h1>
         <hr>
         <form action="{{ url_for('login', next=request.args.get('next')) }}" method='POST'>
-          {% include 'components/register_login_inputs.html' %}
-          <button class="button is-dark" type='submit'>Login</button>
+          {% include 'components/login/register-login-inputs.html' %}
+          <button class="button is-dark is-medium is-wide" type='submit'>Login</button>
         </form>
       </div>
       <p id="create-msg">Don't have an account? <a id="create-account"
@@ -21,7 +21,7 @@
   </div>
 {% endblock %}
 {% block scripts %}
-<script>
-  $("#emailField").select();
-</script>
+<% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
+<script type="text/javascript" src="{{ url_for('static', filename='<%= htmlWebpackPlugin.files.chunks[chunk].entry %>') }}"></script>
+<% } %>
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block head %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='login.6606281a4982ce21da6acb10fb8b63a4.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='login.a1ca351b06193a140801a57c5b902000.css') }}">
 
 {% endblock %}
 {% block body %}
@@ -12,7 +12,7 @@
         <hr>
         <form action="{{ url_for('login', next=request.args.get('next')) }}" method='POST'>
           {% include 'components/register_login_inputs.html' %}
-          <input class="submit-button" type='submit' value="Login">
+          <button class="button is-dark" type='submit'>Login</button>
         </form>
       </div>
       <p id="create-msg">Don't have an account? <a id="create-account"

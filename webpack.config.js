@@ -129,6 +129,12 @@ module.exports = {
       filename: '../templates/login.html',
       chunks: ['login'],
       inject: false
+    }),
+    new HtmlWebpackPlugin({
+      template: 'src/templates/signup.html',
+      filename: '../templates/signup.html',
+      chunks: ['login'],
+      inject: false
     })
     // new CompressionPlugin({
     //   asset: "[path].gz[query]",

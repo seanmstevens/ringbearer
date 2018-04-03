@@ -2,9 +2,6 @@ $(document).ready(function() {
   $("#emailField").select(); // Autoselect first input field on pageload
 
   var userType = $(".signup-container").attr("data-usertype");
-  if (userType == "user") {
-    break
-  }
 
   addSignupListener();
 });

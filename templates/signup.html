@@ -2,54 +2,53 @@
 {% block head %}
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.css"/>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='login.1e78d857164e16f25c9783224107c212.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='login.dd5aa901e00797f6ad3e.css') }}">
 
 {% endblock %}
 {% block body %}
   <div class="wrapper">
-    <div class="signup-container">
+    <div class="signup-container" data-usertype="{{ type }}">
       <div class="form-container-signup">
         <h1 class="title is-2 is-marginless">Sign up</h1>
         <div class="signup-tabs tabs is-toggle">
           <ul>
             <li class="{% if type == 'user' %}is-active{% endif %}">
-              <a class="toggle-form"> Organizer </a>
+              <a class="toggle-form">Organizer</a>
             </li>
             <li class="{% if type == 'vendor' %}is-active{% endif %}">
-              <a class="toggle-form show-vendor"> Vendor </a>
+              <a class="toggle-form show-vendor">Vendor</a>
             </li>
           </ul>
         </div>
         <hr>
         <div class="organizer-signup" {% if type == 'vendor' %}style="display: none;"{% endif %}>
-          <form method='POST'>
-            <div class="input-container">
-              <!-- Grabs the inputs from components/register_inputs.html -->
-              <div>
-                {% include 'components/user_signup/register-username-inputs.html' %}
-                <button name="organizer_signup" class="button is-dark is-medium is-wide" type='submit'>Sign up</button>
-              </div>
-            </div>
+          <form class="input-container" method='POST'>
+            <!-- Grabs the inputs from components/register_inputs.html -->
+            <fieldset>
+              {% include 'components/user_signup/register-username-inputs.html' %}
+              <button name="organizer_signup" class="button is-dark is-medium is-wide" 
+                type='submit'>Sign up</button>
+            </fieldset>
           </form>
         </div>
         <!-- Sign up for vendor users -->
         <div class="vendor-signup" {% if type == 'vendor' %}style="display: block;"{% endif %}>
           <form class="input-container" method='POST'>
             <!-- Grabs the inputs from components/register_inputs.html -->
-            <div>
+            <fieldset>
               {% include 'components/vendor_signup/register-name-inputs.html' %}
-            </div>
-            <div>
+            </fieldset>
+            <fieldset>
               {% include 'components/vendor_signup/register-email-inputs.html' %}
-            </div>
-            <div>
+            </fieldset>
+            <fieldset>
               {% include 'components/vendor_signup/register-vendor-inputs.html' %}
-            </div>
-            <div>
+            </fieldset>
+            <fieldset>
               {% include 'components/vendor_signup/register-location-inputs.html' %}
               <button name="vendor_signup" class="button is-dark is-medium is-wide" 
-              type='submit'>Sign up</button>
-            </div>
+                type="submit">Sign up</button>
+            </fieldset>
             <!-- <label class="checkbox">
               <input class="checkbox" name="is_vendor" type="checkbox" required>
               I wish to sign up as a Vendor
@@ -58,6 +57,8 @@
               type='submit'>Sign up</button> -->
           </form>
         </div>
+        <div class="signup-navigation-container">
+        </div>
       </div>
     </div>
   </div>
@@ -65,6 +66,6 @@
 {% block scripts %}
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
-<script type="text/javascript" src="{{ url_for('static', filename='login.ee3baa12199403ffba3c.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='login.dd5aa901e00797f6ad3e.js') }}"></script>
 
 {% endblock %}

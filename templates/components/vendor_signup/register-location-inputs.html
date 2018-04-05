@@ -1,5 +1,7 @@
 <div class="field">
   {# Street Address Input #}
+  <label class="label">Address</label>
+  <p class="help has-text-grey">Fill out your address information below.</p>
   <div class="control has-icons-left is-expanded">
     <input class="input {% if v_errors['addresserrors'] %}is-danger{% endif %}"
       type="text" placeholder="Street Address" name="address" value="{{ vendor_info['street_address'] }}">
@@ -40,8 +42,8 @@
 </div>
 <div class="field is-grouped state-zip-group">
   {# State Input #}
-  <div class="control has-icons-left">
-    <span class="select">
+  <div class="control has-icons-left is-expanded">
+    <span class="select is-fullwidth">
       <select name="state">
         {% for state in statelist %}
           {% if state == vendor_info['state'] %}

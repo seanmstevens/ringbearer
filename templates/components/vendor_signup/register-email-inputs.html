@@ -1,5 +1,7 @@
 <div class="field">
-  {# Email Input #} 
+  {# Email Input #}
+  <label class="label">Email</label>
+  <p class="help has-text-grey">Enter your email below.</p>
   <div class="control has-icons-left">
     <input class="input {% if v_errors['usererrors'] %}is-danger{% endif %}"
       type="text" placeholder="Email" name="email" value="{{ vendor_info['email'] }}">
@@ -21,6 +23,8 @@
 
 <div class="field">
   {# Password Input #}
+  <label class="label">Password</label>
+  <p class="help has-text-grey">Enter a password between 3-20 characters below.</p>
   <div class="control has-icons-left">
     <input class="input {% if v_errors['passerrors'] %}is-danger{% endif %}"
       type="password" placeholder="Password" name="password">
@@ -42,6 +46,7 @@
 
 <div class="field">
   {# Verify Password Input #}
+  <p class="help has-text-grey">Re-enter your password below.</p>
   <div class="control has-icons-left">
     <input class="input {% if v_errors['verifyerrors'] %}is-danger{% endif %}"
       type="password" placeholder="Verify Password" name="verify">

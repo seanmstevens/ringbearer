@@ -1,6 +1,6 @@
 <div class="field">
   <div class="control has-icons-left">
-    <input class="input is-medium {% if u_errors['nameerrors'] %}is-danger{% endif %}"
+    <input class="input {% if u_errors['nameerrors'] %}is-danger{% endif %}"
       type="text" placeholder="Full Name" name="name" value="{{ user_info['name'] }}">
     <span class="icon is-left">
       <i class="mdi mdi-account-circle"></i>
@@ -19,7 +19,7 @@
 </div>
 <div class="field">
   <div class="control has-icons-left">
-    <input class="input is-medium {% if u_errors['usererrors'] %}is-danger{% endif %}" 
+    <input class="input {% if u_errors['usererrors'] %}is-danger{% endif %}" 
       type="text" placeholder="Email" name="email" value="{{ user_info['email'] }}">
     <span class="icon is-left">
       <i class="mdi mdi-email-outline"></i>
@@ -38,7 +38,7 @@
 </div>
 <div class="field">
   <div class="control has-icons-left">
-    <input class="input is-medium {% if u_errors['passerrors'] %}is-danger{% endif %}" 
+    <input class="input {% if u_errors['passerrors'] %}is-danger{% endif %}" 
       type="password" placeholder="Password" name="password">
     <span class="icon is-left">
       <i class="mdi mdi-lock-outline"></i>
@@ -57,7 +57,7 @@
 </div>
 <div class="field">
   <div class="control has-icons-left">
-    <input class="input is-medium {% if u_errors['verifyerrors'] %}is-danger{% endif %}"
+    <input class="input {% if u_errors['verifyerrors'] %}is-danger{% endif %}"
       type="password" placeholder="Verify Password" name="verify">
     <span class="icon is-left">
       <i class="mdi mdi-checkbox-marked-circle-outline"></i>

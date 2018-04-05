@@ -22,34 +22,33 @@
         </div>
         <hr>
         <div class="organizer-signup" {% if type == 'vendor' %}style="display: none;"{% endif %}>
-          <form method='POST'>
-            <div class="input-container">
-              <!-- Grabs the inputs from components/register_inputs.html -->
-              <div>
-                {% include 'components/user_signup/register-username-inputs.html' %}
-                <button name="organizer_signup" class="button is-dark is-medium is-wide" type='submit'>Sign up</button>
-              </div>
-            </div>
+          <form class="input-container" method='POST'>
+            <!-- Grabs the inputs from components/register_inputs.html -->
+            <fieldset>
+              {% include 'components/user_signup/register-username-inputs.html' %}
+              <button name="organizer_signup" class="button is-dark is-medium is-wide" 
+                type='submit'>Sign up</button>
+            </fieldset>
           </form>
         </div>
         <!-- Sign up for vendor users -->
         <div class="vendor-signup" {% if type == 'vendor' %}style="display: block;"{% endif %}>
           <form class="input-container" method='POST'>
             <!-- Grabs the inputs from components/register_inputs.html -->
-            <div>
+            <fieldset>
               {% include 'components/vendor_signup/register-name-inputs.html' %}
-            </div>
-            <div>
+            </fieldset>
+            <fieldset>
               {% include 'components/vendor_signup/register-email-inputs.html' %}
-            </div>
-            <div>
+            </fieldset>
+            <fieldset>
               {% include 'components/vendor_signup/register-vendor-inputs.html' %}
-            </div>
-            <div>
+            </fieldset>
+            <fieldset>
               {% include 'components/vendor_signup/register-location-inputs.html' %}
               <button name="vendor_signup" class="button is-dark is-medium is-wide" 
-              type='submit'>Sign up</button>
-            </div>
+                type="submit">Sign up</button>
+            </fieldset>
             <!-- <label class="checkbox">
               <input class="checkbox" name="is_vendor" type="checkbox" required>
               I wish to sign up as a Vendor
@@ -57,6 +56,8 @@
             <button name="vendor_signup" class="button is-dark is-medium is-wide" 
               type='submit'>Sign up</button> -->
           </form>
+        </div>
+        <div class="signup-navigation-container">
         </div>
       </div>
     </div>

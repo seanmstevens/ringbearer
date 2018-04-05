@@ -1,12 +1,12 @@
 <div class="field">
   {# Vendor Type Input #}
+  <label class="label">Vendor Type</label>
+  <p class="help has-text-grey">Select the type of vendor that best fits you below.</p>
   <div class="control has-icons-left">
-    <div class="select {% if v_errors['vendortypeerrors'] %}is-danger{% endif %}">
+    <div class="select is-fullwidth {% if v_errors['vendortypeerrors'] %}is-danger{% endif %}">
       <select name="vendortype">
         {% for vendortype in typelist %}
-          {% if not vendor_info['vendor_type'] %}
-            <option value="" selected hidden>Vendor Type</option>
-          {% elif vendor_info['vendor_type'] == vendortype[0] %}
+          {% if vendor_info['vendor_type'] == vendortype[0] %}
             <option value="{{ vendor_info['vendor_type'] }}" selected>{{ vendortype[1] }}</option>
           {% endif %}
           <option value="{{ vendortype[0] }}">{{ vendortype[1] }}</option>
@@ -30,21 +30,11 @@
 </div>
 <div class="field">
   {# Rate Input #}
-  <div class="control has-icons-left">
-    <input class="input {% if v_errors['priceerrors'] %}is-danger{% endif %}"
-      type="text" placeholder="Price/Rate" name="price", value="{{ vendor_info['price'] }}">
-    <span class="icon is-left">
-      <i class="mdi mdi-currency-usd"></i>
-    </span>
-    <div class="error-msgs-wrapper">
-      {% if v_errors["priceerrors"] %}
-        {% for error in v_errors["priceerrors"] %}
-          <p class="help is-danger">
-            <i class="mdi mdi-alert-circle"></i>
-            {{ error }}
-          </p>
-        {% endfor %}
-      {% endif %}
-    </div>
+  <label class="label">Rate</label>
+  <p class="help has-text-grey">Choose your standard rate from the slider below.</p>
+  <div class="control">
+    <input class="slider is-fullwidth is-success has-output" id="rateSlider" name="price" step="1" min="0" max="1000" 
+      value="{% if vendor_info['price'] %}vendor_info['price']{% else %}100{% endif %}" type="range">
+    <output for="rateSlider">${% if vendor_info['price'] %}vendor_info['price']{% else %}100{% endif %}.00/hr</output>
   </div>
 </div>

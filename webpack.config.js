@@ -1,5 +1,4 @@
 const path = require('path');
-const CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
@@ -94,11 +93,8 @@ module.exports = {
   },
   plugins: [
     new WebpackCleanupPlugin(),
-    new webpack.optimize.UglifyJsPlugin({
-      comments: false
-    }),
     new ExtractTextPlugin({
-      filename: '[name].[contenthash].css'
+      filename: '[name].[hash].css'
     }),
     new HtmlWebpackPlugin({
       template: 'src/templates/layout.html',

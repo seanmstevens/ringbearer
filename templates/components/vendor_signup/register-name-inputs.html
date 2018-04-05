@@ -1,8 +1,10 @@
 <div class="field">
   {# Contact Name Input #}
+  <label class="label">Name</label>
+  <p class="help has-text-grey">Enter your full name.</p>
   <div class="control has-icons-left">
     <input class="input {% if v_errors['nameerrors'] %}is-danger{% endif %}"
-      type="text" placeholder="Full Name" name="name" value="{{ vendor_info['name'] }}">
+      type="text" placeholder="Jane Q. Example" name="name" value="{{ vendor_info['name'] }}">
     <span class="icon is-left">
       <i class="mdi mdi-account-circle"></i>
     </span>
@@ -20,9 +22,11 @@
 </div>
 <div class="field">
   {# Business Name Input #}
+  <label class="label">Business Name</label>
+  <p class="help has-text-grey">Enter the name of your business.</p>
   <div class="control has-icons-left">
     <input class="input {% if v_errors['businesserrors'] %}is-danger{% endif %}"
-      type="text" placeholder="Business Name" name="business" value="{{ vendor_info['business_name'] }}">
+      type="text" placeholder="Coolbusiness, LLC" name="business" value="{{ vendor_info['business_name'] }}">
     <span class="icon is-left">
       <i class="mdi mdi-account-card-details"></i>
     </span>

@@ -1,9 +1,16 @@
 @import url("https://fonts.googleapis.com/css?family=Abril+Fatface|Roboto:400,500");
 
+html, body {
+  height: 100%;
+}
+
 body {
   font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Helvetica Neue', sans-serif;
-  height: 100%;
   margin: 0;
+}
+
+.container.is-fluid.is-marginless.brand-color {
+  min-height: 100%;
 }
 
 /* Navbar Styles */

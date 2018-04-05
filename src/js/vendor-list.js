@@ -257,15 +257,12 @@ function addSearchListener() {
     }, 'blur': e => {
       $(e.currentTarget).parent().removeClass("is-active");
     }, 'input': e => {
-      let $self = $(e.currentTarget);
+      let $input = $(e.currentTarget).val();
       let currentList = getCurrentList();
 
       $(".load-more-field").addClass("is-hidden");
 
-      // $('.overlay-container').show();
-      // $('.vendor-list-card .overlay').show();
-
-      IS_ACTIVE_SEARCH = $self.val() === "" ? false : true;
+      IS_ACTIVE_SEARCH = $input === "" ? false : true;
 
       emptyVendorList();
       resetDisplayVariables();
@@ -280,7 +277,7 @@ function addSearchListener() {
           scoreFn(a) { return Math.max(a[0] ? a[0].score : -1000, a[1] ? a[1].score - 75 : -1000, a[2] ? a[2].score - 100 : -1000) }
         };
 
-        VENDOR_DATA.queryResults = fuzzysort.go($self.val(), currentList, options);
+        VENDOR_DATA.queryResults = fuzzysort.go($input, currentList, options);
         displayVendors(VENDOR_DATA.queryResults);
 
         return false;
@@ -290,9 +287,6 @@ function addSearchListener() {
 
       displayVendors(currentList);
       updateResultsCount();
-
-      // $('.overlay-container').hide();
-      // $('.vendor-list-card .overlay').hide();
     }
   });
 }
@@ -384,10 +378,29 @@ function displayVendors(arr) {
   const $wrapper = $(".vendor-list-card-wrapper");
 
   if (arr.length === 0 && IS_ACTIVE_SEARCH) {
+    var entityMap = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+      '/': '&#x2F;',
+      '`': '&#x60;',
+      '=': '&#x3D;'
+    };
+    
+    function escapeHtml(string) {
+      return String(string).replace(/[&<>"'`=\/]/g, function(s) {
+        return entityMap[s];
+      });
+    };
+
+    var search = $('#vendorSearch').val();
+
     const $noSearchResults = $(
       `<li>
         <div class="no-results has-text-centered">
-          No results found for "${$("#vendorSearch").val()}"
+          No results found for "${escapeHtml(search)}"
         </div>
       </li>`
     );

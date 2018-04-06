@@ -34,7 +34,7 @@
   <p class="help has-text-grey">Choose your standard rate from the slider below.</p>
   <div class="control">
     <input class="slider is-fullwidth is-success has-output" id="rateSlider" name="price" step="1" min="0" max="1000" 
-      value="{% if vendor_info['price'] %}vendor_info['price']{% else %}100{% endif %}" type="range">
-    <output for="rateSlider">${% if vendor_info['price'] %}vendor_info['price']{% else %}100{% endif %}.00/hr</output>
+      value="{% if vendor_info['price'] %}{{ vendor_info['price'] }}{% else %}500{% endif %}" type="range">
+    <output for="rateSlider">${% if vendor_info['price'] %}{{ vendor_info['price'] }}{% else %}500{% endif %}.00/hr</output>
   </div>
 </div>

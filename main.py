@@ -460,19 +460,18 @@ def verifyVendorInputs(errorObj, name, business_name, vendor_type, email, street
 
     if not password:
         errorObj["passerrors"].append('This field cannot be left blank.')
-    else:
-        # Check if password has a minimum length of 8 characters
-        if len(password) < 8:
-            errorObj["passerrors"].append("Password must be at least 8 characters long.")
+    elif not all([len(password) >= 8, re.search(r'\d+|[A-Za-z]+', password)]):
+        errorObj["passerrors"].append("Your password must be longer than 8 characters, and must contain at least one number, uppercase letter and lowercase letter.")
+        # REVISED: Make all checks at once, with only one error message
         # Check if contains at least one digit
-        if not re.search(r'\d', password):
-            errorObj["passerrors"].append("Password must contain at least one number.")
-        # Check if contains at least one uppercase letter
-        if not re.search(r'[A-Z]', password):
-            errorObj["passerrors"].append("Password must contain at least one uppercase letter.")
-        # Check if contains at least one lowercase letter
-        if not re.search(r'[a-z]', password):
-            errorObj["passerrors"].append("Password must contain at least one lowercase letter.")
+        # if not re.search(r'\d', password):
+        #     errorObj["passerrors"].append("Password must contain at least one number.")
+        # # Check if contains at least one uppercase letter
+        # if not re.search(r'[A-Z]', password):
+        #     errorObj["passerrors"].append("Password must contain at least one uppercase letter.")
+        # # Check if contains at least one lowercase letter
+        # if not re.search(r'[a-z]', password):
+        #     errorObj["passerrors"].append("Password must contain at least one lowercase letter.")
 
     if password != verify:
         errorObj["verifyerrors"].append("Your passwords don't match.")
@@ -672,7 +671,8 @@ def signup():
             vendor_info=vendor_info,
             type=register_type,
             statelist=statelist,
-            typelist=typelist
+            typelist=typelist,
+            getrequest=False
         )
     # method == get
     return render_template(
@@ -683,7 +683,8 @@ def signup():
         vendor_info=vendor_info,
         type="user",
         statelist=statelist,
-        typelist=typelist
+        typelist=typelist,
+        getrequest=True
     )
     #for testing front end of portfolio
 @app.route('/portfolio', methods=['GET', 'POST'])

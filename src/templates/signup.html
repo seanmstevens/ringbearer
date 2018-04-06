@@ -24,7 +24,7 @@
         <div class="organizer-signup" {% if type == 'vendor' %}style="display: none;"{% endif %}>
           <form class="input-container" method='POST'>
             <!-- Grabs the inputs from components/register_inputs.html -->
-            <fieldset>
+            <fieldset data-validated="false">
               {% include 'components/user_signup/register-username-inputs.html' %}
               <button name="organizer_signup" class="button is-dark is-medium is-wide" 
                 type='submit'>Sign up</button>
@@ -35,9 +35,10 @@
         <div class="vendor-signup" {% if type == 'vendor' %}style="display: block;"{% endif %}>
           <form class="input-container" method='POST'>
             <!-- Grabs the inputs from components/register_inputs.html -->
-            <fieldset>
+            <fieldset data-validated="false">
               {% include 'components/vendor_signup/register-name-inputs.html' %}
             </fieldset>
+            {% if not getrequest %}
             <fieldset>
               {% include 'components/vendor_signup/register-email-inputs.html' %}
             </fieldset>
@@ -49,6 +50,7 @@
               <button name="vendor_signup" class="button is-dark is-medium is-wide" 
                 type="submit">Sign up</button>
             </fieldset>
+            {% endif %}
             <!-- <label class="checkbox">
               <input class="checkbox" name="is_vendor" type="checkbox" required>
               I wish to sign up as a Vendor

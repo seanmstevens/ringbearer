@@ -94,7 +94,7 @@ div.wrapper h1 {
 }
 
 .input-container fieldset {
-  height: 280px;
+  height: 300px;
   overflow: hidden;
   border: none;
   padding: .25rem .75rem;
@@ -119,6 +119,39 @@ div.field > label.label {
 div.field > p.help {
   margin-top: 0;
   margin-bottom: .5rem;
+}
+
+input[type=range].slider:not([orient=vertical]).has-output {
+  width: 100%;
+}
+
+input[type=range].slider#rateSlider::before,
+input[type=range].slider#rateSlider::after {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Helvetica Neue', sans-serif;
+  position: absolute;
+  top: 2rem;
+}
+
+input[type=range].slider#rateSlider::before {
+  content: "$";
+  left: 0.25rem;
+}
+
+input[type=range].slider#rateSlider::after {
+  content: "$$$";
+  right: 0.25rem;
+}
+
+input[type=range].slider:not([orient=vertical]).has-output+output {
+  display: block;
+  margin: auto;
+  top: 0;
+  width: min-content;
+  background-color: white;
+  font-size: 13px;
+  line-height: 13px;
+  color: #2196F3;
+  border: 1px solid #2196F3;
 }
 
 .signup-tabs {
@@ -153,6 +186,10 @@ div.field > p.help {
 
 .tabs a {
   padding: 0.4em 0.8em;
+}
+
+.tabs li.is-active a {
+  pointer-events: none;
 }
 
 .zip-input {

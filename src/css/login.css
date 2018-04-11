@@ -155,7 +155,8 @@ ul.steps {
   bottom: 0;
 }
 
-div.field:not(:last-child) {
+div.field:not(:last-child),
+div.field:last-child {
   margin-bottom: 1.25rem;
 }
 
@@ -211,10 +212,6 @@ input[type=range].slider:not([orient=vertical]).has-output+output {
   justify-content: center;
   position: relative;
   bottom: 0.25rem;
-}
-
-.vendor-signup {
-  display: none;
 }
 
 .toggle-form {
@@ -302,7 +299,8 @@ input[type=range].slider:not([orient=vertical]).has-output+output {
 }
 
 .slick-prev:focus,
-.slick-next:focus {
+.slick-next:focus,
+.slick-signup:focus {
   outline: none;
 }
 

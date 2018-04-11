@@ -10,19 +10,13 @@ const options = {
   infinite: false
 };
 
-$(document).ready(function() {
-  $("#emailField").select(); // Autoselect first input field on pageload
-
+$(function() {
   var userType = $(".signup-container").attr("data-usertype");
 
-  if (userType === "user") {
-    $('.organizer-signup .input-container').slick(options);
-  } else {
-    $('.vendor-signup .input-container').slick(options);
-  }
+  $('.vendor-signup .input-container').slick(options);
 
-  addFormValidationListener();
-  addSignupListener(options);
+  // addSignupListener(options);
+  addFormValidationListeners();
   addNextSlideListeners();
 });
 
@@ -36,11 +30,9 @@ function addSignupListener(options) {
     if ($self.hasClass('show-vendor')) {
       $('.organizer-signup').hide().children().eq(0).slick('unslick');
       $('.vendor-signup').show().children().eq(0).slick(options);
-      addFormValidationListener();
     } else {
       $('.vendor-signup').hide().children().eq(0).slick('unslick');
       $('.organizer-signup').show().children().eq(0).slick(options);
-      addFormValidationListener();
     }
   });
 }
@@ -104,10 +96,6 @@ function addNextSlideListeners() {
 
   $(document).on({
     'beforeChange': function(event, slick, currentSlide, nextSlide) {
-      $(this).find(`fieldset[data-slide-index=${currentSlide}]`).find("input").off('input');
-  
-      console.log("listeners removed!");
-
       $(".current-status").css("width", nextSlide * 33.3 + "%"); // Displaying progress on top bar
 
       // Making next step segment active
@@ -127,14 +115,9 @@ function addNextSlideListeners() {
       } else {
         removeSignUp();
       }
-    }, 'afterChange': function(event, slick, currentSlide) {
-      $(this).find(`fieldset[data-slide-index=${currentSlide}]`).find("input").off('input'); // Removing listerners that were previously added
-  
+    }, 'afterChange': function(event, slick, currentSlide) {  
       console.log("currentSlide: " + currentSlide);
-  
-      addFormValidationListener();
       initializeTabIndexes();
-      console.log("listeners added!");
     }
   }, $form);
 }
@@ -330,26 +313,21 @@ function initializeTabIndexes() {
   }
 }
 
-function addFormValidationListener() {
+function addFormValidationListeners() {
   let inputs = getCurrentlyViewedInputs();
   let touchedStatus;
   let errors = {};
 
-  inputs.on('focus', e => {
-    const $self = $(e.currentTarget);
-    $self.attr("data-touched", true);
-  });
+  console.log("listeners added");
 
-  if (getCurrentSlide() === 2) {
-    return false;
-  }
-
-  inputs.on('change', e => {
+  $("form").on('change', '.input', e => {
     const $self = $(e.currentTarget);
     const $form = $self.parents("fieldset");
     const input = $self.val();
     const name = $self.attr("name");
     var errormsg;
+
+    $self.attr("data-touched", true);
 
     if (name == "email") {
       let emailRegExp = new RegExp(/(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)/);
@@ -380,7 +358,7 @@ function addFormValidationListener() {
         $self.validate();
       }
     } else if (name == "verify") { // Password verification check
-      let password = $("input[name='password']").eq(1).val(); // There are two password fields (one on the user form and one on the vendor form) -- will need to change at some point
+      let password = $("input[name='password']").val(); // There are two password fields (one on the user form and one on the vendor form) -- will need to change at some point
 
       if (input !== password) {
         if (!errors[name]) {
@@ -390,8 +368,8 @@ function addFormValidationListener() {
           displayError($self, errormsg);
         }
       } else {
-         delete errors[name];
-         $self.validate();
+          delete errors[name];
+          $self.validate();
       }
     } else { // Verification for non-specific input fields
       if (input == "" && !errors[name]) {
@@ -408,6 +386,8 @@ function addFormValidationListener() {
     $self.resetValidationIndicators();
   
     touchedStatus = getTouchedStatus(inputs);
+    console.log(inputs);
+    console.log("All inputs touched: " + touchedStatus);
 
     if (Object.keys(errors).length < 1 && touchedStatus === true) {
       $form.validate();
@@ -430,6 +410,11 @@ function addFormValidationListener() {
     }
   });
 }
+
+function comparePasswords(pass1, pass2) {
+  return pass1 === pass2;
+}
+
 
 function getTouchedStatus(inputs) {
   for (let element of inputs) {

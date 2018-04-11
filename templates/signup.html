@@ -2,7 +2,7 @@
 {% block head %}
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.css"/>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='login.45231f515af5a5bded49.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='login.7b95a2e52c6a2abb74b7.css') }}">
 
 {% endblock %}
 {% block body %}
@@ -55,7 +55,7 @@
     <div class="signup-container" data-usertype="{{ type }}">
       <div class="form-container-signup">
         <h1 class="title is-2 is-marginless">Sign up</h1>
-        <div class="signup-tabs tabs is-toggle">
+        <!-- <div class="signup-tabs tabs is-toggle">
           <ul>
             <li class="{% if type == 'user' %}is-active{% endif %}">
               <a class="toggle-form">Organizer</a>
@@ -64,18 +64,17 @@
               <a class="toggle-form show-vendor">Vendor</a>
             </li>
           </ul>
-        </div>
+        </div> -->
         <hr>
-        <div class="organizer-signup" {% if type == 'vendor' %}style="display: none;"{% endif %}>
+        <!-- <div class="organizer-signup" {% if type == 'vendor' %}style="display: none;"{% endif %}>
           <form class="input-container" method='POST'>
-            <!-- Grabs the inputs from components/register_inputs.html -->
             <fieldset data-validated="false">
               {% include 'components/user_signup/register-username-inputs.html' %}
               <button name="organizer_signup" class="button is-dark is-medium is-wide" 
                 type='submit'>Sign up</button>
             </fieldset>
           </form>
-        </div>
+        </div> -->
         <!-- Sign up for vendor users -->
         <div class="vendor-signup" {% if type == 'vendor' %}style="display: block;"{% endif %}>
           <form class="input-container" method='POST'>
@@ -128,6 +127,6 @@
 {% block scripts %}
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
-<script type="text/javascript" src="{{ url_for('static', filename='login.45231f515af5a5bded49.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='login.7b95a2e52c6a2abb74b7.js') }}"></script>
 
 {% endblock %}

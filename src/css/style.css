@@ -1,11 +1,5 @@
 @import url("https://fonts.googleapis.com/css?family=Abril+Fatface|Roboto:400,500");
 
-@media screen and (min-width: 768px) {
-  footer {
-    display: none;
-  }
-}
-
 html, body {
   height: 100%;
 }
@@ -13,6 +7,10 @@ html, body {
 body {
   font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Helvetica Neue', sans-serif;
   margin: 0;
+}
+
+footer.desktop-footer {
+  background-color: hsl(0, 0%, 21%);
 }
 
 .container.is-fluid.is-marginless.brand-color {

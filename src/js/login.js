@@ -1,6 +1,8 @@
 const options = {
   cssEase: "cubic-bezier(0.5, 0.08, 0, 1)",
   appendArrows: $('.signup-navigation-container'),
+  nextArrow: `<button type="button" class="slick-next has-text-primary">Next</button>`,
+  prevArrow: `<button type="button" class="slick-prev has-text-primary">Previous</button>`,
   accessibility: true,
   slidesToShow: 1,
   draggable: false,
@@ -21,6 +23,7 @@ $(document).ready(function() {
 
   addFormValidationListener();
   addSignupListener(options);
+  addNextSlideListeners();
 });
 
 function addSignupListener(options) {
@@ -44,30 +47,39 @@ function addSignupListener(options) {
 
 (function($) {
   $.fn.resetValidationIndicators = function() {
-    if (this.attr("data-validated") == "false") {
-      this.removeClass("is-success").addClass("is-danger");
-      this.siblings(".icon.is-right").remove();
+    var _ = this;
+    if (_.attr("data-validated") == "false") {
+      _.removeClass("is-success").addClass("is-danger");
+      _.siblings(".icon.is-right").remove();
     } else {
-      this.removeClass("is-danger").addClass("is-success");
-      this.parent().addClass("has-icons-right").append(
+      _.removeClass("is-danger").addClass("is-success");
+      _.parent().addClass("has-icons-right").append(
         `<span class="icon is-right has-text-success">
           <i class="mdi mdi-check"></i>
         </span>`
       );
-      this.siblings(".error-msgs-wrapper").empty();
+      _.siblings(".error-msgs-wrapper").empty();
     }
 
-    return this;
+    return _;
   };
 
   $.fn.validate = function() {
-    this.attr("data-validated", true);
-    return this;
+    var _ = this;
+    _.attr("data-validated", true);
+    return _;
   };
 
   $.fn.unvalidate = function() {
-    this.attr("data-validated", false);
-    return this;
+    var _ = this;
+    _.attr("data-validated", false);
+    return _;
+  }
+
+  $.fn.submit = function() {
+    if (getCurrentSlide() !== 3) {
+      return false;
+    }
   }
 })(jQuery);
 
@@ -87,36 +99,48 @@ function getCurrentlyViewedInputs() {
   return $(`fieldset[data-slick-index=${currentSlide}]`).find("input, select");
 }
 
-function addNextSlideListeners() {
+function addNextSlideListeners() { 
   let $form = $("form.slick-initialized");
 
-  $form.on('beforeChange', function(event, slick, currentSlide, nextSlide) {
-    if (currentSlide === 2) {
-      return false;
+  $(document).on({
+    'beforeChange': function(event, slick, currentSlide, nextSlide) {
+      $(this).find(`fieldset[data-slide-index=${currentSlide}]`).find("input").off('input');
+  
+      console.log("listeners removed!");
+
+      $(".current-status").css("width", nextSlide * 33.3 + "%"); // Displaying progress on top bar
+
+      // Making next step segment active
+      if (nextSlide < currentSlide) {
+        $(`.steps-segment[data-slide=${currentSlide}]`).children().eq(0).addClass("is-hollow");
+      }
+
+      $(`.steps-segment[data-slide=${currentSlide}]`).removeClass("is-active");
+      $(`.steps-segment[data-slide=${nextSlide}]`).addClass("is-active").children().eq(0).removeClass("is-hollow");
+
+      if (nextSlide === 2 && $("fieldset[data-slide-index=3]").length === 0) {
+        addNextSlide();
+      }
+  
+      if (nextSlide === 3) {
+        addSignUp();
+      } else {
+        removeSignUp();
+      }
+    }, 'afterChange': function(event, slick, currentSlide) {
+      $(this).find(`fieldset[data-slide-index=${currentSlide}]`).find("input").off('input'); // Removing listerners that were previously added
+  
+      console.log("currentSlide: " + currentSlide);
+  
+      addFormValidationListener();
+      initializeTabIndexes();
+      console.log("listeners added!");
     }
-
-    if (nextSlide === 2 && $("fieldset[data-slick-index=3]").length < 1) { // Checking to see if final slide already exists
-      addNextSlide(2);
-    }
-  });
-
-  $form.on('afterChange', function(event, slick, currentSlide) {
-    console.log("currentSlide: " + currentSlide)
-
-    if (currentSlide === 2) {
-      return false;
-    }
-
-    $("input").off("blur");
-    console.log("listeners removed!");
-    addFormValidationListener();
-    initializeTabIndexes();
-    console.log("listeners added!");
-  });
+  }, $form);
 }
 
-function addNextSlide(slide) {
-  const currentSlide = slide ? slide : getCurrentSlide();
+function addNextSlide() {
+  const currentSlide = getCurrentSlide();
   const $form = $('form.slick-initialized');
   const slideMap = {
     0: `<fieldset data-validated="false">
@@ -254,11 +278,17 @@ function addNextSlide(slide) {
               </div>
             </div>
           </div>
-          <button name="vendor_signup" class="button is-dark is-medium is-wide" type="submit" disabled="true">Sign up</button>
         </fieldset>`
   };
 
   $form.slick('slickAdd', slideMap[currentSlide + 1]);
+
+  console.log(currentSlide === 1 && $("fieldset[data-slick-index=3]").length === 0);
+
+  if (currentSlide === 1 && $("fieldset[data-slick-index=3]").length === 0) {
+    $form.slick('slickAdd', slideMap[3]);
+  }
+
   addSliderListener();
 
   function generateTypeOptions() {
@@ -310,7 +340,11 @@ function addFormValidationListener() {
     $self.attr("data-touched", true);
   });
 
-  inputs.on('blur', e => {
+  if (getCurrentSlide() === 2) {
+    return false;
+  }
+
+  inputs.on('change', e => {
     const $self = $(e.currentTarget);
     const $form = $self.parents("fieldset");
     const input = $self.val();
@@ -374,20 +408,18 @@ function addFormValidationListener() {
     $self.resetValidationIndicators();
   
     touchedStatus = getTouchedStatus(inputs);
-    console.log("all inputs touched", touchedStatus);
 
     if (Object.keys(errors).length < 1 && touchedStatus === true) {
       $form.validate();
 
-      if (getCurrentSlide() === 3) {
-        $("button[type='submit']").prop("disabled", false);
-        return false;
-      } 
-
-      if ($form.next("fieldset").length === 0) { // Check to see if next slide already exists
-        addNextSlide();
-        addNextSlideListeners();
+      if (isNavHidden()) {
+        $(".signup-navigation-container").fadeIn("fast").attr("data-hidden", false);
       }
+
+      if ($form.next("fieldset").length === 0 && getCurrentSlide() !== 3) { // Check to see if next slide already exists
+        addNextSlide();
+      }
+
       enableForwardNavigation();
     } else if (Object.keys(errors).length > 0) {
       $form.unvalidate();
@@ -415,6 +447,22 @@ function disableForwardNavigation() {
 
 function enableForwardNavigation() {
   $(".slick-next").removeClass("slick-disabled");
+}
+
+function isNavHidden() {
+  return $(".signup-navigation-container").attr("data-hidden");
+}
+
+function addSignUp() {
+  const signUpButton = `<button type="submit" name="vendor_signup" class="slick-arrow slick-signup has-text-primary" style="display:none">Sign Up</button>`;
+
+  $(".signup-navigation-container").append(signUpButton);
+  $(".slick-signup").fadeIn(180);
+}
+
+function removeSignUp() {
+  const signUpButton = $(".slick-signup");
+  signUpButton.fadeOut(180).remove();
 }
 
 function displayError(self, error) {

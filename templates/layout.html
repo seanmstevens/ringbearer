@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, shrink-to-fit=no">
     <link rel="stylesheet" href="https://unpkg.com/progressively/dist/progressively.min.css">
     
-    <link rel="stylesheet" href="{{ url_for('static', filename='framework.d5147dc75193718abc14.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='framework.45231f515af5a5bded49.css') }}">
     
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.d5147dc75193718abc14.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.45231f515af5a5bded49.css') }}">
     
     {% block head %} {% endblock %}
   </head>
@@ -142,20 +142,20 @@
     {% endif %} {% endwith %}
       {% block body %} {% endblock %}
     </div>
-    <footer class="footer">
+    <footer class="footer desktop-footer is-hidden-mobile">
       <div class="container">
         <div class="content has-text-centered">
           <p>
-            <strong><a href="#">Back to top</a></strong>
+            <strong><a href="#" tabindex="-1">Back to top</a></strong>
           </p>
         </div>
       </div>
     </footer>
     <script type="text/javascript" src="https://unpkg.com/progressively/dist/progressively.min.js"></script>
     
-    <script type="text/javascript" src="{{ url_for('static', filename='framework.d5147dc75193718abc14.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='framework.45231f515af5a5bded49.js') }}"></script>
     
-    <script type="text/javascript" src="{{ url_for('static', filename='main.d5147dc75193718abc14.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='main.45231f515af5a5bded49.js') }}"></script>
     
     {% block scripts %}{% endblock %}
   </body>

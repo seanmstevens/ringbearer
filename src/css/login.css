@@ -5,12 +5,19 @@ div.wrapper h1 {
   margin-bottom: 0;
 }
 
-@media screen and (min-width: 601px) {
-  div.wrapper {
-    display: flex;
-    flex-flow: column;
-  }
+div.wrapper {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  position: relative;
+  min-height: calc(100vh - 52px);
+}
 
+@media screen and (min-width: 601px) {
   div.wrapper::before,
   div.wrapper::after {
     -webkit-box-flex: 1;
@@ -20,6 +27,7 @@ div.wrapper h1 {
     content: '';
     display: block;
     height: 24px;
+    width: 100%;
   }
 
   div.wrapper::before {
@@ -38,6 +46,7 @@ div.wrapper h1 {
 
   .form-container-signup {
     height: 500px;
+    padding: 2rem;
     border-left: 4px solid #e91e63;
     border-radius: 4px;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 
@@ -46,7 +55,14 @@ div.wrapper h1 {
   }
 
   .signup-navigation-container {
+    padding: 2rem;
+    display: none;
     position: absolute;
+  }
+
+  .footer.level {
+    font-size: 12px;
+    padding: 0.75rem;
   }
 }
 
@@ -72,29 +88,57 @@ div.wrapper h1 {
   .form-container-signup {
     border: none;
     box-shadow: none;
+    padding: 0.5rem;
     height: 100%;
   }
 
   .signup-navigation-container {
     position: relative;
+    padding: 0.5rem;
   }
+}
+
+ul.steps {
+  position: relative;
+}
+
+.status-bar {
+  position: absolute;
+  width: 75%;
+  margin: 0 12.5%;
+  top: 13px;
+  z-index: 20;
+}
+
+.status-bar > .current-status {
+  height: 6px;
+  width: 0;
+  background-color: #e91e63;
+  transition: width 500ms cubic-bezier(0.5, 0.08, 0, 1);
+}
+
+.steps .steps-marker {
+  z-index: 23;
+  transition: 400ms ease-in-out;
+  transition-property: border, background-color, color;
+}
+
+.steps-segment::after {
+  background-color: #dbdbdb;
 }
 
 .signup-navigation-container {
   left: 0;
   bottom: 0;
-  padding: 2rem;
   width: 100%;
 }
 
 .form-container-signup {
   position: relative;
-  padding: 2rem;
   background-color: white;
 }
 
 .input-container fieldset {
-  height: 300px;
   overflow: hidden;
   border: none;
   padding: .25rem .75rem;
@@ -111,14 +155,21 @@ div.wrapper h1 {
   bottom: 0;
 }
 
+div.field:not(:last-child) {
+  margin-bottom: 1.25rem;
+}
+
 div.field > label.label {
   font-weight: 500;
   margin: 0;
 }
 
-div.field > p.help {
-  margin-top: 0;
-  margin-bottom: .5rem;
+div.field p.help {
+  margin: 0;
+}
+
+div.field p.help {
+  margin-bottom: 0.25rem;
 }
 
 input[type=range].slider:not([orient=vertical]).has-output {
@@ -127,7 +178,6 @@ input[type=range].slider:not([orient=vertical]).has-output {
 
 input[type=range].slider#rateSlider::before,
 input[type=range].slider#rateSlider::after {
-  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Helvetica Neue', sans-serif;
   position: absolute;
   top: 2rem;
 }
@@ -205,7 +255,7 @@ input[type=range].slider:not([orient=vertical]).has-output+output {
 }
 
 .error-msgs-wrapper {
-  position: relative;
+  position: absolute;
   overflow: hidden;
 }
 
@@ -228,36 +278,27 @@ input[type=range].slider:not([orient=vertical]).has-output+output {
 /* Slick Styles */
 
 .slick-arrow {
-  opacity: 1;
   visibility: visible;
+  opacity: 1;
   transition: opacity 180ms ease-in-out,
               visibility 180ms ease-in-out;
 }
 
 .slick-arrow.slick-disabled {
-  visibility: hidden;
-  opacity: 0;
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 .slick-prev,
-.slick-next {
-  background: transparent;
+.slick-next,
+.slick-signup {
+  position: absolute;
+  background-color: white;
   border: none;
   cursor: pointer;
   text-transform: uppercase;
   font-size: 14px;
   font-weight: 500;
-  color: #E91E63;
-}
-
-.slick-prev:hover,
-.slick-next:hover {
-  color: #D81B60;
-}
-
-.slick-prev:active,
-.slick-next:active {
-  color: #C2185B;
 }
 
 .slick-prev:focus,
@@ -266,9 +307,10 @@ input[type=range].slider:not([orient=vertical]).has-output+output {
 }
 
 .slick-prev {
-  float: left;
+  left: 2rem;
 }
 
-.slick-next {
-  float: right;
+.slick-next,
+.slick-signup {
+  right: 2rem;
 }

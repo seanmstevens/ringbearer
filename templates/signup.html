@@ -2,11 +2,56 @@
 {% block head %}
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.css"/>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='login.d5147dc75193718abc14.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='login.45231f515af5a5bded49.css') }}">
 
 {% endblock %}
 {% block body %}
   <div class="wrapper">
+    <ul class="steps has-gaps is-centered has-content-centered is-horizontal">
+      <div class="status-bar">
+        <div class="current-status"></div>
+      </div>
+      <li class="steps-segment is-active" data-slide="0">
+        <span class="steps-marker">
+          <span class="icon">
+            <i class="mdi mdi-account"></i>
+          </span>
+        </span>
+        <div class="steps-content">
+          <p class="heading">Name Information</p>
+        </div>
+      </li>
+      <li class="steps-segment" data-slide="1">
+        <span class="steps-marker is-hollow">
+          <span class="icon">
+            <i class="mdi mdi-key"></i>
+          </span>
+        </span>
+        <div class="steps-content">
+          <p class="heading">User Information</p>
+        </div>
+      </li>
+      <li class="steps-segment" data-slide="2">
+        <span class="steps-marker is-hollow">
+          <span class="icon">
+            <i class="mdi mdi-camera"></i>
+          </span>
+        </span>
+        <div class="steps-content">
+          <p class="heading">Vendor Information</p>
+        </div>
+      </li>
+      <li class="steps-segment" data-slide="3">
+        <span class="steps-marker is-hollow">
+          <span class="icon">
+            <i class="mdi mdi-map-marker"></i>
+          </span>
+        </span>
+        <div class="steps-content">
+          <p class="heading">Location + Finish</p>
+        </div>
+      </li>
+    </ul>
     <div class="signup-container" data-usertype="{{ type }}">
       <div class="form-container-signup">
         <h1 class="title is-2 is-marginless">Sign up</h1>
@@ -59,7 +104,22 @@
               type='submit'>Sign up</button> -->
           </form>
         </div>
-        <div class="signup-navigation-container">
+        <div class="signup-navigation-container" data-hidden="true">
+        </div>
+      </div>
+      <div class="footer level is-mobile">
+        <div class="level-left">
+          <div class="level-item">
+            <a class="has-text-grey">Login</a>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <a class="has-text-grey">Help</a>
+          </div>
+          <div class="level-item">
+            <a class="has-text-grey">Terms</a>
+          </div>
         </div>
       </div>
     </div>
@@ -68,6 +128,6 @@
 {% block scripts %}
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
-<script type="text/javascript" src="{{ url_for('static', filename='login.d5147dc75193718abc14.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='login.45231f515af5a5bded49.js') }}"></script>
 
 {% endblock %}

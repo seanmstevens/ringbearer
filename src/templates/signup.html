@@ -77,7 +77,7 @@
         </div> -->
         <!-- Sign up for vendor users -->
         <div class="vendor-signup" {% if type == 'vendor' %}style="display: block;"{% endif %}>
-          <form class="input-container" method='POST'>
+          <form class="input-container" method='POST' autocomplete="off">
             <!-- Grabs the inputs from components/register_inputs.html -->
             <fieldset data-validated="false">
               {% include 'components/vendor_signup/register-name-inputs.html' %}

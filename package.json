@@ -4,8 +4,8 @@
   "description": "A wedding planner app for vendors and organizers",
   "main": "main.js",
   "browserslist": [
-    "> 1%",
-    "ie >= 9"
+    "last 2 versions",
+    "ie >= 10"
   ],
   "scripts": {
     "build": "webpack -p --progress --display-error-details",

@@ -68,6 +68,20 @@ function addSignupListener(options) {
     return _;
   }
 
+  $.fn.formValidate = function() {
+    var _ = this;
+    _.validate();
+    enableForwardNavigation();
+    return _;
+  }
+
+  $.fn.formUnvalidate = function() {
+    var _ = this;
+    _.unvalidate();
+    disableForwardNavigation();
+    return _;
+  }
+
   $.fn.submit = function() {
     if (getCurrentSlide() !== 3) {
       return false;
@@ -106,7 +120,7 @@ function addNextSlideListeners() {
       $(`.steps-segment[data-slide=${currentSlide}]`).removeClass("is-active");
       $(`.steps-segment[data-slide=${nextSlide}]`).addClass("is-active").children().eq(0).removeClass("is-hollow");
 
-      if (nextSlide === 2 && $("fieldset[data-slide-index=3]").length === 0) {
+      if (nextSlide === 2 && $("fieldset[data-slick-index=3]").length === 0) {
         addNextSlide();
       }
   
@@ -314,13 +328,13 @@ function initializeTabIndexes() {
 }
 
 function addFormValidationListeners() {
-  let inputs = getCurrentlyViewedInputs();
   let touchedStatus;
   let errors = {};
 
   console.log("listeners added");
 
   $("form").on('change', '.input', e => {
+    const inputs = getCurrentlyViewedInputs();
     const $self = $(e.currentTarget);
     const $form = $self.parents("fieldset");
     const input = $self.val();
@@ -345,6 +359,7 @@ function addFormValidationListeners() {
       }
     } else if (name == "password") { // Password field verification
       let passwordRegExp = new RegExp(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/);
+      let $verifyInput = $("input[name='verify']");
 
       if (!passwordRegExp.test(input)) {
         if (!errors[name]) {
@@ -360,7 +375,7 @@ function addFormValidationListeners() {
     } else if (name == "verify") { // Password verification check
       let password = $("input[name='password']").val(); // There are two password fields (one on the user form and one on the vendor form) -- will need to change at some point
 
-      if (input !== password) {
+      if (!comparePasswords(input, password)) {
         if (!errors[name]) {
           errormsg = "Passwords do not match.";
           errors[name] = errormsg;
@@ -386,11 +401,10 @@ function addFormValidationListeners() {
     $self.resetValidationIndicators();
   
     touchedStatus = getTouchedStatus(inputs);
-    console.log(inputs);
     console.log("All inputs touched: " + touchedStatus);
 
-    if (Object.keys(errors).length < 1 && touchedStatus === true) {
-      $form.validate();
+    if (Object.keys(errors).length == 0 && touchedStatus === true) {
+      $form.formValidate();
 
       if (isNavHidden()) {
         $(".signup-navigation-container").fadeIn("fast").attr("data-hidden", false);
@@ -400,13 +414,8 @@ function addFormValidationListeners() {
         addNextSlide();
       }
 
-      enableForwardNavigation();
     } else if (Object.keys(errors).length > 0) {
-      $form.unvalidate();
-
-      if ($form.next("fieldset").length > 0) {
-        disableForwardNavigation();
-      }
+      $form.formUnvalidate();
     }
   });
 }
@@ -414,7 +423,6 @@ function addFormValidationListeners() {
 function comparePasswords(pass1, pass2) {
   return pass1 === pass2;
 }
-
 
 function getTouchedStatus(inputs) {
   for (let element of inputs) {

@@ -1,3 +1,5 @@
+import "@babel/polyfill";
+
 import $ from "jquery";
 import progressively from "progressively";
 import fuzzysort from "fuzzysort";

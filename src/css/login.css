@@ -64,6 +64,15 @@ div.wrapper {
     font-size: 12px;
     padding: 0.75rem;
   }
+
+  .slick-prev {
+    left: 2rem;
+  }
+  
+  .slick-next,
+  .slick-signup {
+    right: 2rem;
+  }
 }
 
 @media screen and (max-width: 600px) {
@@ -95,6 +104,15 @@ div.wrapper {
   .signup-navigation-container {
     position: relative;
     padding: 0.5rem;
+  }
+
+  .slick-prev {
+    left: 0.5rem;
+  }
+  
+  .slick-next,
+  .slick-signup {
+    right: 0.5rem;
   }
 }
 
@@ -155,8 +173,8 @@ ul.steps {
   bottom: 0;
 }
 
-div.field:not(:last-child),
-div.field:last-child {
+fieldset .field:not(:last-child),
+fieldset .field:last-child {
   margin-bottom: 1.25rem;
 }
 
@@ -276,6 +294,14 @@ input[type=range].slider:not([orient=vertical]).has-output+output {
 
 .slick-arrow {
   visibility: visible;
+  position: absolute;
+  background-color: white;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 500;
+  bottom: 2rem;
   opacity: 1;
   transition: opacity 180ms ease-in-out,
               visibility 180ms ease-in-out;
@@ -286,29 +312,8 @@ input[type=range].slider:not([orient=vertical]).has-output+output {
   pointer-events: none;
 }
 
-.slick-prev,
-.slick-next,
-.slick-signup {
-  position: absolute;
-  background-color: white;
-  border: none;
-  cursor: pointer;
-  text-transform: uppercase;
-  font-size: 14px;
-  font-weight: 500;
-}
-
 .slick-prev:focus,
 .slick-next:focus,
 .slick-signup:focus {
   outline: none;
-}
-
-.slick-prev {
-  left: 2rem;
-}
-
-.slick-next,
-.slick-signup {
-  right: 2rem;
 }

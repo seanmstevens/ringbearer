@@ -2,7 +2,7 @@
 {% block head %}
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.css"/>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='login.fd91a63cdf28549882f0.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='login.854a5ae43401a8cce794.css') }}">
 
 {% endblock %}
 {% block body %}
@@ -18,7 +18,7 @@
           </span>
         </span>
         <div class="steps-content">
-          <p class="heading">Name Information</p>
+          <p class="heading">Account</p>
         </div>
       </li>
       <li class="steps-segment" data-slide="1">
@@ -28,7 +28,7 @@
           </span>
         </span>
         <div class="steps-content">
-          <p class="heading">User Information</p>
+          <p class="heading">Profile</p>
         </div>
       </li>
       <li class="steps-segment" data-slide="2">
@@ -80,19 +80,17 @@
           <form class="input-container" method='POST' autocomplete="off">
             <!-- Grabs the inputs from components/register_inputs.html -->
             <fieldset data-validated="false">
-              {% include 'components/vendor_signup/register-name-inputs.html' %}
+              {% include 'components/vendor_signup/register-email-inputs.html' %}
             </fieldset>
             {% if not getrequest %}
             <fieldset>
-              {% include 'components/vendor_signup/register-email-inputs.html' %}
+              {% include 'components/vendor_signup/register-name-inputs.html' %}
             </fieldset>
             <fieldset>
               {% include 'components/vendor_signup/register-vendor-inputs.html' %}
             </fieldset>
             <fieldset>
               {% include 'components/vendor_signup/register-location-inputs.html' %}
-              <button name="vendor_signup" class="button is-dark is-medium is-wide" 
-                type="submit">Sign up</button>
             </fieldset>
             {% endif %}
             <!-- <label class="checkbox">
@@ -127,6 +125,6 @@
 {% block scripts %}
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
-<script type="text/javascript" src="{{ url_for('static', filename='login.fd91a63cdf28549882f0.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='login.854a5ae43401a8cce794.js') }}"></script>
 
 {% endblock %}

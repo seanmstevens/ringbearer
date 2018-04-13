@@ -4,7 +4,7 @@
   <p class="help has-text-grey">Enter your email below.</p>
   <div class="control has-icons-left">
     <input class="input {% if v_errors['usererrors'] %}is-danger{% endif %}"
-      type="text" placeholder="Email" name="email" value="{{ vendor_info['email'] }}">
+      type="text" data-touched="false" placeholder="Email" name="email" value="{{ vendor_info['email'] }}">
     <span class="icon is-left">
       <i class="mdi mdi-email-outline"></i>
     </span>
@@ -27,7 +27,7 @@
   <p class="help has-text-grey">Enter a password between 3-20 characters below.</p>
   <div class="control has-icons-left">
     <input class="input {% if v_errors['passerrors'] %}is-danger{% endif %}"
-      type="password" placeholder="Password" name="password">
+      type="password" data-touched="false" placeholder="Password" name="password">
     <span class="icon is-left">
       <i class="mdi mdi-lock-outline"></i>
     </span>
@@ -49,7 +49,7 @@
   <p class="help has-text-grey">Re-enter your password below.</p>
   <div class="control has-icons-left">
     <input class="input {% if v_errors['verifyerrors'] %}is-danger{% endif %}"
-      type="password" placeholder="Verify Password" name="verify">
+      type="password" data-touched="false" placeholder="Verify Password" name="verify">
     <span class="icon is-left">
       <i class="mdi mdi-checkbox-marked-circle-outline"></i>
     </span>

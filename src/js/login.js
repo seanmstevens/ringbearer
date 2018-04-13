@@ -10,6 +10,17 @@ const options = {
   infinite: false
 };
 
+const formErrors = {
+  name: "This field cannot be left blank.",
+  business: "This field cannot be left blank.",
+  email: "That is not a valid email.",
+  password: "Password must be at least 8 characters, and must contain at least one number, uppercase letter and lowercase letter.",
+  verify: "Passwords do not match.",
+  address: "This field cannot be left blank.",
+  city: "This field cannot be left blank.",
+  zipcode: "Please enter a 5-digit zipcode."
+};
+
 $(function() {
   var userType = $(".signup-container").attr("data-usertype");
 
@@ -62,7 +73,7 @@ function addSignupListener(options) {
     return _;
   };
 
-  $.fn.unvalidate = function() {
+  $.fn.invalidate = function() {
     var _ = this;
     _.attr("data-validated", false);
     return _;
@@ -72,13 +83,16 @@ function addSignupListener(options) {
     var _ = this;
     _.validate();
     enableForwardNavigation();
+    getCurrentSlide() === 3 ? enableSignup() : enableForwardNavigation();
+
     return _;
   }
 
-  $.fn.formUnvalidate = function() {
+  $.fn.formInvalidate = function() {
     var _ = this;
-    _.unvalidate();
-    disableForwardNavigation();
+    _.invalidate();
+    getCurrentSlide() === 3 ? disableSignup() : disableForwardNavigation();
+
     return _;
   }
 
@@ -102,7 +116,7 @@ function getCurrentSlide() {
 
 function getCurrentlyViewedInputs() {
   let currentSlide = getCurrentSlide();
-  return $(`fieldset[data-slick-index=${currentSlide}]`).find("input, select");
+  return $(`fieldset[data-slick-index=${currentSlide}]`).find("input.input");
 }
 
 function addNextSlideListeners() { 
@@ -110,7 +124,15 @@ function addNextSlideListeners() {
 
   $(document).on({
     'beforeChange': function(event, slick, currentSlide, nextSlide) {
-      $(".current-status").css("width", nextSlide * 33.3 + "%"); // Displaying progress on top bar
+      $(".current-status").css("width", nextSlide * 33.3 + "%"); // Animating progress bar
+
+      var $slideObject = $(slick.$slides[nextSlide]);
+
+      if ($slideObject.attr("data-validated") == "false") {
+        disableForwardNavigation();
+      } else {
+        if (nextSlide !== 3) enableForwardNavigation();
+      }
 
       // Making next step segment active
       if (nextSlide < currentSlide) {
@@ -126,11 +148,14 @@ function addNextSlideListeners() {
   
       if (nextSlide === 3) {
         addSignUp();
+        $(".slick-next").hide();
+        if ($slideObject.attr("data-validated") == "true") enableSignup();
       } else {
         removeSignUp();
       }
     }, 'afterChange': function(event, slick, currentSlide) {  
       console.log("currentSlide: " + currentSlide);
+
       initializeTabIndexes();
     }
   }, $form);
@@ -141,32 +166,6 @@ function addNextSlide() {
   const $form = $('form.slick-initialized');
   const slideMap = {
     0: `<fieldset data-validated="false">
-          <div class="field">
-            <label class="label">Name</label>
-            <p class="help has-text-grey">Enter your full name.</p>
-            <div class="control has-icons-left">
-              <input class="input" type="text" data-touched="false" placeholder="Jane Q. Example" tabindex=-1 name="name">
-              <span class="icon is-left">
-                <i class="mdi mdi-account-circle"></i>
-              </span>
-              <div class="error-msgs-wrapper">
-              </div>
-            </div>
-          </div>
-          <div class="field">
-            <label class="label">Business Name</label>
-            <p class="help has-text-grey">Enter the name of your business.</p>
-            <div class="control has-icons-left">
-              <input class="input" type="text" data-touched="false" placeholder="Coolbusiness, LLC" tabindex=-1 name="business">
-              <span class="icon is-left">
-                <i class="mdi mdi-account-card-details"></i>
-              </span>
-              <div class="error-msgs-wrapper">
-              </div>
-            </div>
-          </div>
-        </fieldset>`,
-    1: `<fieldset data-validated="false">
           <div class="field">
             <label class="label">Email</label>
             <p class="help has-text-grey">Enter your email below.</p>
@@ -205,7 +204,33 @@ function addNextSlide() {
             </div>
           </div>
         </fieldset>`,
-    2: `<fieldset data-validated="false">
+    1: `<fieldset data-validated="false">
+          <div class="field">
+            <label class="label">Name</label>
+            <p class="help has-text-grey">Enter your full name.</p>
+            <div class="control has-icons-left">
+              <input class="input" type="text" data-touched="false" placeholder="Jane Q. Example" tabindex=-1 name="name">
+              <span class="icon is-left">
+                <i class="mdi mdi-account-circle"></i>
+              </span>
+              <div class="error-msgs-wrapper">
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">Business Name</label>
+            <p class="help has-text-grey">Enter the name of your business.</p>
+            <div class="control has-icons-left">
+              <input class="input" type="text" data-touched="false" placeholder="Coolbusiness, LLC" tabindex=-1 name="business">
+              <span class="icon is-left">
+                <i class="mdi mdi-account-card-details"></i>
+              </span>
+              <div class="error-msgs-wrapper">
+              </div>
+            </div>
+          </div>
+        </fieldset>`,
+    2: `<fieldset data-validated="true">
           <div class="field">
             <label class="label">Vendor Type</label>
             <p class="help has-text-grey">Select the type of vendor that best fits you below.</p>
@@ -328,118 +353,173 @@ function initializeTabIndexes() {
 }
 
 function addFormValidationListeners() {
-  let touchedStatus;
-  let errors = {};
+  let touchedStatus, inputs, $self, $form, input, name, errormsg, slickObj;
+  let localErrors = {};
 
   console.log("listeners added");
 
-  $("form").on('change', '.input', e => {
-    const inputs = getCurrentlyViewedInputs();
-    const $self = $(e.currentTarget);
-    const $form = $self.parents("fieldset");
-    const input = $self.val();
-    const name = $self.attr("name");
-    var errormsg;
+  $("form").on({
+    'change': e => {
+      inputs = getCurrentlyViewedInputs();
+      $self = $(e.currentTarget);
+      $form = $self.parents("fieldset");
+      slickObj = $('.vendor-signup .input-container');
+      input = $self.val();
+      name = $self.attr("name");
 
-    $self.attr("data-touched", true);
+      $self.attr("data-touched", true);
 
-    if (name == "email") {
-      let emailRegExp = new RegExp(/(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)/);
+      if (name == "email") {
+        let emailRegExp = new RegExp(/(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)/);
 
-      if (!emailRegExp.test(input)) {
-        if (!errors[name]) {
-          errormsg = "Must be a valid email.";
-          errors[name] = errormsg;
-          $self.unvalidate();
-          displayError($self, errormsg);
-        }
-      } else {
-        delete errors[name];
-        $self.validate();
-      }
-    } else if (name == "password") { // Password field verification
-      let passwordRegExp = new RegExp(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/);
-      let $verifyInput = $("input[name='verify']");
-
-      if (!passwordRegExp.test(input)) {
-        if (!errors[name]) {
-          errormsg = "Password must be at least 8 characters, and must contain at least one number, uppercase letter and lowercase letter.";
-          errors[name] = errormsg;
-          $self.unvalidate();
-          displayError($self, errormsg);
-        }
-      } else {
-        delete errors[name];
-        $self.validate();
-      }
-    } else if (name == "verify") { // Password verification check
-      let password = $("input[name='password']").val(); // There are two password fields (one on the user form and one on the vendor form) -- will need to change at some point
-
-      if (!comparePasswords(input, password)) {
-        if (!errors[name]) {
-          errormsg = "Passwords do not match.";
-          errors[name] = errormsg;
-          $self.unvalidate();
-          displayError($self, errormsg);
-        }
-      } else {
-          delete errors[name];
+        if (!emailRegExp.test(input)) {
+          if (!localErrors[name]) {
+            errormsg = formErrors[name];
+            localErrors[name] = errormsg;
+            $self.invalidate();
+            displayError($self, errormsg);
+          }
+        } else {
+          delete localErrors[name];
           $self.validate();
+        }
+      } else if (name == "password") { // Password field verification
+        let passwordRegExp = new RegExp(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/);
+        let $verifyInput = $("input[name='verify']");
+
+        if (!passwordRegExp.test(input)) {
+          if (!localErrors[name]) {
+            errormsg = formErrors[name];
+            localErrors[name] = errormsg;
+            $self.invalidate();
+            displayError($self, errormsg);
+          }
+        } else {
+          delete localErrors[name];
+          $self.validate();
+        }
+
+        comparePasswords();
+      } else if (name == "verify") { // Password verification check
+        comparePasswords();
+      } else if (name == "zipcode") {
+        let zipcodeRegExp = new RegExp(/\d{5}/);
+
+        if (!zipcodeRegExp.test(input)) {
+          if (!localErrors[name]) {
+            errormsg = formErrors[name];
+            localErrors[name] = errormsg;
+            $self.invalidate();
+            displayError($self, errormsg);
+          }
+        } else {
+          delete localErrors[name];
+          $self.validate();
+        }
+      } else { // Verification for non-specific input fields
+        if (input == "" && !localErrors[name]) {
+          errormsg = formErrors[name];
+          localErrors[name] = errormsg;
+          $self.invalidate();
+          displayError($self, errormsg);
+        } else if (input !== "" && localErrors[name]) {
+          delete localErrors[name];
+          $self.validate();
+        }
       }
-    } else { // Verification for non-specific input fields
-      if (input == "" && !errors[name]) {
-        errormsg = "This field cannot be left blank.";
-        errors[name] = errormsg;
-        $self.unvalidate();
-        displayError($self, errormsg);
-      } else if (input !== "" && errors[name]) {
-        delete errors[name];
-        $self.validate();
+
+      $self.resetValidationIndicators();
+    
+      touchedStatus = getTouchedStatus();
+      console.log("All inputs touched: " + touchedStatus);
+
+      if (Object.keys(localErrors).length == 0 && touchedStatus === true) {
+        $form.formValidate();
+
+        if (isNavHidden()) {
+          $(".signup-navigation-container").fadeIn("fast").attr("data-hidden", false);
+        }
+
+        if ($form.next("fieldset").length === 0 && getCurrentSlide() !== 3) { // Check to see if next slide already exists
+          addNextSlide();
+        }
+
+      } else if (Object.keys(localErrors).length > 0) {
+        $form.formInvalidate();
+      }
+    }, 'keydown': e => {
+      if (e.which === 13 && Object.keys(localErrors).length == 0 && touchedStatus === true) {
+        // slickObj.slick('slickNext'); >> This needs to control for errors that occur at the time of presing enter
       }
     }
+  }, '.input');
 
-    $self.resetValidationIndicators();
+  function comparePasswords() {
+    const $verifyInput = $("input[name='verify']");
+
+    if ($verifyInput.attr("data-touched") == "false") return false; // Short-circuiting if user hasn't touched verification input yet
   
-    touchedStatus = getTouchedStatus(inputs);
-    console.log("All inputs touched: " + touchedStatus);
-
-    if (Object.keys(errors).length == 0 && touchedStatus === true) {
-      $form.formValidate();
-
-      if (isNavHidden()) {
-        $(".signup-navigation-container").fadeIn("fast").attr("data-hidden", false);
+    const $comparisonTarget = name === "password" ? 
+      $verifyInput :
+      $("input[name='password']");
+  
+    if ($self.val() === $comparisonTarget.val()) {
+      delete localErrors.verify;
+      $verifyInput.validate();
+    } else {
+      if (!localErrors.verify) {
+        localErrors.verify = formErrors.verify;
+        $verifyInput.invalidate();
+        displayError($verifyInput, localErrors.verify);
       }
-
-      if ($form.next("fieldset").length === 0 && getCurrentSlide() !== 3) { // Check to see if next slide already exists
-        addNextSlide();
-      }
-
-    } else if (Object.keys(errors).length > 0) {
-      $form.formUnvalidate();
     }
-  });
-}
 
-function comparePasswords(pass1, pass2) {
-  return pass1 === pass2;
-}
+    $verifyInput.resetValidationIndicators();    
+  }
 
-function getTouchedStatus(inputs) {
-  for (let element of inputs) {
-    if ($(element).attr("data-touched") == "false") {
-      return false;
-    }
+  function displayError($self, error) {
+    $self = !$self instanceof jQuery ? $self : $($self);
+  
+    $self.addClass("is-danger");
+    $self.siblings(".error-msgs-wrapper").append(
+      buildError(error)
+    );
   }
   
-  return true;
+  function buildError(error) {
+    return (
+      `<p class="help is-danger">
+        <i class="mdi mdi-alert-circle"></i>
+        ${error}
+      </p>`
+    );
+  }
+
+  function getTouchedStatus() {
+    for (let element of inputs) {
+      if ($(element).attr("data-touched") == "false") {
+        return false;
+      }
+    }
+    
+    return true;
+  }
 }
 
 function disableForwardNavigation() {
-  $(".slick-next").addClass("slick-disabled");
+  $(".slick-next").fadeTo(130, 0.4).css("pointer-events", "none").attr("aria-disabled", true);
 }
 
 function enableForwardNavigation() {
-  $(".slick-next").removeClass("slick-disabled");
+  $(".slick-next").fadeTo(130, 1).css("pointer-events", "all").attr("aria-disabled", false);
+}
+
+function enableSignup() {
+  $(".slick-signup").prop("disabled", false);
+}
+
+function disableSignup() {
+  $(".slick-signup").prop("disabled", true);
 }
 
 function isNavHidden() {
@@ -447,33 +527,15 @@ function isNavHidden() {
 }
 
 function addSignUp() {
-  const signUpButton = `<button type="submit" name="vendor_signup" class="slick-arrow slick-signup has-text-primary" style="display:none">Sign Up</button>`;
+  const signUpButton = `<button type="submit" name="vendor_signup" class="button is-primary slick-signup" style="display:none" disabled>Sign Up</button>`;
 
   $(".signup-navigation-container").append(signUpButton);
-  $(".slick-signup").fadeIn(180);
+  $(".slick-signup").fadeIn(130);
 }
 
 function removeSignUp() {
   const signUpButton = $(".slick-signup");
-  signUpButton.fadeOut(180).remove();
-}
-
-function displayError(self, error) {
-  if (!self instanceof jQuery) {
-    self = $(self);
-  }
-
-  self.addClass("is-danger");
-  self.siblings(".error-msgs-wrapper").append(
-    buildError(error)
-  );
-}
-
-function buildError(error) {
-  return (
-    `<p class="help is-danger">
-      <i class="mdi mdi-alert-circle"></i>
-      ${error}
-    </p>`
-  );
+  signUpButton.fadeOut(130, "linear", function() {
+    this.remove();
+  });
 }

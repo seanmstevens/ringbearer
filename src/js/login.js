@@ -82,7 +82,6 @@ function addSignupListener(options) {
   $.fn.formValidate = function() {
     var _ = this;
     _.validate();
-    enableForwardNavigation();
     getCurrentSlide() === 3 ? enableSignup() : enableForwardNavigation();
 
     return _;
@@ -507,11 +506,11 @@ function addFormValidationListeners() {
 }
 
 function disableForwardNavigation() {
-  $(".slick-next").fadeTo(130, 0.4).css("pointer-events", "none").attr("aria-disabled", true);
+  $(".slick-next").fadeTo(130, 0.4, "linear").css("pointer-events", "none").attr("aria-disabled", true);
 }
 
 function enableForwardNavigation() {
-  $(".slick-next").fadeTo(130, 1).css("pointer-events", "all").attr("aria-disabled", false);
+  $(".slick-next").fadeTo(130, 1, "linear").css("pointer-events", "all").attr("aria-disabled", false);
 }
 
 function enableSignup() {
@@ -527,10 +526,34 @@ function isNavHidden() {
 }
 
 function addSignUp() {
-  const signUpButton = `<button type="submit" name="vendor_signup" class="button is-primary slick-signup" style="display:none" disabled>Sign Up</button>`;
+  const $signUpButton = $('<button type="submit" class="button is-primary slick-signup is-hidden" name="vendor_signup" disabled>Sign Up</button>');
 
-  $(".signup-navigation-container").append(signUpButton);
-  $(".slick-signup").fadeIn(130);
+  $(".signup-navigation-container").append($signUpButton);
+  $signUpButton.removeClass("is-hidden");
+
+  addSignupButtonListener();
+
+  function addSignupButtonListener() {
+    $signUpButton.click(e => {
+      const $self = $(e.currentTarget);
+      $self.addClass("is-loading");
+
+      const data = $('form').serialize(); // Serializing form data
+
+      $.post({
+        url: "/signup",
+        data: data
+      })
+      .done(data => {
+        console.log(data);
+      })
+      .fail(error => {
+        console.log(error)
+      });
+
+      $self.removeClass("is-loading");
+    })
+  }
 }
 
 function removeSignUp() {

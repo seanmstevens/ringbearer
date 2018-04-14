@@ -320,4 +320,5 @@ input[type=range].slider:not([orient=vertical]).has-output+output {
   text-transform: uppercase;
   top: 50%;
   transform: translateY(-50%);
+  transition: opacity 130ms ease-in-out;
 }

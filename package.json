@@ -28,7 +28,7 @@
     "@babel/preset-env": "^7.0.0-beta.44",
     "autoprefixer": "^8.2.0",
     "babel-loader": "^8.0.0-beta.2",
-    "bulma": "^0.6.2",
+    "bulma": "^0.7.0",
     "bulma-extensions": "^1.0.14",
     "bulma-steps-component": "^0.5.3",
     "css-loader": "^0.28.11",

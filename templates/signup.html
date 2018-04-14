@@ -2,12 +2,12 @@
 {% block head %}
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.css"/>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='login.854a5ae43401a8cce794.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='login.0d210d10d95f998cf77f.css') }}">
 
 {% endblock %}
 {% block body %}
   <div class="wrapper">
-    <ul class="steps has-gaps is-centered has-content-centered is-horizontal">
+    <ul class="steps has-gaps is-centered has-content-centered is-horizontal is-balanced">
       <div class="status-bar">
         <div class="current-status"></div>
       </div>
@@ -17,7 +17,7 @@
             <i class="mdi mdi-account"></i>
           </span>
         </span>
-        <div class="steps-content">
+        <div class="steps-content is-hidden-mobile">
           <p class="heading">Account</p>
         </div>
       </li>
@@ -27,7 +27,7 @@
             <i class="mdi mdi-key"></i>
           </span>
         </span>
-        <div class="steps-content">
+        <div class="steps-content is-hidden-mobile">
           <p class="heading">Profile</p>
         </div>
       </li>
@@ -37,7 +37,7 @@
             <i class="mdi mdi-camera"></i>
           </span>
         </span>
-        <div class="steps-content">
+        <div class="steps-content is-hidden-mobile">
           <p class="heading">Vendor Information</p>
         </div>
       </li>
@@ -47,7 +47,7 @@
             <i class="mdi mdi-map-marker"></i>
           </span>
         </span>
-        <div class="steps-content">
+        <div class="steps-content is-hidden-mobile">
           <p class="heading">Location + Finish</p>
         </div>
       </li>
@@ -104,7 +104,7 @@
         <div class="signup-navigation-container" data-hidden="true">
         </div>
       </div>
-      <div class="footer level is-mobile">
+      <!-- <div class="footer level is-mobile">
         <div class="level-left">
           <div class="level-item">
             <a class="has-text-grey">Login</a>
@@ -118,13 +118,13 @@
             <a class="has-text-grey">Terms</a>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 {% endblock %}
 {% block scripts %}
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
-<script type="text/javascript" src="{{ url_for('static', filename='login.854a5ae43401a8cce794.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='login.0d210d10d95f998cf77f.js') }}"></script>
 
 {% endblock %}

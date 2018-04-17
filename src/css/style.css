@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Abril+Fatface|Roboto:400,500");
+@import url("https://fonts.googleapis.com/css?family=Abril+Fatface|Roboto:400,500,700");
 
 html, body {
   height: 100%;
@@ -32,6 +32,11 @@ a.navbar-link:not(.navbar-brand-logo) {
   color: #7a7a7a;
 }
 
+.navbar-dropdown a.navbar-item,
+.navbar-dropdown a.navbar-item {
+  font-weight: 400;
+}
+
 a.navbar-item.is-active, 
 a.navbar-item:hover, 
 a.navbar-link.is-active, 
@@ -41,6 +46,11 @@ a.navbar-link:hover {
 
 a.navbar-item.navbar-brand-logo:hover {
   color: #4a4a4a;
+}
+
+a.navbar-item>.icon:not(:last-child) {
+  margin-left: -.25rem;
+  margin-right: .25rem;
 }
 
 /* General Adjustments */

@@ -1,8 +1,8 @@
 const options = {
   cssEase: "cubic-bezier(0.5, 0.08, 0, 1)",
   appendArrows: $('.signup-navigation-container'),
-  nextArrow: `<button type="button" class="slick-next has-text-primary">Next</button>`,
-  prevArrow: `<button type="button" class="slick-prev has-text-primary">Previous</button>`,
+  nextArrow: `<button type="button" class="slick-next button is-primary is-inverted is-uppercase is-shadowless">Next</button>`,
+  prevArrow: `<button type="button" class="slick-prev button is-primary is-inverted is-uppercase is-shadowless">Previous</button>`,
   accessibility: true,
   slidesToShow: 1,
   draggable: false,
@@ -69,7 +69,7 @@ function addSignupListener(options) {
 
   $.fn.validate = function() {
     var _ = this;
-    _.attr("data-validated", true);
+    _.attr("data-validated", true).removeData("errors");
     return _;
   };
 
@@ -133,6 +133,7 @@ function addNextSlideListeners() {
         if (nextSlide !== 3) enableForwardNavigation();
       }
 
+      // TODO: Control for moving multiple slides at once and manipulating CSS classes appropriately
       // Making next step segment active
       if (nextSlide < currentSlide) {
         $(`.steps-segment[data-slide=${currentSlide}]`).children().eq(0).addClass("is-hollow");
@@ -146,15 +147,16 @@ function addNextSlideListeners() {
       }
   
       if (nextSlide === 3) {
-        addSignUp();
+        let isValidated = $slideObject.attr("data-validated") == "true" ? true : false;
+
+        addSignUp(isValidated)
+        if (isValidated) { enableSignup() };
+
         $(".slick-next").hide();
-        if ($slideObject.attr("data-validated") == "true") enableSignup();
       } else {
         removeSignUp();
       }
     }, 'afterChange': function(event, slick, currentSlide) {  
-      console.log("currentSlide: " + currentSlide);
-
       initializeTabIndexes();
     }
   }, $form);
@@ -169,7 +171,7 @@ function addNextSlide() {
             <label class="label">Email</label>
             <p class="help has-text-grey">Enter your email below.</p>
             <div class="control has-icons-left">
-              <input class="input" type="text" data-touched="false" placeholder="Email" tabindex=-1 name="email">
+              <input class="input" type="text" autocomplete="off" data-touched="false" placeholder="Email" tabindex=-1 name="email">
               <span class="icon is-left">
                 <i class="mdi mdi-email-outline"></i>
               </span>
@@ -181,8 +183,7 @@ function addNextSlide() {
             <label class="label">Password</label>
             <p class="help has-text-grey">Enter a password longer than 8 characters below.</p>
             <div class="control has-icons-left">
-              <input class="input"
-                type="password" data-touched="false" placeholder="Password" tabindex=-1 name="password">
+              <input class="input" type="password" autocomplete="off" data-touched="false" placeholder="Password" tabindex=-1 name="password">
               <span class="icon is-left">
                 <i class="mdi mdi-lock-outline"></i>
               </span>
@@ -193,8 +194,7 @@ function addNextSlide() {
           <div class="field">
             <p class="help has-text-grey">Re-enter your password below.</p>
             <div class="control has-icons-left">
-              <input class="input"
-                type="password" data-touched="false" placeholder="Verify Password" tabindex=-1 name="verify">
+              <input class="input" type="password" autocomplete="off" data-touched="false" placeholder="Verify Password" tabindex=-1 name="verify">
               <span class="icon is-left">
                 <i class="mdi mdi-checkbox-marked-circle-outline"></i>
               </span>
@@ -208,7 +208,7 @@ function addNextSlide() {
             <label class="label">Name</label>
             <p class="help has-text-grey">Enter your full name.</p>
             <div class="control has-icons-left">
-              <input class="input" type="text" data-touched="false" placeholder="Jane Q. Example" tabindex=-1 name="name">
+              <input class="input" type="text" autocomplete="off" data-touched="false" placeholder="Jane Q. Example" tabindex=-1 name="name">
               <span class="icon is-left">
                 <i class="mdi mdi-account-circle"></i>
               </span>
@@ -220,7 +220,7 @@ function addNextSlide() {
             <label class="label">Business Name</label>
             <p class="help has-text-grey">Enter the name of your business.</p>
             <div class="control has-icons-left">
-              <input class="input" type="text" data-touched="false" placeholder="Coolbusiness, LLC" tabindex=-1 name="business">
+              <input class="input" type="text" autocomplete="off" data-touched="false" placeholder="Coolbusiness, LLC" tabindex=-1 name="business">
               <span class="icon is-left">
                 <i class="mdi mdi-account-card-details"></i>
               </span>
@@ -235,7 +235,7 @@ function addNextSlide() {
             <p class="help has-text-grey">Select the type of vendor that best fits you below.</p>
             <div class="control has-icons-left">
               <div class="select is-fullwidth">
-                <select name="vendortype" data-touched="false" tabindex=-1>
+                <select name="vendortype" autocomplete="off" data-touched="false" tabindex=-1>
                 ${generateTypeOptions()}
                 </select>
               </div>
@@ -250,7 +250,7 @@ function addNextSlide() {
             <label class="label">Rate</label>
             <p class="help has-text-grey">Choose your standard rate from the slider below.</p>
             <div class="control">
-              <input class="slider is-fullwidth is-success has-output" id="rateSlider" tabindex=-1 name="price" data-touched="false" step="1" min="0" max="1000" 
+              <input class="slider is-fullwidth is-success has-output" id="rateSlider" autocomplete="off" tabindex=-1 name="rate" data-touched="false" step="1" min="0" max="1000" 
                 value="500" type="range">
               <output for="rateSlider">$500.00/hr</output>
             </div>
@@ -261,7 +261,7 @@ function addNextSlide() {
             <label class="label">Address</label>
             <p class="help has-text-grey">Fill out your address information below.</p>
             <div class="control has-icons-left is-expanded">
-              <input class="input" type="text" data-touched="false" placeholder="Street Address" tabindex=-1 name="address">
+              <input class="input" type="text" autocomplete="off" data-touched="false" placeholder="Street Address" tabindex=-1 name="address">
               <span class="icon is-left">
                 <i class="mdi mdi-home"></i>
               </span>
@@ -271,7 +271,7 @@ function addNextSlide() {
           </div>
           <div class="field">
             <div class="control has-icons-left is-expanded">
-              <input class="input" type="text" data-touched="false" placeholder="City" tabindex=-1 name="city">
+              <input class="input" type="text" autocomplete="off" data-touched="false" placeholder="City" tabindex=-1 name="city">
               <span class="icon is-left">
                 <i class="mdi mdi-google-maps"></i>
               </span>
@@ -282,7 +282,7 @@ function addNextSlide() {
           <div class="field is-grouped state-zip-group">
             <div class="control has-icons-left is-expanded">
               <span class="select is-fullwidth">
-                <select name="state" data-touched="false" tabindex=-1>
+                <select name="state" autocomplete="off" data-touched="false" tabindex=-1>
                 ${generateStateOptions()}
                 </select>
               </span>
@@ -291,7 +291,7 @@ function addNextSlide() {
               </span>
             </div>
             <div class="control has-icons-left zip-input">
-              <input class="input" type="text" data-touched="false" placeholder="Zipcode" tabindex=-1 name="zipcode" maxlength="5">
+              <input class="input" type="text" autocomplete="off" data-touched="false" placeholder="Zipcode" tabindex=-1 name="zipcode" maxlength="5">
               <span class="icon is-left">
                 <i class="mdi mdi-map-marker"></i>
               </span>
@@ -303,8 +303,6 @@ function addNextSlide() {
   };
 
   $form.slick('slickAdd', slideMap[currentSlide + 1]);
-
-  console.log(currentSlide === 1 && $("fieldset[data-slick-index=3]").length === 0);
 
   if (currentSlide === 1 && $("fieldset[data-slick-index=3]").length === 0) {
     $form.slick('slickAdd', slideMap[3]);
@@ -355,8 +353,6 @@ function addFormValidationListeners() {
   let touchedStatus, inputs, $self, $form, input, name, errormsg, slickObj;
   let localErrors = {};
 
-  console.log("listeners added");
-
   $("form").on({
     'change': e => {
       inputs = getCurrentlyViewedInputs();
@@ -371,32 +367,12 @@ function addFormValidationListeners() {
       if (name == "email") {
         let emailRegExp = new RegExp(/(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)/);
 
-        if (!emailRegExp.test(input)) {
-          if (!localErrors[name]) {
-            errormsg = formErrors[name];
-            localErrors[name] = errormsg;
-            $self.invalidate();
-            displayError($self, errormsg);
-          }
-        } else {
-          delete localErrors[name];
-          $self.validate();
-        }
+        !emailRegExp.test(input) ? enumerateError() : removeError();
       } else if (name == "password") { // Password field verification
         let passwordRegExp = new RegExp(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/);
         let $verifyInput = $("input[name='verify']");
 
-        if (!passwordRegExp.test(input)) {
-          if (!localErrors[name]) {
-            errormsg = formErrors[name];
-            localErrors[name] = errormsg;
-            $self.invalidate();
-            displayError($self, errormsg);
-          }
-        } else {
-          delete localErrors[name];
-          $self.validate();
-        }
+        !passwordRegExp.test(input) ? enumerateError() : removeError();
 
         comparePasswords();
       } else if (name == "verify") { // Password verification check
@@ -404,33 +380,15 @@ function addFormValidationListeners() {
       } else if (name == "zipcode") {
         let zipcodeRegExp = new RegExp(/\d{5}/);
 
-        if (!zipcodeRegExp.test(input)) {
-          if (!localErrors[name]) {
-            errormsg = formErrors[name];
-            localErrors[name] = errormsg;
-            $self.invalidate();
-            displayError($self, errormsg);
-          }
-        } else {
-          delete localErrors[name];
-          $self.validate();
-        }
+        !zipcodeRegExp.test(input) ? enumerateError() : removeError();
       } else { // Verification for non-specific input fields
-        if (input == "" && !localErrors[name]) {
-          errormsg = formErrors[name];
-          localErrors[name] = errormsg;
-          $self.invalidate();
-          displayError($self, errormsg);
-        } else if (input !== "" && localErrors[name]) {
-          delete localErrors[name];
-          $self.validate();
-        }
+        input === "" ? enumerateError() : removeError();
       }
 
+      $self.data("errors", localErrors[name]);
       $self.resetValidationIndicators();
     
       touchedStatus = getTouchedStatus();
-      console.log("All inputs touched: " + touchedStatus);
 
       if (Object.keys(localErrors).length == 0 && touchedStatus === true) {
         $form.formValidate();
@@ -448,7 +406,8 @@ function addFormValidationListeners() {
       }
     }, 'keydown': e => {
       if (e.which === 13 && Object.keys(localErrors).length == 0 && touchedStatus === true) {
-        // slickObj.slick('slickNext'); >> This needs to control for errors that occur at the time of presing enter
+        // console.log("KEYPRESS EVENT FIRED");
+        // slickObj.slick('slickNext'); // This needs to control for errors that occur at the time of presing enter
       }
     }
   }, '.input');
@@ -476,22 +435,18 @@ function addFormValidationListeners() {
     $verifyInput.resetValidationIndicators();    
   }
 
-  function displayError($self, error) {
-    $self = !$self instanceof jQuery ? $self : $($self);
-  
-    $self.addClass("is-danger");
-    $self.siblings(".error-msgs-wrapper").append(
-      buildError(error)
-    );
+  function enumerateError() {
+    if (!localErrors[name]) { // Check to see if error already exists. No need to add it twice.
+      errormsg = formErrors[name];
+      localErrors[name] = errormsg;
+      $self.invalidate();
+      displayError($self, errormsg);
+    }
   }
-  
-  function buildError(error) {
-    return (
-      `<p class="help is-danger">
-        <i class="mdi mdi-alert-circle"></i>
-        ${error}
-      </p>`
-    );
+
+  function removeError() {
+    if (localErrors[name]) delete localErrors[name];
+    $self.validate();
   }
 
   function getTouchedStatus() {
@@ -505,60 +460,181 @@ function addFormValidationListeners() {
   }
 }
 
+function displayError($self, error) {
+  $self = !$self instanceof jQuery ? $self : $($self);
+
+  $self.siblings(".error-msgs-wrapper").append(
+    buildError(error)
+  );
+}
+
+function buildError(error) {
+  return (
+    `<p class="help is-danger">
+      <i class="mdi mdi-alert-circle"></i>
+      ${error}
+    </p>`
+  );
+}
+
 function disableForwardNavigation() {
-  $(".slick-next").fadeTo(130, 0.4, "linear").css("pointer-events", "none").attr("aria-disabled", true);
+  $(".slick-next").fadeTo(130, 0.5, "linear").attr("disabled", "disabled").attr("aria-disabled", true);
 }
 
 function enableForwardNavigation() {
-  $(".slick-next").fadeTo(130, 1, "linear").css("pointer-events", "all").attr("aria-disabled", false);
-}
-
-function enableSignup() {
-  $(".slick-signup").prop("disabled", false);
+  $(".slick-next").fadeTo(130, 1, "linear").removeAttr("disabled").attr("aria-disabled", false);
 }
 
 function disableSignup() {
-  $(".slick-signup").prop("disabled", true);
+  $(".slick-signup").removeAttr("style").attr("disabled", "disabled");
+}
+
+function enableSignup() {
+  $(".slick-signup").removeAttr("style disabled");
 }
 
 function isNavHidden() {
   return $(".signup-navigation-container").attr("data-hidden");
 }
 
-function addSignUp() {
-  const $signUpButton = $('<button type="submit" class="button is-primary slick-signup is-hidden" name="vendor_signup" disabled>Sign Up</button>');
+function addSignUp(isValidated) {
+  const $signUpButton = $(`<button type="submit" class="button is-primary slick-signup" name="vendor" disabled>Sign Up</button>`);
+  let targetOpacity = isValidated ? 1.0 : 0.5;
 
+  $signUpButton.hide();
   $(".signup-navigation-container").append($signUpButton);
-  $signUpButton.removeClass("is-hidden");
+  $signUpButton.fadeTo(130, targetOpacity);
 
   addSignupButtonListener();
 
   function addSignupButtonListener() {
+    let email;
+    const $overlay = $(".form-overlay");
+
     $signUpButton.click(e => {
       const $self = $(e.currentTarget);
+
       $self.addClass("is-loading");
+      $overlay.fadeTo(130, 0.8);
 
-      const data = $('form').serialize(); // Serializing form data
+      let data = $('form').serializeArray();
+      data.push(
+        {name: "registerType", value: $self.attr("name")},
+        {name: "ajax", value: true}
+      ) // Adding additional data to post request that is not included in form element
 
-      $.post({
+      $.ajax({
+        method: "POST",
         url: "/signup",
-        data: data
-      })
-      .done(data => {
-        console.log(data);
-      })
-      .fail(error => {
-        console.log(error)
-      });
+        data: data,
+        success: data => {
+          email = data.email;
 
-      $self.removeClass("is-loading");
-    })
+          $("ul.steps").animate({ // Hiding progress bar
+            height: 0, 
+            marginBottom: 0,
+            opacity: 0
+          }, {
+            duration: 275,
+            queue: false,
+            complete: function() {
+              $(this).remove();
+            }
+          });
+
+          displaySignupConfirmation();
+        },
+        error: error => {
+          console.log(error.responseJSON.errors);
+          $overlay.fadeOut(130);
+          appendErrors(error.responseJSON.errors);
+
+          $('.vendor-signup .input-container').slick('slickGoTo', 0)
+        }
+      });
+    });
+
+    function displaySignupConfirmation() {
+      const $container = $(".form-signup-content");
+
+      $container.addClass("is-sliding");
+    
+      setTimeout(function() {
+        $container.empty(); // Empty container
+        buildConfirmation(); // Append confirmation message to container
+        $overlay.hide();
+  
+        $container.removeClass("is-sliding"); // Slide and fade the message up
+
+        setTimeout(function() {
+          $(".svg-container svg").addClass("is-shown"); // Scale up success SVG element after slideup completes
+        }, 275);
+      }, 275); // Controlling for 275ms transition
+      
+      function buildConfirmation() {
+        const $confirmation = $(
+          `<div class="has-text-centered confirmation-message">
+            <div class="svg-container">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" style="width:120px; height:120px" x="0px" y="0px" viewBox="0 0 52 52" xml:space="preserve">
+                <g>
+                  <path style="fill:#23d160;" d="M26,0C11.664,0,0,11.663,0,26s11.664,26,26,26s26-11.663,26-26S40.336,0,26,0z M26,50C12.767,50,2,39.233,2,26   S12.767,2,26,2s24,10.767,24,24S39.233,50,26,50z"></path>
+                  <path style="fill:#23d160;" d="M38.252,15.336l-15.369,17.29l-9.259-7.407c-0.43-0.345-1.061-0.274-1.405,0.156c-0.345,0.432-0.275,1.061,0.156,1.406   l10,8C22.559,34.928,22.78,35,23,35c0.276,0,0.551-0.114,0.748-0.336l16-18c0.367-0.412,0.33-1.045-0.083-1.411   C39.251,14.885,38.62,14.922,38.252,15.336z"></path>
+                </g>
+              </svg>
+            </div>
+            <h1 class="title is-4"><strong>You're all set!</strong></h1>
+            <div class="content">
+              <p>
+                <small>We've sent a confirmation email to <span class="has-text-link">${email}</span>.</small>
+              </p>
+              <p>
+                <small>Head on over to <a href="/profile">your profile</a> to get started.</small>
+              </p>
+            </div>
+          </div>`
+        );
+    
+        $container.append($confirmation);
+      }
+    }
+  }
+}
+
+function appendErrors(errorsObject) {
+  const errMap = {
+    addressErrors: "address",
+    businessErrors: "business",
+    cityErrors: "city",
+    emailErrors: "email",
+    nameErrors: "name",
+    passErrors: "password",
+    rateErrors: "verify",
+    verifyErrors: "verify",
+    zipcodeErrors: "zipcode"
+  };
+
+  for (let errorType in errorsObject) {
+    let $targetInput = $(`input[name=${errMap[errorType]}]`);
+    let error = errorsObject[errorType];
+    let $form = $targetInput.parents("fieldset");
+
+    if (!$targetInput.data("errors") && error) {
+      $form.formInvalidate();
+
+      $targetInput.invalidate()
+        .resetValidationIndicators()
+        .data("errors", error)
+        .siblings(".error-msgs-wrapper")
+        .append(
+          displayError($targetInput, error)
+        );
+    }
   }
 }
 
 function removeSignUp() {
   const signUpButton = $(".slick-signup");
   signUpButton.fadeOut(130, "linear", function() {
-    this.remove();
+    $(this).remove();
   });
 }

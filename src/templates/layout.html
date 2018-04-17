@@ -63,7 +63,7 @@
               {% elif session['userType'] == 'user' %}
               <a href="/user-account" class="navbar-link">
               {% endif %}
-                <span class="icon is-small">
+                <span class="icon">
                   <i class="mdi mdi-account-circle mdi-24px"></i>
                 </span>
               </a>
@@ -77,32 +77,32 @@
                   <span class="icon">
                     <i class="mdi mdi-book-open-variant"></i>
                   </span>
-                  Bookings
+                  <span>Bookings</span>
                 </a>
                 <a class="navbar-item" href="/profile#account">
                   <span class="icon">
                     <i class="mdi mdi-account"></i>
                   </span>
-                  Account
+                  <span>Account</span>
                 </a>
                 <a class="navbar-item" href="/portfolio?vendor={{ session['userID'] }}">
                   <span class="icon">
                     <i class="mdi mdi-treasure-chest"></i>
                   </span>
-                  Portfolio
+                  <span>Portfolio</span>
                 </a>
                 {% elif session['userType'] == 'user' %}
                 <a class="navbar-item" href="/user-account#organizer">
                   <span class="icon">
                     <i class="mdi mdi-book-open-variant"></i>
                   </span>
-                  Organizer
+                  <span>Organizer</span>
                 </a>
                 <a class="navbar-item" href="/user-account#account">
                   <span class="icon">
                     <i class="mdi mdi-account"></i>
                   </span>
-                  Account
+                  <span>Account</span>
                 </a>
                 {% endif %}
                 <hr class="navbar-divider"></hr>
@@ -110,7 +110,7 @@
                   <span class="icon">
                     <i class="mdi mdi-logout"></i>
                   </span>
-                  Logout
+                  <span>Logout</span>
                 </a>
               </div>
             </div>

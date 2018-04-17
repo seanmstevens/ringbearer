@@ -3,7 +3,7 @@
   <label class="label">Vendor Type</label>
   <p class="help has-text-grey">Select the type of vendor that best fits you below.</p>
   <div class="control has-icons-left">
-    <div class="select is-fullwidth {% if v_errors['vendortypeerrors'] %}is-danger{% endif %}">
+    <div class="select is-fullwidth {% if v_errors['vendorTypeErrors'] %}is-danger{% endif %}">
       <select name="vendortype">
         {% for vendortype in typelist %}
           {% if vendor_info['vendor_type'] == vendortype[0] %}
@@ -17,8 +17,8 @@
       <i class="mdi mdi-camera"></i>
     </span>
     <div class="error-msgs-wrapper">
-      {% if v_errors["vendortypeerrors"] %}
-        {% for error in v_errors["vendortypeerrors"] %}
+      {% if v_errors["vendorTypeErrors"] %}
+        {% for error in v_errors["vendorTypeErrors"] %}
           <p class="help is-danger">
             <i class="mdi mdi-alert-circle"></i>
             {{ error }}
@@ -33,8 +33,8 @@
   <label class="label">Rate</label>
   <p class="help has-text-grey">Choose your standard rate from the slider below.</p>
   <div class="control">
-    <input class="slider is-fullwidth is-success has-output" id="rateSlider" name="price" step="1" min="0" max="1000" 
-      value="{% if vendor_info['price'] %}{{ vendor_info['price'] }}{% else %}500{% endif %}" type="range">
-    <output for="rateSlider">${% if vendor_info['price'] %}{{ vendor_info['price'] }}{% else %}500{% endif %}.00/hr</output>
+    <input class="slider is-fullwidth has-output" id="rateSlider" name="rate" step="1" min="0" max="1000" 
+      value="{% if vendor_info['rate'] %}{{ vendor_info['rate'] }}{% else %}500{% endif %}" type="range">
+    <output for="rateSlider">${% if vendor_info['rate'] %}{{ vendor_info['rate'] }}{% else %}500{% endif %}.00/hr</output>
   </div>
 </div>

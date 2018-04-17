@@ -67,7 +67,7 @@ class Vendor(db.Model):
     zipcode = db.Column(db.Integer)
     rating = db.Column(db.Float)
     vendorType = db.Column(db.String(50))
-    price = db.Column(db.BIGINT)
+    rate = db.Column(db.BIGINT)
     password = db.Column(db.String(100))
     state = db.Column(db.String(2))
     users = db.relationship(
@@ -76,7 +76,7 @@ class Vendor(db.Model):
     )
 
 
-    def __init__(self, email, businessName, contactName, streetAddress, city, zipcode, rating, vendorType, price, password, state):
+    def __init__(self, email, businessName, contactName, streetAddress, city, zipcode, rating, vendorType, rate, password, state):
         self.businessName = businessName
         self.contactName = contactName
         self.email = email
@@ -85,7 +85,7 @@ class Vendor(db.Model):
         self.zipcode = zipcode
         self.rating = rating
         self.vendorType = vendorType
-        self.price = price
+        self.rate = rate
         self.password = password
         self.state = state
 
@@ -118,8 +118,11 @@ def require_login():
         flash(message, "is-danger")
         return redirect(url_for('login', next=request.endpoint))
 
-def bad_request(message):
-    response = jsonify({'message': message})
+def bad_request(message, errors=None):
+    response = jsonify({
+        'message': message,
+        'errors': errors
+    })
     response.status_code = 401
     return response
 
@@ -170,9 +173,9 @@ def login():
     if session.get('email', False):
         return redirect(session['url'])
 
-    (usererrors, passerrors, verifyerrors) = ([], [], [])
-    errors = {'usererrors': usererrors,
-              'passerrors': passerrors} # initializing errors object
+    (emailErrors, passErrors) = (None, None)
+    errors = {'emailErrors': emailErrors,
+              'passErrors': passErrors} # initializing errors object
 
     if request.method == 'POST':
         email = request.form['email'] #get email/pass
@@ -181,13 +184,13 @@ def login():
         vendor = Vendor.query.filter_by(email=email).first()
 
         if email == '':
-            usererrors.append("This field cannot be left blank.")
+            emailErrors = "This field cannot be left blank."
         if password == '':
-            passerrors.append("This field cannot be left blank.")
+            passErrors = "This field cannot be left blank."
 
         if user:
             if not check_pw_hash(password, user.password):
-                passerrors.append("That password is incorrect.")
+                passErrors = "That password is incorrect."
             else:
                 session['email'] = email #starts session
                 session['userType'] = "user"
@@ -196,7 +199,7 @@ def login():
                 return redirect_dest(fallback=url_for('index'))
         elif vendor:
             if not check_pw_hash(password, vendor.password):
-                passerrors.append("That password is incorrect.")
+                passErrors = "That password is incorrect."
             else:
                 session['email'] = email #starts session
                 session['userType'] = "vendor"
@@ -204,7 +207,7 @@ def login():
                 session['userID'] = vendor.id
                 return redirect_dest(fallback=url_for('index'))
         else:
-            usererrors.append("That user doesn't exist.")
+            emailErrors = "That user doesn't exist."
 
         return render_template('login.html', errors=errors, email=email)
     return render_template('login.html', errors=errors)
@@ -317,7 +320,7 @@ def organizer():
                 Vendor.contactName, 
                 Vendor.email,
                 Vendor.businessName,
-                Vendor.price,
+                Vendor.rate,
                 Vendor.vendorType).\
              filter(UserVendor.user_id == user.id, UserVendor.enabled == 1).\
              order_by(UserVendor.bookedDate)
@@ -447,147 +450,100 @@ def vendor():
             "state": vendor.state,
             "rating": vendor.rating,
             "vendorType": vendor.vendorType,
-            "price": vendor.price,
+            "rate": vendor.rate,
         })
+
     return jsonify(type=vendor_type, vendors=vendors)
-
-def verifyVendorInputs(errorObj, name, business_name, vendor_type, email, street_address, city, zipcode, password, verify, price):
-    if not email:
-        errorObj["usererrors"].append('This field cannot be left blank.')
-    # Check if is valid email
-    elif not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email):
-        errorObj["usererrors"].append('Must be a valid email.')
-
-    if not password:
-        errorObj["passerrors"].append('This field cannot be left blank.')
-    elif not all([len(password) >= 8, re.search(r'\d+|[A-Za-z]+', password)]):
-        errorObj["passerrors"].append("Your password must be longer than 8 characters, and must contain at least one number, uppercase letter and lowercase letter.")
-        # REVISED: Make all checks at once, with only one error message
-        # Check if contains at least one digit
-        # if not re.search(r'\d', password):
-        #     errorObj["passerrors"].append("Password must contain at least one number.")
-        # # Check if contains at least one uppercase letter
-        # if not re.search(r'[A-Z]', password):
-        #     errorObj["passerrors"].append("Password must contain at least one uppercase letter.")
-        # # Check if contains at least one lowercase letter
-        # if not re.search(r'[a-z]', password):
-        #     errorObj["passerrors"].append("Password must contain at least one lowercase letter.")
-
-    if password != verify:
-        errorObj["verifyerrors"].append("Your passwords don't match.")
-
-    if not name:
-        errorObj["nameerrors"].append("This field cannot be left blank.")
-    elif name.isdigit():
-        errorObj["nameerrors"].append("Your name cannot contain numbers.")
-
-    if not business_name:
-        errorObj["businesserrors"].append("This field cannot be left blank.")
-
-    if not vendor_type:
-        errorObj["vendortypeerrors"].append("Please select a vendor type.")
-
-    if not street_address:
-        errorObj["addresserrors"].append("This field cannot be left blank.")
-
-    if not zipcode:
-        errorObj["zipcodeerrors"].append("This field cannot be left blank.")
-    else:
-        if zipcode.isalpha() or len(zipcode) < 5:
-            errorObj["zipcodeerrors"].append("That is not a valid zipcode.")
-
-    if not city:
-        errorObj["cityerrors"].append("This field cannot be left blank.")
-
-    if not price:
-        errorObj["priceerrors"].append("This field cannot be left blank.")
-    elif price.isalpha():
-        errorObj["priceerrors"].append("Price must be a number.")
-
-    return errorObj
-
-def verifyUserInputs(errorObj, name, email, password, verify):
-    if not name:
-        errorObj["nameerrors"].append("This field cannot be left blank.")
-    elif name.isdigit():
-        errorObj["nameerrors"].append("Your name cannot contain numbers.")
-
-    if not email:
-        errorObj["usererrors"].append('This field cannot be left blank.')
-    # Check if is valid email
-    elif not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email):
-        errorObj["usererrors"].append('Must be a valid email.')
-
-    if not password:
-        errorObj["passerrors"].append('This field cannot be left blank.')
-    else:
-        # Check if password has a minimum length of 8 characters
-        if len(password) < 8:
-            errorObj["passerrors"].append("Password must be at least 8 characters long.")
-        # Check if contains at least one digit
-        if not re.search(r'\d', password):
-            errorObj["passerrors"].append("Password must contain at least one number.")
-        # Check if contains at least one uppercase letter
-        if not re.search(r'[A-Z]', password):
-            errorObj["passerrors"].append("Password must contain at least one uppercase letter.")
-        # Check if contains at least one lowercase letter
-        if not re.search(r'[a-z]', password):
-            errorObj["passerrors"].append("Password must contain at least one lowercase letter.")
-
-    if password != verify:
-        errorObj["verifyerrors"].append("Your passwords don't match.")
-
-    return errorObj
-
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     u_errors = {
-      'usererrors': [],
-      'passerrors': [],
-      'verifyerrors': [],
-      'nameerrors': []
+      'emailErrors': None,
+      'passErrors': None,
+      'verifyErrors': None,
+      'nameErrors': None
     } # initializing user errors object
 
     v_errors = {
-      'usererrors': [],
-      'passerrors': [],
-      'verifyerrors': [],
-      'nameerrors': [],
-      'businesserrors': [],
-      'vendortypeerrors': [],
-      'addresserrors': [],
-      'cityerrors': [],
-      'stateerrors': [],
-      'zipcodeerrors': [],
-      'priceerrors': []
+      'emailErrors': None,
+      'passErrors': None,
+      'verifyErrors': None,
+      'nameErrors': None,
+      'businessErrors': None,
+      'addressErrors': None,
+      'cityErrors': None,
+      'zipcodeErrors': None,
+      'rateErrors': None
     }
 
     user_info = {}
     vendor_info = {}
 
-    if request.method == 'POST': #is user signing up
-        form = request.form
+    def verifyUserInputs(name, email, password, verify):
+        if not name:
+            u_errors["nameErrors"] = "This field cannot be left blank."
 
-        register_type = "user"
+        # Check if is valid email
+        if not re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email):
+            u_errors["emailErrors"] = "That is not a valid email."
+
+        if not re.search(r'(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}', password):
+            u_errors["passErrors"] = "Password must be at least 8 characters, and must contain at least one number, uppercase letter and lowercase letter."
+
+        if password != verify:
+            u_errors["verifyErrors"] = "Passwords do not match."
+
+    def verifyVendorInputs(name, business_name, email, street_address, city, zipcode, password, verify, rate):
+        # Check if is valid email
+        if not re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', email):
+            v_errors["emailErrors"] = "That is not a valid email."
+
+        if not re.search(r'(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}', password):
+            v_errors["passErrors"] = "Password must be at least 8 characters, and must contain at least one number, uppercase letter and lowercase letter."
+
+        if password != verify:
+            v_errors["verifyErrors"] = "Passwords do not match."
+
+        if not name:
+            v_errors["nameErrors"] = "This field cannot be left blank."
+
+        if not business_name:
+            v_errors["businessErrors"] = "This field cannot be left blank."
+
+        if not street_address:
+            v_errors["addressErrors"] = "This field cannot be left blank."
+
+        if not re.match(r'\d{5}', zipcode):
+            v_errors["zipcodeErrors"] = "Please enter a 5-digit zipcode."
+
+        if not city:
+            v_errors["cityErrors"] = "This field cannot be left blank."
+
+        if not rate:
+            v_errors["rateErrors"] = "That is not a valid rate."
+
+    if request.method == 'POST': #is user signing up
+
+        form = request.form
+        ajax = True if form['ajax'] == 'true' else False
+        register_type = request.form['registerType']
 
         # User signup validation
-        if 'organizer_signup' in form:
+        if register_type == "user":
 
             user_info['email'] = email = form['email']
             user_info['name'] = name = form['name']
             password = form['password']
             verify = form['verify']
 
-            u_errors = verifyUserInputs(
-                u_errors,
+            verifyUserInputs(
                 name,
                 email,
                 password,
                 verify
             )
 
-            if all(u_errors.get(item) == [] for item in u_errors):
+            if all(u_errors.get(item) == None for item in u_errors):
                 user = User.query.filter_by(email=email).first()
                 # Check if email already exists
                 if not user:
@@ -599,13 +555,17 @@ def signup():
                     session['userType'] = "user"
                     session['name'] = new_user.name
                     session['userID'] = new_user.id
-                    return render_template('confirmation-page.html')
+
+                    if ajax:
+                        return jsonify(
+                            successful=True,
+                            email=form['email']
+                        )
                 else:
-                    u_errors["usererrors"].append("Email is already in use.")
+                    u_errors["emailErrors"] = "This email is already in use."
 
         # Vendor signup validation
-        elif 'vendor_signup' in form:
-            register_type = 'vendor'
+        elif register_type == "vendor":
 
             vendor_info['email'] = email = form['email']
             vendor_info['name'] = name = form['name']
@@ -617,28 +577,25 @@ def signup():
             vendor_info['city'] = city = form['city']
             vendor_info['state'] = state = form['state']
             vendor_info['zipcode'] = zipcode = form['zipcode']
-            vendor_info['price'] = price = form['price']
+            vendor_info['rate'] = rate = form['rate']
 
-            v_errors = verifyVendorInputs(
-                v_errors,
+            verifyVendorInputs(
                 name,
                 business_name,
-                vendor_type,
                 email,
                 street_address,
                 city,
                 zipcode,
                 password,
                 verify,
-                price
+                rate
             )
 
-            if all(v_errors.get(item) == [] for item in v_errors):
+            if all(v_errors.get(item) == None for item in v_errors):
                 vendor = Vendor.query.filter_by(email=email).first()
                 # Check if email already exists
                 if not vendor:
                     # Hash the password before sending to DB#
-                    # TODO add the rest of the vendor fields
                     new_vendor = Vendor(
                         email,
                         business_name,
@@ -648,7 +605,7 @@ def signup():
                         zipcode,
                         None,
                         vendor_type,
-                        price,
+                        rate,
                         make_pw_hash(password),
                         state
                     )
@@ -658,11 +615,20 @@ def signup():
                     session['userType'] = "vendor"
                     session['name'] = new_vendor.contactName
                     session['userID'] = new_vendor.id
-                    return render_template('confirmation-page.html')
+
+                    if ajax:
+                        return jsonify(
+                            successful=True,
+                            email=form['email']
+                        )
                 else:
-                    v_errors["usererrors"].append("Email is already in use.")
+                    v_errors["emailErrors"] = "This email is already in use."
 
         # If method == post
+
+        if ajax:
+            return bad_request("There were errors in your form, stupid.", v_errors)
+
         return render_template(
             'signup.html',
             u_errors=u_errors,
@@ -670,10 +636,9 @@ def signup():
             user_info=user_info,
             vendor_info=vendor_info,
             type=register_type,
-            statelist=statelist,
-            typelist=typelist,
             getrequest=False
         )
+
     # method == get
     return render_template(
         'signup.html',
@@ -682,10 +647,9 @@ def signup():
         user_info=user_info,
         vendor_info=vendor_info,
         type="user",
-        statelist=statelist,
-        typelist=typelist,
         getrequest=True
     )
+
     #for testing front end of portfolio
 @app.route('/portfolio', methods=['GET', 'POST'])
 def portfolio():

@@ -3,14 +3,14 @@
   <label class="label">Address</label>
   <p class="help has-text-grey">Fill out your address information below.</p>
   <div class="control has-icons-left is-expanded">
-    <input class="input {% if v_errors['addresserrors'] %}is-danger{% endif %}"
+    <input class="input {% if v_errors['addressErrors'] %}is-danger{% endif %}"
       type="text" placeholder="Street Address" name="address" value="{{ vendor_info['street_address'] }}">
     <span class="icon is-left">
       <i class="mdi mdi-home"></i>
     </span>
     <div class="error-msgs-wrapper">
-      {% if v_errors["addresserrors"] %}
-        {% for error in v_errors["addresserrors"] %}
+      {% if v_errors["addressErrors"] %}
+        {% for error in v_errors["addressErrors"] %}
           <p class="help is-danger">
             <i class="mdi mdi-alert-circle"></i>
             {{ error }}
@@ -23,14 +23,14 @@
 <div class="field">
   {# City Input #}
   <div class="control has-icons-left is-expanded">
-    <input class="input {% if v_errors['cityerrors'] %}is-danger{% endif %}"
+    <input class="input {% if v_errors['cityErrors'] %}is-danger{% endif %}"
       type="text" placeholder="City" name="city" value="{{ vendor_info['city'] }}">
     <span class="icon is-left">
       <i class="mdi mdi-google-maps"></i>
     </span>
     <div class="error-msgs-wrapper">
-      {% if v_errors["cityerrors"] %}
-        {% for error in v_errors["cityerrors"] %}
+      {% if v_errors["cityErrors"] %}
+        {% for error in v_errors["cityErrors"] %}
           <p class="help is-danger">
             <i class="mdi mdi-alert-circle"></i>
             {{ error }}
@@ -59,14 +59,14 @@
   </div>
   {# Zipcode Input #}
   <div class="control has-icons-left zip-input">
-    <input class="input {% if v_errors['zipcodeerrors'] %}is-danger{% endif %}"
+    <input class="input {% if v_errors['zipcodeErrors'] %}is-danger{% endif %}"
       type="text" placeholder="Zipcode" name="zipcode" maxlength="5" value="{{ vendor_info['zipcode'] }}">
     <span class="icon is-left">
       <i class="mdi mdi-map-marker"></i>
     </span>
     <div class="error-msgs-wrapper">
-      {% if v_errors["zipcodeerrors"] %}
-        {% for error in v_errors["zipcodeerrors"] %}
+      {% if v_errors["zipcodeErrors"] %}
+        {% for error in v_errors["zipcodeErrors"] %}
           <p class="help is-danger">
             <i class="mdi mdi-alert-circle"></i>
             {{ error }}

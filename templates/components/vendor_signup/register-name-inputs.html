@@ -3,14 +3,14 @@
   <label class="label">Name</label>
   <p class="help has-text-grey">Enter your full name.</p>
   <div class="control has-icons-left">
-    <input class="input {% if v_errors['nameerrors'] %}is-danger{% endif %}"
+    <input class="input {% if v_errors['nameErrors'] %}is-danger{% endif %}"
       type="text" placeholder="Jane Q. Example" name="name" value="{{ vendor_info['name'] }}">
     <span class="icon is-left">
       <i class="mdi mdi-account-circle"></i>
     </span>
     <div class="error-msgs-wrapper">
-      {% if v_errors["nameerrors"] %}
-        {% for error in v_errors["nameerrors"] %}
+      {% if v_errors["nameErrors"] %}
+        {% for error in v_errors["nameErrors"] %}
           <p class="help is-danger">
             <i class="mdi mdi-alert-circle"></i>
             {{ error }}
@@ -25,14 +25,14 @@
   <label class="label">Business Name</label>
   <p class="help has-text-grey">Enter the name of your business.</p>
   <div class="control has-icons-left">
-    <input class="input {% if v_errors['businesserrors'] %}is-danger{% endif %}"
+    <input class="input {% if v_errors['businessErrors'] %}is-danger{% endif %}"
       type="text" placeholder="Coolbusiness, LLC" name="business" value="{{ vendor_info['business_name'] }}">
     <span class="icon is-left">
       <i class="mdi mdi-account-card-details"></i>
     </span>
     <div class="error-msgs-wrapper">
-      {% if v_errors["businesserrors"] %}
-        {% for error in v_errors["businesserrors"] %}
+      {% if v_errors["businessErrors"] %}
+        {% for error in v_errors["businessErrors"] %}
           <p class="help is-danger">
             <i class="mdi mdi-alert-circle"></i>
             {{ error }}

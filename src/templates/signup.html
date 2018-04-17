@@ -7,7 +7,7 @@
 {% endblock %}
 {% block body %}
   <div class="wrapper">
-    <ul class="steps has-gaps is-centered has-content-centered is-horizontal is-balanced">
+    <ul class="steps has-gaps is-centered has-content-centered is-horizontal is-balanced is-bold">
       <div class="status-bar">
         <div class="current-status"></div>
       </div>
@@ -17,8 +17,8 @@
             <i class="mdi mdi-account"></i>
           </span>
         </span>
-        <div class="steps-content is-hidden-mobile">
-          <p class="heading">Account</p>
+        <div class="steps-content">
+          <p class="heading is-hidden-mobile">Account</p>
         </div>
       </li>
       <li class="steps-segment" data-slide="1">
@@ -27,8 +27,8 @@
             <i class="mdi mdi-key"></i>
           </span>
         </span>
-        <div class="steps-content is-hidden-mobile">
-          <p class="heading">Profile</p>
+        <div class="steps-content">
+          <p class="heading is-hidden-mobile">Profile</p>
         </div>
       </li>
       <li class="steps-segment" data-slide="2">
@@ -37,8 +37,8 @@
             <i class="mdi mdi-camera"></i>
           </span>
         </span>
-        <div class="steps-content is-hidden-mobile">
-          <p class="heading">Vendor Information</p>
+        <div class="steps-content">
+          <p class="heading is-hidden-mobile">Vendor Information</p>
         </div>
       </li>
       <li class="steps-segment" data-slide="3">
@@ -47,78 +47,81 @@
             <i class="mdi mdi-map-marker"></i>
           </span>
         </span>
-        <div class="steps-content is-hidden-mobile">
-          <p class="heading">Location + Finish</p>
+        <div class="steps-content">
+          <p class="heading is-hidden-mobile">Location + Finish</p>
         </div>
       </li>
     </ul>
     <div class="signup-container" data-usertype="{{ type }}">
       <div class="form-container-signup">
-        <h1 class="title is-2 is-marginless">Sign up</h1>
-        <!-- <div class="signup-tabs tabs is-toggle">
-          <ul>
-            <li class="{% if type == 'user' %}is-active{% endif %}">
-              <a class="toggle-form">Organizer</a>
-            </li>
-            <li class="{% if type == 'vendor' %}is-active{% endif %}">
-              <a class="toggle-form show-vendor">Vendor</a>
-            </li>
-          </ul>
-        </div> -->
-        <hr>
-        <!-- <div class="organizer-signup" {% if type == 'vendor' %}style="display: none;"{% endif %}>
-          <form class="input-container" method='POST'>
-            <fieldset data-validated="false">
-              {% include 'components/user_signup/register-username-inputs.html' %}
-              <button name="organizer_signup" class="button is-dark is-medium is-wide" 
-                type='submit'>Sign up</button>
-            </fieldset>
-          </form>
-        </div> -->
-        <!-- Sign up for vendor users -->
-        <div class="vendor-signup" {% if type == 'vendor' %}style="display: block;"{% endif %}>
-          <form class="input-container" method='POST' autocomplete="off">
-            <!-- Grabs the inputs from components/register_inputs.html -->
-            <fieldset data-validated="false">
-              {% include 'components/vendor_signup/register-email-inputs.html' %}
-            </fieldset>
-            {% if not getrequest %}
-            <fieldset>
-              {% include 'components/vendor_signup/register-name-inputs.html' %}
-            </fieldset>
-            <fieldset>
-              {% include 'components/vendor_signup/register-vendor-inputs.html' %}
-            </fieldset>
-            <fieldset>
-              {% include 'components/vendor_signup/register-location-inputs.html' %}
-            </fieldset>
-            {% endif %}
-            <!-- <label class="checkbox">
-              <input class="checkbox" name="is_vendor" type="checkbox" required>
-              I wish to sign up as a Vendor
-            </label>
-            <button name="vendor_signup" class="button is-dark is-medium is-wide" 
-              type='submit'>Sign up</button> -->
-          </form>
+        <div class="form-overlay is-overlay"></div>
+        <div class="form-signup-content">
+          <h1 class="title is-2 is-marginless">Sign up</h1>
+          <!-- <div class="signup-tabs tabs is-toggle">
+            <ul>
+              <li class="{% if type == 'user' %}is-active{% endif %}">
+                <a class="toggle-form">Organizer</a>
+              </li>
+              <li class="{% if type == 'vendor' %}is-active{% endif %}">
+                <a class="toggle-form show-vendor">Vendor</a>
+              </li>
+            </ul>
+          </div> -->
+          <hr>
+          <!-- <div class="organizer-signup" {% if type == 'vendor' %}style="display: none;"{% endif %}>
+            <form class="input-container" method='POST'>
+              <fieldset data-validated="false">
+                {% include 'components/user_signup/register-username-inputs.html' %}
+                <button name="organizer_signup" class="button is-dark is-medium is-wide" 
+                  type='submit'>Sign up</button>
+              </fieldset>
+            </form>
+          </div> -->
+          <!-- Sign up for vendor users -->
+          <div class="vendor-signup" {% if type == 'vendor' %}style="display: block;"{% endif %}>
+            <form class="input-container" method='POST' autocomplete="off">
+              <!-- Grabs the inputs from components/register_inputs.html -->
+              <fieldset data-validated="false">
+                {% include 'components/vendor_signup/register-email-inputs.html' %}
+              </fieldset>
+              {% if not getrequest %}
+              <fieldset>
+                {% include 'components/vendor_signup/register-name-inputs.html' %}
+              </fieldset>
+              <fieldset>
+                {% include 'components/vendor_signup/register-vendor-inputs.html' %}
+              </fieldset>
+              <fieldset>
+                {% include 'components/vendor_signup/register-location-inputs.html' %}
+              </fieldset>
+              {% endif %}
+              <!-- <label class="checkbox">
+                <input class="checkbox" name="is_vendor" type="checkbox" required>
+                I wish to sign up as a Vendor
+              </label>
+              <button name="vendor_signup" class="button is-dark is-medium is-wide" 
+                type='submit'>Sign up</button> -->
+            </form>
+          </div>
+          <div class="signup-navigation-container" data-hidden="true">
+          </div>
         </div>
-        <div class="signup-navigation-container" data-hidden="true">
-        </div>
+        <!-- <div class="footer level is-mobile">
+          <div class="level-left">
+            <div class="level-item">
+              <a class="has-text-grey">Login</a>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <a class="has-text-grey">Help</a>
+            </div>
+            <div class="level-item">
+              <a class="has-text-grey">Terms</a>
+            </div>
+          </div>
+        </div> -->
       </div>
-      <!-- <div class="footer level is-mobile">
-        <div class="level-left">
-          <div class="level-item">
-            <a class="has-text-grey">Login</a>
-          </div>
-        </div>
-        <div class="level-right">
-          <div class="level-item">
-            <a class="has-text-grey">Help</a>
-          </div>
-          <div class="level-item">
-            <a class="has-text-grey">Terms</a>
-          </div>
-        </div>
-      </div> -->
     </div>
   </div>
 {% endblock %}

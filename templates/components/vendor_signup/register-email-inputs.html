@@ -3,14 +3,14 @@
   <label class="label">Email</label>
   <p class="help has-text-grey">Enter your email below.</p>
   <div class="control has-icons-left">
-    <input class="input {% if v_errors['usererrors'] %}is-danger{% endif %}"
+    <input class="input {% if v_errors['emailErrors'] %}is-danger{% endif %}" autocomplete="off"
       type="text" data-touched="false" placeholder="Email" name="email" value="{{ vendor_info['email'] }}">
     <span class="icon is-left">
       <i class="mdi mdi-email-outline"></i>
     </span>
     <div class="error-msgs-wrapper">
-      {% if v_errors["usererrors"] %}
-        {% for error in v_errors["usererrors"] %}
+      {% if v_errors["emailErrors"] %}
+        {% for error in v_errors["emailErrors"] %}
           <p class="help is-danger">
             <i class="mdi mdi-alert-circle"></i>
             {{ error }}
@@ -26,14 +26,14 @@
   <label class="label">Password</label>
   <p class="help has-text-grey">Enter a password between 3-20 characters below.</p>
   <div class="control has-icons-left">
-    <input class="input {% if v_errors['passerrors'] %}is-danger{% endif %}"
+    <input class="input {% if v_errors['passErrors'] %}is-danger{% endif %}" autocomplete="off"
       type="password" data-touched="false" placeholder="Password" name="password">
     <span class="icon is-left">
       <i class="mdi mdi-lock-outline"></i>
     </span>
     <div class="error-msgs-wrapper">
-      {% if v_errors["passerrors"] %}
-        {% for error in v_errors["passerrors"] %}
+      {% if v_errors["passErrors"] %}
+        {% for error in v_errors["passErrors"] %}
           <p class="help is-danger">
             <i class="mdi mdi-alert-circle"></i>
             {{ error }}
@@ -48,14 +48,14 @@
   {# Verify Password Input #}
   <p class="help has-text-grey">Re-enter your password below.</p>
   <div class="control has-icons-left">
-    <input class="input {% if v_errors['verifyerrors'] %}is-danger{% endif %}"
+    <input class="input {% if v_errors['verifyErrors'] %}is-danger{% endif %}" autocomplete="off"
       type="password" data-touched="false" placeholder="Verify Password" name="verify">
     <span class="icon is-left">
       <i class="mdi mdi-checkbox-marked-circle-outline"></i>
     </span>
     <div class="error-msgs-wrapper">
-      {% if v_errors["verifyerrors"] %}
-        {% for error in v_errors["verifyerrors"] %}
+      {% if v_errors["verifyErrors"] %}
+        {% for error in v_errors["verifyErrors"] %}
           <p class="help is-danger">
             <i class="mdi mdi-alert-circle"></i>
             {{ error }}

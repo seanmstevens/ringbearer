@@ -449,7 +449,7 @@ function displayVendors(arr) {
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">Rate</p>
-            <p class="title is-6 has-text-weight-light">$${value.price}/hr</p>
+            <p class="title is-6 has-text-weight-light">$${value.rate}/hr</p>
           </div>
         </div>
         <div class="level-item has-text-centered">

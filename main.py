@@ -118,10 +118,10 @@ def require_login():
         flash(message, "is-danger")
         return redirect(url_for('login', next=request.endpoint))
 
-def bad_request(message, errors=None):
+def bad_request(message, data=None):
     response = jsonify({
         'message': message,
-        'errors': errors
+        'data': data
     })
     response.status_code = 401
     return response

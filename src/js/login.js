@@ -1,3 +1,5 @@
+import { isNullOrUndefined } from "util";
+
 const options = {
   cssEase: "cubic-bezier(0.5, 0.08, 0, 1)",
   appendArrows: $('.signup-navigation-container'),
@@ -350,8 +352,7 @@ function initializeTabIndexes() {
 }
 
 function addFormValidationListeners() {
-  let touchedStatus, inputs, $self, $form, input, name, errormsg, slickObj;
-  let localErrors = {};
+  let touchedStatus, inputs, $self, $form, input, name, errormsg, slickObj, localErrors;
 
   $("form").on({
     'change': e => {
@@ -361,6 +362,9 @@ function addFormValidationListeners() {
       slickObj = $('.vendor-signup .input-container');
       input = $self.val();
       name = $self.attr("name");
+      localErrors = Object.is($self.data("errors"), undefined) ? {} : $self.data("errors");
+
+      console.log("data errors:", localErrors);
 
       $self.attr("data-touched", true);
 
@@ -385,7 +389,6 @@ function addFormValidationListeners() {
         input === "" ? enumerateError() : removeError();
       }
 
-      $self.data("errors", localErrors[name]);
       $self.resetValidationIndicators();
     
       touchedStatus = getTouchedStatus();
@@ -545,10 +548,16 @@ function addSignUp(isValidated) {
           displaySignupConfirmation();
         },
         error: error => {
-          console.log(error.responseJSON.errors);
-          $overlay.fadeOut(130);
-          appendErrors(error.responseJSON.errors);
+          console.log(error.status);
 
+          if (error.status !== 401) { // Catching for internal server errors mostly
+            console.log("Something went wrong. Please try again.")
+          } else {
+            console.log(error.responseJSON.data);
+            appendErrors(error.responseJSON.data);
+          }
+          
+          $overlay.fadeOut(130);
           $('.vendor-signup .input-container').slick('slickGoTo', 0)
         }
       });
@@ -615,6 +624,7 @@ function appendErrors(errorsObject) {
 
   for (let errorType in errorsObject) {
     let $targetInput = $(`input[name=${errMap[errorType]}]`);
+    let name = $targetInput.attr("name");
     let error = errorsObject[errorType];
     let $form = $targetInput.parents("fieldset");
 
@@ -623,7 +633,9 @@ function appendErrors(errorsObject) {
 
       $targetInput.invalidate()
         .resetValidationIndicators()
-        .data("errors", error)
+        .data("errors", {
+          [name]: error 
+        })
         .siblings(".error-msgs-wrapper")
         .append(
           displayError($targetInput, error)

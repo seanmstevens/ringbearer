@@ -10,9 +10,26 @@
   overflow: hidden;
 }
 
+@media screen and (min-width: 320px) {
+  .title.mainpage-title {
+    font-size: 3rem;
+  }
+}
+
+@media screen and (min-width: 375px) {
+  .title.mainpage-title {
+    font-size: 3.5rem;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .title.mainpage-title {
+    font-size: 6rem;
+  }
+}
+
 .title.mainpage-title.has-text-white {
   font-family: "Abril Fatface", serif;
-  font-size: 6rem;
   margin-bottom: 2rem;
 }
 

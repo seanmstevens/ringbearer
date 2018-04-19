@@ -7,8 +7,8 @@ from faker import Faker
 import random
 import sys
 from datetime import datetime
-from sqlalchemy import create_engine
-from globals import statelist, typelist, vendor_total
+from sqlalchemy import create_engine, func
+from globals import statelist, typelist
 import os
 
 engine = create_engine('sqlite:///association_tables.sqlite')
@@ -26,7 +26,6 @@ app.secret_key = "246Pass"
 
 app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/')
 
-EXTERNAL_VENDOR_IDS = [1, 2, 3, 4, 5, 6, 7]
 VENDOR_TYPES = {"venue": 1,
                 "photographer": 2,
                 "videographer": 3,
@@ -265,7 +264,24 @@ def profile():
         db.session.commit()
 
     if request.args.get("source") == "ajax":
-        result = UserVendor.query.join(User, UserVendor.user_id == User.id).add_columns(UserVendor.id, UserVendor.user_id, UserVendor.vendor_id, UserVendor.bookedDate, UserVendor.eventStartTime, UserVendor.eventEndTime, User.name, User.email).filter(UserVendor.vendor_id == vendor.id).order_by(UserVendor.bookedDate)
+        result = UserVendor.query.join(
+            User, 
+            UserVendor.user_id == User.id
+        ).add_columns(
+                UserVendor.id, 
+                UserVendor.user_id, 
+                UserVendor.vendor_id, 
+                UserVendor.bookedDate, 
+                UserVendor.eventStartTime, 
+                UserVendor.eventEndTime, 
+                User.name, 
+                User.email
+        ).filter(
+            UserVendor.vendor_id == vendor.id
+        ).order_by(
+            UserVendor.bookedDate
+        )
+
         userInfo = []
 
         for row in result:
@@ -309,21 +325,27 @@ def organizer():
 
     user = User.query.filter_by(email=session["email"]).first()
 
-    result = UserVendor.query.join(Vendor, UserVendor.vendor_id == Vendor.id).\
-             add_columns(
-                UserVendor.id,
-                UserVendor.user_id,
-                UserVendor.vendor_id, 
-                UserVendor.bookedDate, 
-                UserVendor.eventStartTime, 
-                UserVendor.eventEndTime, 
-                Vendor.contactName, 
-                Vendor.email,
-                Vendor.businessName,
-                Vendor.rate,
-                Vendor.vendorType).\
-             filter(UserVendor.user_id == user.id, UserVendor.enabled == 1).\
-             order_by(UserVendor.bookedDate)
+    result = UserVendor.query.join(
+        Vendor, 
+        UserVendor.vendor_id == Vendor.id
+    ).add_columns(
+        UserVendor.id,
+        UserVendor.user_id,
+        UserVendor.vendor_id, 
+        UserVendor.bookedDate, 
+        UserVendor.eventStartTime, 
+        UserVendor.eventEndTime, 
+        Vendor.contactName, 
+        Vendor.email,
+        Vendor.businessName,
+        Vendor.rate,
+        Vendor.vendorType
+    ).filter(
+        UserVendor.user_id == user.id, 
+        UserVendor.enabled == 1
+    ).order_by(
+        UserVendor.bookedDate
+    )
 
     venue = []
     photographer = []
@@ -410,8 +432,15 @@ def bookExternal(vendor_type):
         db.session.commit()
     return redirect("user-account")
 
-@app.route('/vendor-list', methods=['GET', 'POST'])
+def get_count(q):
+    count_q = q.statement.with_only_columns([func.count()]).order_by(None)
+    count = q.session.execute(count_q).scalar()
+    return count
+
+@app.route('/vendors', methods=['GET', 'POST'])
 def vendorList():
+    vendor_total = get_count(Vendor.query)
+
     session['url'] = request.path
     return render_template('vendor-list.html', vendor_total=vendor_total)
 
@@ -430,15 +459,12 @@ def vendor():
     vendor_type = request.args.get("type")
 
     if vendor_type == "all":
-        query = Vendor.query.all()
+        query = Vendor.query.order_by(Vendor.id.desc())
     else:
-        query = Vendor.query.filter_by(vendorType=vendor_type)
+        query = Vendor.query.filter_by(vendorType=vendor_type).order_by(Vendor.id.desc())
 
     vendors = []
     for vendor in query:
-        if vendor.id in EXTERNAL_VENDOR_IDS:
-            continue
-
         vendors.append({
             "id": vendor.id,
             "businessName": vendor.businessName,

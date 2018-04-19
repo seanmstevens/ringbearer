@@ -14,7 +14,7 @@ var IS_ACTIVE_SEARCH = false;
 var IS_ACTIVE_FILTER = false;
 
 var DISPLAY_INCREMENT = 0;
-var RESULTS_PER_PAGE = 18;
+var RESULTS_PER_PAGE = 36;
 var CURRENT_PAGE = 1;
 
 $(function() {
@@ -242,21 +242,15 @@ function sortArray(arr, type, order) {
   return arr;
 }
 
-// const delay = (function() {
-//   var timer = 0;
-//   return function(callback, ms) {
-//     clearTimeout(timer);
-//     timer = setTimeout(callback, ms);
-//   };
-// })();
-
 function addSearchListener() {
+  // Still needs to control for IE 11 and lower counting click events as input. e.stopImmediatePropagation does not work.
   $("#vendorSearch").on({
     'focus': e => {
       $(e.currentTarget).parent().addClass("is-active");
     }, 'blur': e => {
       $(e.currentTarget).parent().removeClass("is-active");
     }, 'input': e => {
+      console.log("INPUT ENTERED")
       let $input = $(e.currentTarget).val();
       let currentList = getCurrentList();
 
@@ -290,30 +284,6 @@ function addSearchListener() {
     }
   });
 }
-
-// function filterArray(query) {
-//   let queryResults = VENDOR_DATA.queryResults;
-
-//   queryResults = [];
-//   $.each(CURRENT_LIST, (idx, entry) => {
-//     // Cycling through entries in each vendor object. If a match is detected in
-//     // any of the fields (contact name, business name, address) except email,
-//     // it will be added to the QUERY_RESULTS array, then displayed in the view.
-//     for (const [key, value] of Object.entries(entry)) {
-//       if (key != "email" && typeof value == "string") {
-//         if (value.toLowerCase().indexOf(query.toLowerCase()) > -1) {
-//           queryResults.push(entry);
-//           break;
-//         }
-//       }
-//     }
-//   });
-
-//   emptyVendorList();
-//   resetDisplayVariables();
-//   displayVendors(queryResults);
-//   updateResultsCount();
-// }
 
 function getVendorByType(type) {
   // Show AJAX loading animation
@@ -448,20 +418,14 @@ function displayVendors(arr) {
       `<nav class="level is-mobile box">
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">Rate</p>
-            <p class="title is-6 has-text-weight-light">$${value.rate}/hr</p>
+            <p class="heading has-text-grey">Rate</p>
+            <p class="title is-6 has-text-weight-light">$${value.rate}.00/hr</p>
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading">Following</p>
-            <p class="title is-6 has-text-weight-light">123</p>
-          </div>
-        </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading">Followers</p>
-            <p class="title is-6 has-text-weight-light">456K</p>
+            <p class="heading has-text-grey">Business</p>
+            <p class="title is-6 has-text-weight-light">${value.businessName}</p>
           </div>
         </div>
       </nav>`
@@ -470,7 +434,7 @@ function displayVendors(arr) {
     const $card = $(`<article class="tile is-child card card-${value.vendorType}" data-vendor-id=${value.id}></article>`);
 
     const $cardHeader = $(
-      `<div class="level is-mobile tile-header card-header-${value.vendorType}">
+      `<nav class="level is-mobile tile-header card-header-${value.vendorType}">
         <div class="level-left">
           <div class="level-item icon">
             ${icons[value.vendorType]}
@@ -528,7 +492,7 @@ function displayVendors(arr) {
           </div>
           <div class="media-content">
             <div class="profile-info-container">
-              <p class="title is-4 vendor-name">
+              <p class="title is-4 vendor-name has-text-weight-medium" title="${value.contactName}">
                 ${value.contactName}
               </p>
               <div class="vendor-location">

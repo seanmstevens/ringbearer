@@ -353,6 +353,7 @@ function initializeTabIndexes() {
 
 function addFormValidationListeners() {
   let touchedStatus, inputs, $self, $form, input, name, errormsg, slickObj, localErrors;
+  localErrors = {};
 
   $("form").on({
     'change': e => {
@@ -362,9 +363,12 @@ function addFormValidationListeners() {
       slickObj = $('.vendor-signup .input-container');
       input = $self.val();
       name = $self.attr("name");
-      localErrors = Object.is($self.data("errors"), undefined) ? {} : $self.data("errors");
 
-      console.log("data errors:", localErrors);
+      if ($self.data("errors") !== 'undefined') {
+        $self.siblings(".error-msgs-wrapper").empty();
+      }
+
+      console.log("errors:", localErrors);
 
       $self.attr("data-touched", true);
 
@@ -550,11 +554,11 @@ function addSignUp(isValidated) {
         error: error => {
           console.log(error.status);
 
-          if (error.status !== 401) { // Catching for internal server errors mostly
-            console.log("Something went wrong. Please try again.")
-          } else {
+          if (error.status === 401) {
             console.log(error.responseJSON.data);
             appendErrors(error.responseJSON.data);
+          } else { // Catching for internal server errors mostly
+            console.log("Something went wrong. Please try again.")
           }
           
           $overlay.fadeOut(130);

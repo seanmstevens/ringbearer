@@ -171,6 +171,13 @@
 
 /* General card styles */
 
+@media screen and (min-width: 769px), print {
+  .level-left .level-item:not(:last-child), 
+  .level-right .level-item:not(:last-child) {
+    margin-right: .75rem;
+  }
+}
+
 .results-count {
   font-size: 0.75rem;
   color: #888888;
@@ -203,10 +210,6 @@
   padding: .25rem .5rem;
   border-radius: 2px 2px 0 0;
   background-color: #03a9f4;
-}
-
-.level.is-mobile.tile-header .level-item {
-  margin: 0;
 }
 
 .card-header-icon {
@@ -326,11 +329,6 @@
   padding: 0.85rem;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.08),
               0 3px 3px -2px rgba(0, 0, 0, .12);
-}
-
-.level.box .heading {
-  font-size: 10px;
-  color: #9b9b9b;
 }
 
 .vendor-blurb {

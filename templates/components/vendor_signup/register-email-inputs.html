@@ -3,7 +3,7 @@
   <label class="label">Email</label>
   <p class="help has-text-grey">Enter your email below.</p>
   <div class="control has-icons-left">
-    <input class="input {% if v_errors['emailErrors'] %}is-danger{% endif %}" autocomplete="off"
+    <input class="input {% if v_errors['emailErrors'] %}is-danger{% endif %}" autocomplete="off" autofocus
       type="text" data-touched="false" placeholder="Email" name="email" value="{{ vendor_info['email'] }}">
     <span class="icon is-left">
       <i class="mdi mdi-email-outline"></i>

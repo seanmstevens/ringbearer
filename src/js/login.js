@@ -56,8 +56,10 @@ function addSignupListener(options) {
     if (_.attr("data-validated") == "false") {
       _.removeClass("is-success").addClass("is-danger");
       _.siblings(".icon.is-right").remove();
+      _.parents("div.field").addClass("is-marginless");
     } else {
       _.removeClass("is-danger").addClass("is-success");
+      _.parents("div.field").removeClass("is-marginless");
       _.parent().addClass("has-icons-right").append(
         `<span class="icon is-right has-text-success">
           <i class="mdi mdi-check"></i>
@@ -363,12 +365,6 @@ function addFormValidationListeners() {
       slickObj = $('.vendor-signup .input-container');
       input = $self.val();
       name = $self.attr("name");
-
-      if ($self.data("errors") !== 'undefined') {
-        $self.siblings(".error-msgs-wrapper").empty();
-      }
-
-      console.log("errors:", localErrors);
 
       $self.attr("data-touched", true);
 

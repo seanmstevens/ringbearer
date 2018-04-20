@@ -283,6 +283,22 @@ function addSearchListener() {
       updateResultsCount();
     }
   });
+
+  function isWorthyKeypress(a) {
+    // Keyboard numbers, numpad numbers, letters
+    if (a >= 48 && a <= 57 || a >= 96 && a <= 105 || a >= 65 && a <= 90) {
+      return true;
+    }
+
+    switch(a) {
+      case 8: // Backspace
+        return true;
+      case 13: // Enter
+        return true;
+      default: // Everything else
+        return false;
+    }
+  }
 }
 
 function getVendorByType(type) {

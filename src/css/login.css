@@ -8,6 +8,7 @@ div.wrapper {
   display: flex;
   -webkit-flex-direction: column;
   flex-direction: column;
+  justify-content: space-evenly;
   position: relative;
   min-height: calc(100vh - 52px);
 }
@@ -21,8 +22,8 @@ hr.has-halved-margin {
   div.wrapper::after {
     -webkit-box-flex: 1;
     box-flex: 1;
-    -webkit-flex-grow: 1;
-    flex-grow: 1;
+    -webkit-flex-grow: 0;
+    flex-grow: 0;
     content: '';
     display: block;
     height: 24px;
@@ -55,6 +56,24 @@ hr.has-halved-margin {
     position: absolute;
   }
 
+  ul.steps {
+    overflow: hidden;
+  }
+
+  .steps-segment {
+    display: list-item;
+  }
+
+  .status-bar {
+    width: 75%;
+    margin: 0 12.5%;
+    top: 13px;
+  }
+
+  .status-bar > .current-status {
+    height: 6px;
+  }
+
   .footer.level {
     font-size: 12px;
     padding: 0.75rem;
@@ -83,12 +102,31 @@ hr.has-halved-margin {
   .form-container-signup {
     border: none;
     box-shadow: none;
-    padding: 0.5rem;
+    padding: 1rem 0.5rem 0.5rem;
     height: 100%;
   }
 
   .signup-navigation-container {
     position: relative;
+  }
+
+  ul.steps {
+    overflow: visible;
+    margin: 0 !important;
+  }
+
+  .steps-segment {
+    display: none;
+  }
+
+  .status-bar > .current-status {
+    height: 3px;
+  }
+
+  .status-bar {
+    width: 100%;
+    margin: 0;
+    top: 0;
   }
 
   .slick-signup {
@@ -105,19 +143,14 @@ hr.has-halved-margin {
 
 ul.steps {
   position: relative;
-  overflow: hidden;
 }
 
 .status-bar {
   position: absolute;
-  width: 75%;
-  margin: 0 12.5%;
-  top: 13px;
   z-index: 20;
 }
 
 .status-bar > .current-status {
-  height: 6px;
   width: 0;
   background-color: #e91e63;
   transition: width 500ms cubic-bezier(0.5, 0.08, 0, 1);
@@ -199,7 +232,7 @@ ul.steps {
 }
 
 fieldset .field:not(:last-child) {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 div.field > label.label {

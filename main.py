@@ -19,7 +19,7 @@ from sqlalchemy.orm import sessionmaker
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", 'mysql+pymysql://admin:Password1@wedding-planner.cl1lubxzpscn.us-east-2.rds.amazonaws.com/wedplan')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", 'mysql+pymysql://admin:Password1@ringbearer.cl1lubxzpscn.us-east-2.rds.amazonaws.com/wedplan')
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 app.secret_key = "246Pass"
@@ -697,7 +697,7 @@ def genData():
     user = User(
       fake.name(),
       fake.email(),
-      make_pw_hash(fake.password(length=10, digits=True, upper_case=True, lower_case=True))
+      make_pw_hash("Password1")
     )
     vendor = Vendor(
       fake.email(),
@@ -709,7 +709,7 @@ def genData():
       random.randrange(0, 6),
       random.choice(vendorTypes),
       random.randrange(1, 1000),
-      make_pw_hash(fake.password(length=10, digits=True, upper_case=True, lower_case=True)),
+      make_pw_hash("Password1"),
       fake.state_abbr()
     )
     db.session.add(user)

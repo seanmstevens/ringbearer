@@ -48,7 +48,8 @@ a.navbar-item.navbar-brand-logo:hover {
   color: #4a4a4a;
 }
 
-a.navbar-item>.icon:not(:last-child) {
+a.navbar-item > .icon:not(:last-child),
+div.navbar-item > .icon:not(:last-child) {
   margin-left: -.25rem;
   margin-right: .25rem;
 }
@@ -63,6 +64,21 @@ a.navbar-item>.icon:not(:last-child) {
 
 .button.is-wide {
   width: 100%;
+}
+
+.delete.is-inverted,
+.delete.is-inverted:hover,
+.delete.is-inverted:active {
+  background-color: transparent;
+}
+
+.delete.is-inverted::after,
+.delete.is-inverted::before {
+  background-color: #808080;
+}
+
+hr.has-halved-margin {
+  margin: 0.75rem 0;
 }
 
 .brand-color {

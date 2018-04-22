@@ -13,7 +13,7 @@
 
 {% block head %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='vendoracc.335f1495fe57c573c089.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='vendoracc.37147ff0149d2f2da48b.css') }}">
 
 {% endblock %}
 
@@ -64,7 +64,7 @@
       </footer>
     </div>
   </div>
-  <section class="hero is-brand is-bold">
+  <section class="hero is-primary is-bold">
     <div class="hero-body">
       <div class="container">
         <h1 class="title has-text-white">
@@ -76,26 +76,26 @@
       </div>
     </div>
   </section>
-  <nav class="navbar has-shadow">
+  <nav class="navbar has-shadow subsection-nav">
     <div class="container">
       <div class="navbar-tabs">
         <a class="navbar-item is-tab is-active getBookings" href="#bookings">
           <span class="icon">
             <i class="mdi mdi-book-open-variant"></i>
           </span>
-          Bookings
+          <span>Bookings</span>
         </a>
         <a class="navbar-item is-tab getAccount" href="#account">
           <span class="icon">
             <i class="mdi mdi-account"></i>
           </span>
-          Account
+          <span>Account</span>
         </a>
         <a class="navbar-item is-tab" href="/portfolio?vendor={{ session['userID'] }}">
           <span class="icon">
             <i class="mdi mdi-treasure-chest"></i>
           </span>
-          Portfolio
+          <span>Portfolio</span>
         </a>
       </div>
     </div>
@@ -237,6 +237,6 @@
 
 {% block scripts %}
 
-<script type="text/javascript" src="{{ url_for('static', filename='vendoracc.335f1495fe57c573c089.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='vendoracc.37147ff0149d2f2da48b.js') }}"></script>
 
 {% endblock %}

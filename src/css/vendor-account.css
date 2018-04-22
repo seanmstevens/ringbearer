@@ -21,6 +21,14 @@
   overflow: visible;
 }
 
+.datepicker.is-active .calendar {
+  max-height: auto;
+}
+
+.subsection-nav {
+  z-index: 25;
+}
+
 .tooltip:hover::before, 
 .tooltip:hover::after {
   z-index: 19;

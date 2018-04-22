@@ -13,10 +13,6 @@ div.wrapper {
   min-height: calc(100vh - 52px);
 }
 
-hr.has-halved-margin {
-  margin: 0.75rem 0;
-}
-
 @media screen and (min-width: 601px) {
   div.wrapper::before,
   div.wrapper::after {

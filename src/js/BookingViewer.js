@@ -410,7 +410,7 @@ export class BookingViewer {
     }
 
     this.calendarContainer.style.position = 'relative';
-    this.calendarContainer.style.zIndex = '100';
+    this.calendarContainer.style.zIndex = '20';
   }
 
   destroy() {

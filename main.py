@@ -389,22 +389,41 @@ def book():
         return bad_request("Vendors cannot book other vendors.")
 
     form = request.form
-    vendor = Vendor.query.filter_by(id=form['vendorID']).first()
+
+    vendor = Vendor.query.filter_by(id=form['vendor_id']).first()
     user = User.query.filter_by(email=session['email']).first()
+
     vendor_id = vendor.id
     user_id = user.id
-    eventDate = form['date']
-    eventStartTime = "12:00:00"
-    eventEndTime = "12:00:00"
+    eventDate = form.get('book_date')
+    eventStartTime = form.get('book_start_time')
+    eventEndTime = form.get('book_end_time')
+    fullDay = form.get('book_full_day')
     enabled = 1
 
-    bookingInfo = {}
-    bookingInfo['vendor_name'] = vendor.contactName
-    bookingInfo['vendor_business'] = vendor.businessName
+    if not eventDate or not eventStartTime or not eventEndTime:
+        return bad_request("There were some errors while processing your request. Please re-check your input above.")
+    
+    (formattedDate, formattedStartTime, formattedEndTime) = (
+        datetime.strptime(eventDate, '%Y-%m-%d').strftime('%B %d, %Y'),
+        datetime.strptime(eventStartTime, '%H:%M:%S').strftime('%I:%M %p'),
+        datetime.strptime(eventEndTime, '%H:%M:%S').strftime('%I:%M %p')
+    )
 
-    dateInput = datetime.strptime(form['date'], '%Y-%m-%d')
-    formattedDate = dateInput.strftime('%B %d, %Y')
-    bookingInfo['book_date'] = formattedDate
+    # Stripping zero-padding from timestamps with hour < 10
+    if formattedStartTime[0] == "0":
+        formattedStartTime = formattedStartTime[1:]
+
+    if formattedEndTime[0] == "0":
+        formattedEndTime = formattedEndTime[1:]
+
+    bookingInfo = {
+        'vendor_contact_name': vendor.contactName,
+        'vendor_business': vendor.businessName,
+        'book_date': formattedDate,
+        'book_start_time': formattedStartTime,
+        'book_end_time': formattedEndTime
+    }
 
     new_Booking = UserVendor(vendor_id, user_id, eventDate, eventStartTime, eventEndTime, enabled)
     db.session.add(new_Booking)

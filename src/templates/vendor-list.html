@@ -58,6 +58,10 @@
               </div>
             </div>
             <div class="field">
+              <input class="is-checkradio" id="fullDay" type="checkbox" name="book_full_day">
+              <label for="fullDay">Book for full day</label>
+            </div>
+            <div class="field">
               <label class="heading">From</label>
               <div class="control has-icons-left">
                 <input id="bookStartTime" type="text" class="input" placeholder="Start time" autocomplete="off" name="book_start_time">
@@ -79,7 +83,7 @@
         </section>
       </div>
       <footer id="bookingFooter" class="quickview-footer">
-        <button id="bookSubmit" type="submit" class="button is-success is-wide">Book Vendor</button>
+        <button id="bookSubmit" type="submit" class="button is-success is-wide" aria-disabled="true" disabled>Book Vendor</button>
       </footer>
     </div>
     <div class="columns">

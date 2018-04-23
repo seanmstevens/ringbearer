@@ -33,17 +33,23 @@ $(function() {
     altFormat: "F j, Y",
     dateFormat: "Y-m-d",
     minDate: "today",
+    static: true,
     onChange: function() {
       BOOKING_DETAILS.date = this.input.value;
+      checkBookingInputs();
     }
   };
 
   let flatpickrTimeConfig = {
     enableTime: true,
     noCalendar: true,
-    dateFormat: "h:i K",
+    altInput: true,
+    altFormat: "h:i K",
+    dateFormat: "H:i:S",
+    static: true,
     onChange: function() {
       BOOKING_DETAILS.endTime = this.input.value;
+      checkBookingInputs();
     }
   };
 
@@ -54,13 +60,15 @@ $(function() {
       BOOKING_DETAILS.startTime = this.input.value;
 
       fpEndTime.set("minDate", this.input.value);
-      let startTimeStamp = this.parseDate(this.input.value, this.dateFormat);
-      let endTimeStamp = fpEndTime.parseDate(fpEndTime.input.value, fpEndTime.dateFormat);
+      let startTimeStamp = this.parseDate(this.input.value);
+      let endTimeStamp = fpEndTime.parseDate(fpEndTime.input.value);
 
       // Disallowing end time to be before start time. A server-side check is also made.
       if (startTimeStamp != null && endTimeStamp != null && startTimeStamp > endTimeStamp.getTime()) {
         fpEndTime.setDate(this.input.value, true);
       }
+
+      checkBookingInputs();
     }
   }));
   
@@ -88,8 +96,19 @@ $(function() {
   addBookingListeners();
   addBookFulfillmentListener();
   addCloseQuickviewListeners();
+  addCheckboxListener();
 
-    // UTILITIES //
+
+  // ADDITIONAL CONVENIENCE METHODS //
+
+  (function($) {
+    $.fn.resetCheckbox = function() {
+      var _ = this;
+      if (this.prop("type") === "checkbox") this.prop("checked", false);
+    }
+  })(jQuery);
+  
+  // UTILITIES //
 
   function isActiveSearch() {
     return $("#vendorSearch").val() != null;
@@ -650,14 +669,47 @@ $(function() {
 
         $('#bookingQuickview').addClass("is-active");
         $('#quickviewCloseLayer').fadeIn(250);
-        $('body').toggleClass("is-clipped");
       }
+    });
+  }
+
+  function addCheckboxListener() {
+    let $fullDayCheckbox = $("input#fullDay");
+    let $fullDayCheckboxTarget = $fullDayCheckbox.siblings("label");
+
+    $fullDayCheckboxTarget.on('click', e => {
+      if ($fullDayCheckbox.prop("checked") === false) {
+        fpStartTime.setDate("00:00:00", true);
+        fpStartTime.altInput.setAttribute("disabled", true);
+
+        fpEndTime.setDate("23:59:00", true);
+        fpEndTime.altInput.setAttribute("disabled", true);
+        console.log(fpEndTime);
+      } else {
+        fpStartTime.clear();
+        fpStartTime.altInput.removeAttribute("disabled");
+
+        fpEndTime.clear();
+        fpEndTime.altInput.removeAttribute("disabled");
+      }
+    })
+  }
+
+  function checkBookingInputs() {
+    $("input[type=hidden]").each(function(idx, element) {
+      if ($(element).val() == "") {
+        $("#bookSubmit").attr("disabled", "disabled").attr("aria-disabled", true);
+        return false;
+      } 
+
+      $("#bookSubmit").removeAttr("disabled").attr("aria-disabled", false);
     });
   }
 
   function addCloseQuickviewListeners() {
     $(document).on('click', '[data-dismiss="quickview"]', e => {
       let target = $(e.currentTarget).attr("data-target");
+
       $(target).removeClass("is-active");
       $('#quickviewCloseLayer').fadeOut(250);
 
@@ -665,7 +717,10 @@ $(function() {
       fpStartTime.clear();
       fpEndTime.clear();
 
-      $('body').toggleClass("is-clipped");
+      fpStartTime.altInput.removeAttribute("disabled");
+      fpEndTime.altInput.removeAttribute("disabled");
+
+      $("input#fullDay").resetCheckbox();
     });
   }
 
@@ -681,27 +736,23 @@ $(function() {
     $('.quickview-overlay').fadeIn("fast");
     $('#bookSubmit').addClass('is-loading');
 
+    let data = $('form#bookingDetailsForm').serializeArray();
+    data.push({ name: 'vendor_id', value: CURRENT_VENDOR_DATA.id });
+    console.log(data);
+
     $.post({
       url: "/book",
-      data: {
-        "vendorID": CURRENT_VENDOR_DATA.id,
-        "date": date,
-        "startTime": startTime,
-        "endTime": endTime
-      },
+      data: data,
       success: data => {
         console.log(data);
+        displayBookingConfirmation(data);
+      },
+      error: err => {
+        console.log(err.responseJSON.message);
+        createErrorMessage(err.responseJSON.message);
       }
     })
-    .done(data => {
-      $('.quickview-overlay').fadeOut("fast");
-      $('#bookSubmit').removeClass('is-loading');
-    })
-    .fail((xhr) => {
-      console.log(xhr.responseJSON.message);
-
-      // Hide AJAX booking animation
-
+    .always(() => {
       $('.quickview-overlay').fadeOut("fast");
       $('#bookSubmit').removeClass('is-loading');
     });
@@ -710,7 +761,8 @@ $(function() {
   function displayBookingConfirmation(json, id) {
     const info = json.bookingInfo;
 
-    $('.bookingInputBox, #bookingFooter').hide();
+    const $submitButton = $('#bookSubmit');
+    $submitButton.detach();
 
     $('#bookingInfoBox').append($('<p class="subtitle detail">').text(info.book_date));
     $('#vendorBusinessBox').append($('<p class="subtitle detail">').text(info.vendor_business));
@@ -721,12 +773,16 @@ $(function() {
     updateBookingNotifiers(VENDOR_DATA.bookedVendors);
   }
 
-  function displayErrorMessage(err) {
-    $('.bookingInputBox, #bookingFooter').hide();
+  function createErrorMessage(err) {
+    const errMessage = $(
+      `<footer class="quickview-footer quickview-error has-background-danger">
+          <span class="is-size-7 has-text-white">
+            ${err}
+          </span>
+      </footer>`
+    );
 
-    $('.errorMessage').append('<p class="subtitle">' + err + '</p>');
-
-    $('.errorMessage, #confirmFooter').show();
+    $('#bookingQuickview').append(errMessage);
   }
 
   function resetModalView() {

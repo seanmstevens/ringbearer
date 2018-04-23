@@ -478,6 +478,15 @@ li.vendor-information-list__list-item > .icon {
   z-index: 10;
 }
 
+.flatpickr-wrapper {
+  display: block;
+}
+
+.is-checkradio[type=checkbox]+label {
+  font-size: 0.875rem;
+  margin-left: 0;
+}
+
 /* AJAX loader styles */
 
 .loading-container {

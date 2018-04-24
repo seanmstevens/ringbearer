@@ -28,7 +28,7 @@ $(function() {
     update_tag();
   });
 
-  let flatpickrConfig = {
+  const flatpickrConfig = {
     altInput: true,
     altFormat: "F j, Y",
     dateFormat: "Y-m-d",
@@ -40,7 +40,7 @@ $(function() {
     }
   };
 
-  let flatpickrTimeConfig = {
+  const flatpickrTimeConfig = {
     enableTime: true,
     noCalendar: true,
     altInput: true,
@@ -98,13 +98,24 @@ $(function() {
   addCloseQuickviewListeners();
   addCheckboxListener();
 
-
   // ADDITIONAL CONVENIENCE METHODS //
 
   (function($) {
     $.fn.resetCheckbox = function() {
       var _ = this;
-      if (this.prop("type") === "checkbox") this.prop("checked", false);
+      if (_.prop("type") === "checkbox") _.prop("checked", false);
+
+      return _;
+    }
+
+    $.fn.resetQuickview = function() {
+      var _ = this;
+      if (_.hasClass("quickview")) { // Check if bound element in a quickview component
+        $("#confirmationView").remove();
+        $("#defaultView").show();
+      }
+
+      return _;
     }
   })(jQuery);
   
@@ -676,21 +687,22 @@ $(function() {
   function addCheckboxListener() {
     let $fullDayCheckbox = $("input#fullDay");
     let $fullDayCheckboxTarget = $fullDayCheckbox.siblings("label");
+    let targetInput = fp.isMobile === true ? "mobileInput" : "altInput";
 
     $fullDayCheckboxTarget.on('click', e => {
       if ($fullDayCheckbox.prop("checked") === false) {
         fpStartTime.setDate("00:00:00", true);
-        fpStartTime.altInput.setAttribute("disabled", true);
+        fpStartTime[targetInput].setAttribute("disabled", true);
 
         fpEndTime.setDate("23:59:00", true);
-        fpEndTime.altInput.setAttribute("disabled", true);
+        fpEndTime[targetInput].setAttribute("disabled", true);
         console.log(fpEndTime);
       } else {
         fpStartTime.clear();
-        fpStartTime.altInput.removeAttribute("disabled");
+        fpStartTime[targetInput].removeAttribute("disabled");
 
         fpEndTime.clear();
-        fpEndTime.altInput.removeAttribute("disabled");
+        fpEndTime[targetInput].removeAttribute("disabled");
       }
     })
   }
@@ -713,12 +725,21 @@ $(function() {
       $(target).removeClass("is-active");
       $('#quickviewCloseLayer').fadeOut(250);
 
+      // If AJAX request was fired, regardless of result, we will remove the entire quickview display
+      // Otherwise, we just clear the inputs and move on.
+      if ($(target).attr("data-submitted") == "true") {
+        setTimeout(() => {
+          $(target).resetQuickview();
+          $('#bookSubmit').show();
+        }, 250);
+      }
       fp.clear();
       fpStartTime.clear();
       fpEndTime.clear();
 
-      fpStartTime.altInput.removeAttribute("disabled");
-      fpEndTime.altInput.removeAttribute("disabled");
+      let targetInput = fp.isMobile === true ? "mobileInput" : "altInput";
+      fpStartTime[targetInput].removeAttribute("disabled");
+      fpEndTime[targetInput].removeAttribute("disabled");
 
       $("input#fullDay").resetCheckbox();
     });
@@ -745,7 +766,7 @@ $(function() {
       data: data,
       success: data => {
         console.log(data);
-        displayBookingConfirmation(data);
+        displayBookingConfirmation(data.bookingInfo);
       },
       error: err => {
         createErrorMessage(err.responseJSON.message);
@@ -753,24 +774,37 @@ $(function() {
       }
     })
     .always(() => {
+      $("#bookingQuickview").attr("data-submitted", true);
       $('.quickview-overlay').fadeOut("fast");
       $('#bookSubmit').removeClass('is-loading');
     });
   }
 
-  function displayBookingConfirmation(json, id) {
-    const info = json.bookingInfo;
+  function displayBookingConfirmation(data) {
+    const { bookDate, bookStartTime, bookEndTime, businessName, contactName, fullDay } = data;
+    console.log(bookDate, bookStartTime, contactName);
 
     const $submitButton = $('#bookSubmit');
-    $submitButton.detach();
+    $submitButton.fadeOut();
 
-    $('#bookingInfoBox').append($('<p class="subtitle detail">').text(info.book_date));
-    $('#vendorBusinessBox').append($('<p class="subtitle detail">').text(info.vendor_business));
-    $('#vendorNameBox').append($('<p class="subtitle detail">').text(info.vendor_name));
+    const $container = $('.quickview-block');
 
-    $('.confirmationMessage, #confirmFooter').show();
-    VENDOR_DATA.bookedVendors.push(id);
-    updateBookingNotifiers(VENDOR_DATA.bookedVendors);
+    const $bookInformationComponent = $(
+      `<summary id="confirmationView">
+        <p>Congrats! Your booking for ${contactName} on ${bookDate} from ${bookStartTime} to ${bookEndTime} has been confirmed.</p> 
+      </summary>`
+    );
+
+    $container.addClass("is-sliding").parent().toggleClass("is-clipped");
+
+    setTimeout(function() {
+      $('#defaultView').hide(); // Empty container
+      $container.append($bookInformationComponent); // Append confirmation message to container
+      $container.removeClass("is-sliding").parent().toggleClass("is-clipped"); // Slide and fade the message up
+    }, 275); // Controlling for 275ms transition
+    
+    // VENDOR_DATA.bookedVendors.push(id);
+    // updateBookingNotifiers(VENDOR_DATA.bookedVendors);
   }
 
   function createErrorMessage(err) {
@@ -802,16 +836,5 @@ $(function() {
         $errMessage.remove();
       }, 275);
     }
-  }
-
-  function resetModalView() {
-    const $inputView = $('.bookingInputBox, #bookingFooter');
-    const $confirmView = $('.confirmationMessage, #confirmFooter');
-    const $errorView = $('.errorMessage');
-
-    $inputView.show();
-    $confirmView.hide();
-    $errorView.hide();
-    $('.detail').remove();
   }
 });

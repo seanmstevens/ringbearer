@@ -403,10 +403,13 @@ def book():
     fullDay = True if form.get('book_full_day') != None else False
     enabled = 1
 
-    parsedStartTime = datetime.strptime(eventStartTime, '%H:%M:%S')
-    parsedEndTime = datetime.strptime(eventEndTime, '%H:%M:%S')
-
     error = bad_request("There were some errors while processing your request. Please check your input above.")
+    
+    try:
+        parsedStartTime = datetime.strptime(eventStartTime, '%H:%M:%S')
+        parsedEndTime = datetime.strptime(eventEndTime, '%H:%M:%S')
+    except ValueError:
+        return error
 
     if any([not eventDate, not eventStartTime, not eventEndTime, parsedStartTime > parsedEndTime]):
         return error
@@ -425,12 +428,12 @@ def book():
         formattedEndTime = formattedEndTime[1:]
 
     bookingInfo = {
-        'vendor_contact_name': vendor.contactName,
-        'vendor_business': vendor.businessName,
-        'full_day': fullDay,
-        'book_date': formattedDate,
-        'book_start_time': formattedStartTime,
-        'book_end_time': formattedEndTime
+        'contactName': vendor.contactName,
+        'businessName': vendor.businessName,
+        'fullDay': fullDay,
+        'bookDate': formattedDate,
+        'bookStartTime': formattedStartTime,
+        'bookEndTime': formattedEndTime
     }
 
     new_Booking = UserVendor(vendor_id, user_id, eventDate, eventStartTime, eventEndTime, fullDay, enabled)

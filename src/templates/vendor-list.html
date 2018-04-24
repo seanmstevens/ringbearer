@@ -19,67 +19,69 @@
       </header>
       <div class="quickview-body">
         <section class="section quickview-block">
-          <ul class="vendor-information-list">
-            <p class="heading">Booking Information</p>
-            <li class="vendor-information-list__list-item">
-              <span class="icon is-medium has-text-primary">
-                <i class="mdi mdi-24px mdi-account-circle"></i>
-              </span>
-              <span class="has-text-dark" id="booking__contactName"></span>
-            </li>
-            <li class="vendor-information-list__list-item">
-              <span class="icon is-medium has-text-primary">
-                <i class="mdi mdi-24px mdi-account-card-details"></i>
-              </span>
-              <span class="has-text-dark" id="booking__businessName"></span>
-            </li>
-            <li class="vendor-information-list__list-item">
-              <span class="icon is-medium has-text-primary">
-                <i class="mdi mdi-24px mdi-currency-usd"></i>
-              </span>
-              <span class="has-text-dark" id="booking__rate"></span>
-            </li>
-            <li class="vendor-information-list__list-item">
-              <span class="icon is-medium has-text-primary">
-                <i class="mdi mdi-24px mdi-map-marker"></i>
-              </span>
-              <span class="has-text-dark" id="booking__cityState"></span>
-            </li>
-          </ul>
-          <hr>
-          <form id="bookingDetailsForm" method="POST">
-            <div class="field">
-              <label class="heading">Select a Date</label>
-              <div class="control has-icons-left">
-                <input id="bookDate" type="text" class="input" placeholder="Pick a date" autocomplete="off" name="book_date">
-                <span class="icon is-left">
-                  <i class="mdi mdi-calendar"></i>
+          <summary id="defaultView">
+            <ul>
+              <p class="heading">Booking Information</p>
+              <li class="vendor-information-list__list-item">
+                <span class="icon is-medium has-text-primary">
+                  <i class="mdi mdi-24px mdi-account-circle"></i>
                 </span>
-              </div>
-            </div>
-            <div class="field">
-              <input class="is-checkradio" id="fullDay" type="checkbox" name="book_full_day">
-              <label for="fullDay">Book for full day</label>
-            </div>
-            <div class="field">
-              <label class="heading">From</label>
-              <div class="control has-icons-left">
-                <input id="bookStartTime" type="text" class="input" placeholder="Start time" autocomplete="off" name="book_start_time">
-                <span class="icon is-left">
-                  <i class="mdi mdi-clock"></i>
+                <span class="has-text-dark" id="booking__contactName"></span>
+              </li>
+              <li class="vendor-information-list__list-item">
+                <span class="icon is-medium has-text-primary">
+                  <i class="mdi mdi-24px mdi-account-card-details"></i>
                 </span>
-              </div>
-            </div>
-            <div class="field">
-              <label class="heading">Until</label>
-              <div class="control has-icons-left">
-                <input id="bookEndTime" type="text" class="input" placeholder="End time" autocomplete="off" name="book_end_time">
-                <span class="icon is-left">
-                  <i class="mdi mdi-clock"></i>
+                <span class="has-text-dark" id="booking__businessName"></span>
+              </li>
+              <li class="vendor-information-list__list-item">
+                <span class="icon is-medium has-text-primary">
+                  <i class="mdi mdi-24px mdi-currency-usd"></i>
                 </span>
+                <span class="has-text-dark" id="booking__rate"></span>
+              </li>
+              <li class="vendor-information-list__list-item">
+                <span class="icon is-medium has-text-primary">
+                  <i class="mdi mdi-24px mdi-map-marker"></i>
+                </span>
+                <span class="has-text-dark" id="booking__cityState"></span>
+              </li>
+            </ul>
+            <hr>
+            <form id="bookingDetailsForm" method="POST">
+              <div class="field">
+                <label class="heading">Select a Date</label>
+                <div class="control has-icons-left">
+                  <input id="bookDate" type="text" class="input" placeholder="Pick a date" autocomplete="off" name="book_date">
+                  <span class="icon is-left">
+                    <i class="mdi mdi-calendar"></i>
+                  </span>
+                </div>
               </div>
-            </div>
-          </form>
+              <div class="field">
+                <input class="is-checkradio" id="fullDay" type="checkbox" name="book_full_day">
+                <label for="fullDay">Book for full day</label>
+              </div>
+              <div class="field">
+                <label class="heading">From</label>
+                <div class="control has-icons-left">
+                  <input id="bookStartTime" type="text" class="input" placeholder="Start time" autocomplete="off" name="book_start_time">
+                  <span class="icon is-left">
+                    <i class="mdi mdi-clock"></i>
+                  </span>
+                </div>
+              </div>
+              <div class="field">
+                <label class="heading">Until</label>
+                <div class="control has-icons-left">
+                  <input id="bookEndTime" type="text" class="input" placeholder="End time" autocomplete="off" name="book_end_time">
+                  <span class="icon is-left">
+                    <i class="mdi mdi-clock"></i>
+                  </span>
+                </div>
+              </div>
+            </form>
+          </summary>
         </section>
       </div>
       <footer id="bookingFooter" class="quickview-footer">

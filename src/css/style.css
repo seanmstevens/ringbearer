@@ -13,6 +13,17 @@ footer.desktop-footer {
   background-color: hsl(0, 0%, 21%);
 }
 
+@media screen and (max-width: 768px) {
+  .tooltip.is-tooltip-active:before, 
+  .tooltip:focus:before, 
+  .tooltip:hover:before,
+  .tooltip.is-tooltip-active:not(.is-loading):after, 
+  .tooltip:focus:not(.is-loading):after, 
+  .tooltip:hover:not(.is-loading):after {
+    display: none;
+  }
+}
+
 .container.is-fluid.is-marginless.brand-color {
   min-height: 100%;
 }

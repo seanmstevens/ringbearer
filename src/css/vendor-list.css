@@ -441,9 +441,22 @@
 
 /* Quickview styles */
 
-.quickview-body > .quickview-block {
-  padding: 2rem 1rem;
+.quickview {
+  max-width: 100%;
 }
+
+.quickview-block {
+  padding: 2rem 1rem;
+  transform: translateY(0px);
+  opacity: 1;
+  transition: 275ms cubic-bezier(0.5, 0.08, 0, 1);
+  transition-property: transform, opacity;
+}
+
+.quickview-block.is-sliding {
+  transform: translateY(100px);
+  opacity: 0;
+} 
 
 .quickview-close-layer {
   position: fixed;
@@ -494,6 +507,7 @@ li.vendor-information-list__list-item > .icon {
 .quickview-error {
   position: absolute;
   bottom: 0;
+  width: 100%;
   transform: translateY(4rem);
   transition: transform 275ms cubic-bezier(0.5, 0.08, 0, 1);
 }

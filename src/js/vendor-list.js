@@ -748,8 +748,8 @@ $(function() {
         displayBookingConfirmation(data);
       },
       error: err => {
-        console.log(err.responseJSON.message);
         createErrorMessage(err.responseJSON.message);
+        $('#bookSubmit').attr("disabled", "disabled");
       }
     })
     .always(() => {
@@ -774,15 +774,34 @@ $(function() {
   }
 
   function createErrorMessage(err) {
-    const errMessage = $(
-      `<footer class="quickview-footer quickview-error has-background-danger">
+    const $errMessage = $(
+      `<footer class="quickview-footer quickview-error has-background-danger is-active">
           <span class="is-size-7 has-text-white">
+            <span class="icon is-small">
+              <i class="mdi mdi-alert-circle"></i>
+            </span>
             ${err}
           </span>
       </footer>`
     );
 
-    $('#bookingQuickview').append(errMessage);
+    $('#bookingQuickview').append($errMessage);
+
+    $errMessage.on('click', e => {
+      dismissError();
+      return false;
+    });
+
+    setTimeout(() => {
+      dismissError();
+    }, 4000);
+
+    function dismissError() {
+      $errMessage.removeClass("is-active");
+      setTimeout(() => {
+        $errMessage.remove();
+      }, 275);
+    }
   }
 
   function resetModalView() {

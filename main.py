@@ -42,16 +42,18 @@ class UserVendor(db.Model):
     bookedDate = db.Column(db.Date)
     eventStartTime = db.Column(db.Time)
     eventEndTime = db.Column(db.Time)
-    enabled = db.Column(db.Boolean, default = True)
+    fullDay = db.Column(db.Boolean, default=False)
+    enabled = db.Column(db.Boolean, default=True)
     vendor = db.relationship('Vendor', backref="user_assoc")
     user = db.relationship('User', backref="vendor_assoc")
 
-    def __init__(self, vendor_id, user_id, bookedDate, eventStartTime, eventEndTime, enabled):
+    def __init__(self, vendor_id, user_id, bookedDate, eventStartTime, eventEndTime, fullDay, enabled):
         self.vendor_id = vendor_id
         self.user_id = user_id
         self.bookedDate = bookedDate
         self.eventStartTime = eventStartTime
         self.eventEndTime = eventEndTime
+        self.fullDay = False
         self.enabled = True
 
 
@@ -386,7 +388,7 @@ def organizer():
 @app.route('/book', methods=['POST'])
 def book():
     if session['userType'] == "vendor":
-        return bad_request("Vendors cannot book other vendors.")
+        return bad_request("You must be logged in as a user to book a vendor.")
 
     form = request.form
 
@@ -398,16 +400,21 @@ def book():
     eventDate = form.get('book_date')
     eventStartTime = form.get('book_start_time')
     eventEndTime = form.get('book_end_time')
-    fullDay = form.get('book_full_day')
+    fullDay = True if form.get('book_full_day') != None else False
     enabled = 1
 
-    if not eventDate or not eventStartTime or not eventEndTime:
-        return bad_request("There were some errors while processing your request. Please re-check your input above.")
+    parsedStartTime = datetime.strptime(eventStartTime, '%H:%M:%S')
+    parsedEndTime = datetime.strptime(eventEndTime, '%H:%M:%S')
+
+    error = bad_request("There were some errors while processing your request. Please check your input above.")
+
+    if any([not eventDate, not eventStartTime, not eventEndTime, parsedStartTime > parsedEndTime]):
+        return error
     
     (formattedDate, formattedStartTime, formattedEndTime) = (
         datetime.strptime(eventDate, '%Y-%m-%d').strftime('%B %d, %Y'),
-        datetime.strptime(eventStartTime, '%H:%M:%S').strftime('%I:%M %p'),
-        datetime.strptime(eventEndTime, '%H:%M:%S').strftime('%I:%M %p')
+        parsedStartTime.strftime('%I:%M %p'),
+        parsedEndTime.strftime('%I:%M %p')
     )
 
     # Stripping zero-padding from timestamps with hour < 10
@@ -420,12 +427,13 @@ def book():
     bookingInfo = {
         'vendor_contact_name': vendor.contactName,
         'vendor_business': vendor.businessName,
+        'full_day': fullDay,
         'book_date': formattedDate,
         'book_start_time': formattedStartTime,
         'book_end_time': formattedEndTime
     }
 
-    new_Booking = UserVendor(vendor_id, user_id, eventDate, eventStartTime, eventEndTime, enabled)
+    new_Booking = UserVendor(vendor_id, user_id, eventDate, eventStartTime, eventEndTime, fullDay, enabled)
     db.session.add(new_Booking)
     db.session.commit()
 
@@ -710,31 +718,32 @@ def portfolio():
 # FOR TESTING PURPOSES ONLY
 @app.route('/gendata')
 def genData():
-  vendorTypes = ['venue', 'photographer', 'videographer', 'caterer', 'music', 'cosmetics', 'tailor']
-  fake = Faker()
-  for i in range(50):
-    user = User(
-      fake.name(),
-      fake.email(),
-      make_pw_hash("Password1")
-    )
-    vendor = Vendor(
-      fake.email(),
-      fake.company(),
-      fake.name(),
-      fake.street_address(),
-      fake.city(),
-      fake.zipcode(),
-      random.randrange(0, 6),
-      random.choice(vendorTypes),
-      random.randrange(1, 1000),
-      make_pw_hash("Password1"),
-      fake.state_abbr()
-    )
-    db.session.add(user)
-    db.session.add(vendor)
+    vendorTypes = ['venue', 'photographer', 'videographer', 'caterer', 'music', 'cosmetics', 'tailor']
+    fake = Faker()
+    for i in range(50):
+        user = User(
+        fake.name(),
+        fake.email(),
+        make_pw_hash("Password1")
+        )
+        vendor = Vendor(
+        fake.email(),
+        fake.company(),
+        fake.name(),
+        fake.street_address(),
+        fake.city(),
+        fake.zipcode(),
+        random.randrange(0, 6),
+        random.choice(vendorTypes),
+        random.randrange(1, 1000),
+        make_pw_hash("Password1"),
+        fake.state_abbr()
+        )
+        db.session.add(user)
+        db.session.add(vendor)
+        
     db.session.commit()
-  return redirect('/')
+    return redirect('/')
 
 
 

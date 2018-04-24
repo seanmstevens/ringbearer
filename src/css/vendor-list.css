@@ -468,6 +468,10 @@ li.vendor-information-list__list-item:not(:last-child) {
   border-bottom: 1px solid #dbdbdb;
 }
 
+li.vendor-information-list__list-item:first-child {
+  padding-top: 0;
+}
+
 li.vendor-information-list__list-item > .icon {
   margin-right: 1rem;
 }
@@ -485,6 +489,17 @@ li.vendor-information-list__list-item > .icon {
 .is-checkradio[type=checkbox]+label {
   font-size: 0.875rem;
   margin-left: 0;
+}
+
+.quickview-error {
+  position: absolute;
+  bottom: 0;
+  transform: translateY(4rem);
+  transition: transform 275ms cubic-bezier(0.5, 0.08, 0, 1);
+}
+
+.quickview-error.is-active {
+  transform: translateY(0px);
 }
 
 /* AJAX loader styles */

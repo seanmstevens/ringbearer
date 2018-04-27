@@ -11,7 +11,6 @@ $(function() {
     queryResults: []
   };
   var CURRENT_VENDOR_DATA;
-  var BOOKING_DETAILS = {};
 
   var IS_ACTIVE_SEARCH = false;
   var IS_ACTIVE_FILTER = false;
@@ -35,7 +34,6 @@ $(function() {
     minDate: "today",
     static: true,
     onChange: function() {
-      BOOKING_DETAILS.date = this.input.value;
       checkBookingInputs();
     }
   };
@@ -48,7 +46,6 @@ $(function() {
     dateFormat: "H:i:S",
     static: true,
     onChange: function() {
-      BOOKING_DETAILS.endTime = this.input.value;
       checkBookingInputs();
     }
   };
@@ -57,8 +54,6 @@ $(function() {
   const fpEndTime = flatpickr("#bookEndTime", flatpickrTimeConfig);
   const fpStartTime = flatpickr("#bookStartTime", Object.assign(flatpickrTimeConfig, {
     onChange: function() {
-      BOOKING_DETAILS.startTime = this.input.value;
-
       fpEndTime.set("minDate", this.input.value);
       let startTimeStamp = this.parseDate(this.input.value);
       let endTimeStamp = fpEndTime.parseDate(fpEndTime.input.value);
@@ -87,6 +82,11 @@ $(function() {
   // Adding position:sticky polyfill for side menu to make sure it works in older browers
   var elements = $('.sticky');
   stickybits(elements, {stickyBitStickyOffset: 67});
+
+  $.ajaxSetup({
+    cache: false,
+  });
+
 
   retrieveBookedVendors();
   addAjaxListeners();
@@ -132,6 +132,24 @@ $(function() {
 
   function emptyVendorList() {
     $(".vendor-list-card-wrapper").empty().hide();
+  }
+
+  function buildErrorMessage(errorText, subMessage, hasIcon) {
+    const $errorComponent = $(
+      `<li class="no-results">
+        <p class="has-text-centered has-text-grey is-size-5">
+        ${hasIcon === true ?
+          `<span class="icon has-text-danger">
+            <i class="mdi mdi-alert-box"></i>
+          </span>` : ``}
+          <span>${errorText}</span>
+          <br>
+          <span class="is-size-7">${subMessage}</span>
+        </p>
+      </li>`
+    );
+
+    return $errorComponent;
   }
 
   function makeSidelinkActive(type) {
@@ -191,14 +209,16 @@ $(function() {
       data: {
         booked: "true"
       },
+      timeout: 15000,
+      dataType: "json",
       global: false
     })
-    .done(json => {
-      VENDOR_DATA.bookedVendors = json;
+    .done((data, textStatus, jqXHR) => {
+      VENDOR_DATA.bookedVendors = data;
       updateBookingNotifiers(VENDOR_DATA.bookedVendors);
     })
-    .fail(err => {
-      console.log(err);
+    .fail((jqXHR, textStatus, errorThrown) => {
+      console.log(jqXHR);
     });
   }
 
@@ -389,33 +409,49 @@ $(function() {
       data: {
         "type": type
       },
-      success: data => {
-        if (IS_ACTIVE_FILTER) {
-          VENDOR_DATA.filteredResults = data.vendors;
-        } else {
-          VENDOR_DATA.vendorList = data.vendors;
-        }
-      }
+      timeout: 15000,
+      dataType: "json",
     })
-    .done(json => {
+    .done((data, textStatus, jqXHR) => {
       var t1 = Date.now();
       console.log("Time to finish request " + (t1 - t0) + " milliseconds.");
+
+      if (IS_ACTIVE_FILTER) { // Loading data into correct lists
+        VENDOR_DATA.filteredResults = data.vendors;
+      } else {
+        VENDOR_DATA.vendorList = data.vendors;
+      }
 
       emptyVendorList();
       resetDisplayVariables();
       displayVendors(getCurrentList());
       updateResultsCount();
-      
-      // Hide AJAX loading animation
-
-      $('.overlay-container').hide();
-      $('.vendor-list-card .overlay').hide();
-      $(".load-more-field").removeClass("is-hidden");
 
       API_CALL_MADE = false;
     })
-    .fail((xhr, status, error) => {
-      console.log(xhr, status, error);
+    .fail((jqXHR, textStatus, errorThrown) => {
+      if (jqXHR.readyState === 4) {
+        // http error
+        emptyVendorList();
+
+        $('ul.vendor-list-card-wrapper').show().append(
+          buildErrorMessage("Something went wrong.", "Please try again later.", true)
+        );
+      } else if (jqXHR.readyState === 0) {
+        // network error
+        emptyVendorList();
+        
+        $('ul.vendor-list-card-wrapper').show().append(
+          buildErrorMessage("A network error occurred.", "Please check your connection and try again.", true)
+        );
+      }
+
+      console.log(jqXHR);
+    })
+    .always(() => {
+      $('.overlay-container').hide();
+      $('.vendor-list-card .overlay').hide();
+      $(".load-more-field").removeClass("is-hidden");
     });
   }
 
@@ -455,15 +491,10 @@ $(function() {
 
       var search = $('#vendorSearch').val();
 
-      const $noSearchResults = $(
-        `<li>
-          <div class="no-results has-text-centered">
-            No results found for "${escapeHtml(search)}"
-          </div>
-        </li>`
+      $wrapper.append(
+        buildErrorMessage(`No results found for "${escapeHtml(search)}"`, "Try narrowing your search.", false)
       );
 
-      $wrapper.append($noSearchResults);
       $wrapper.show();
 
       return false;
@@ -522,50 +553,46 @@ $(function() {
       const $card = $(`<article class="tile is-child card card-${value.vendorType}"></article>`);
 
       const $cardHeader = $(
-        `<nav class="level is-mobile tile-header card-header-${value.vendorType}">
-          <div class="level-left">
-            <div class="level-item icon">
-              ${icons[value.vendorType]}
+        `<nav class="tile-header card-header-${value.vendorType}">
+          <div class="icon is-pulled-left">
+            ${icons[value.vendorType]}
+          </div>
+          <div class="is-pulled-right">
+            <div class="dropdown is-right card-dropdown tooltip" data-tooltip="More actions">
+              <div class="dropdown-trigger">
+                <a class="card-header-icon" aria-controls="dropdown-menu">
+                  <span class="icon">
+                    <i class="mdi mdi-24px mdi-chevron-down" aria-hidden="true"></i>
+                  </span>
+                </a>
+              </div>
+              <div id="extra-actions" class="dropdown-menu" role="menu">
+                <div class="dropdown-content">
+                  <a class="dropdown-item book-button" data-show="quickview" data-target="bookingQuickview">
+                    <span class="icon">
+                      <i class="mdi mdi-plus-circle"></i>
+                    </span> Book
+                  </a>
+                  <a class="dropdown-item" href="/portfolio">
+                    <span class="icon">
+                      <i class="mdi mdi-treasure-chest"></i>
+                    </span> Portfolio
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="level-right">
-            <div class="level-item">
-            <div id="vendor__${value.id}" class="book-button shortcut tooltip" data-show="quickview" data-target="bookingQuickview" data-tooltip="Book">
+          <div class="is-pulled-right">
+            <div class="book-button shortcut tooltip" data-vendor-id=${value.id} data-show="quickview" data-target="bookingQuickview" data-tooltip="Book">
               <div class="icon has-text-white book-icon">
                 <i class="mdi mdi-plus-circle"></i>
               </div>
             </div>
-            </div>
-            <div class="level-item">
-              <div class="dropdown is-right card-dropdown tooltip" data-tooltip="More actions">
-                <div class="dropdown-trigger">
-                  <a class="card-header-icon" aria-controls="dropdown-menu">
-                    <span class="icon">
-                      <i class="mdi mdi-24px mdi-chevron-down" aria-hidden="true"></i>
-                    </span>
-                  </a>
-                </div>
-                <div id="extra-actions" class="dropdown-menu" role="menu">
-                  <div class="dropdown-content">
-                    <a class="dropdown-item book-button" data-show="quickview" data-target="bookingQuickview">
-                      <span class="icon">
-                        <i class="mdi mdi-plus-circle"></i>
-                      </span> Book
-                    </a>
-                    <a class="dropdown-item" href="/portfolio">
-                      <span class="icon">
-                        <i class="mdi mdi-treasure-chest"></i>
-                      </span> Portfolio
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
-        </div>`
+        </nav>`
       );
 
-      const $overlay = $('<div class="overlay"></div>');
+      const $overlay = $('<div class="overlay is-overlay"></div>');
 
       $card.append($cardHeader, $overlay);
 
@@ -611,7 +638,7 @@ $(function() {
       $vendorCardWrapper.append($card);
       $wrapper.append($vendorCardWrapper);
 
-      const $bookButton = $(`#vendor__${value.id}`);
+      const $bookButton = $(`[data-vendor-id=${value.id}]`);
       $bookButton.data("vendorData", {
         id: value.id,
         contactName: value.contactName,
@@ -747,14 +774,13 @@ $(function() {
 
   function addBookFulfillmentListener() {
     $('#bookSubmit').on('click', e => {
-      console.log(BOOKING_DETAILS);
-      postBookRequest(BOOKING_DETAILS);
+      postBookRequest();
     });
   }
 
-  function postBookRequest({date, startTime, endTime}) {
+  function postBookRequest() {
     // Show AJAX booking animation
-    $('.quickview-overlay').fadeIn("fast");
+    $('.quickview .overlay').fadeIn("fast");
     $('#bookSubmit').addClass('is-loading');
 
     let data = $('form#bookingDetailsForm').serializeArray();
@@ -764,24 +790,42 @@ $(function() {
     $.post({
       url: "/book",
       data: data,
-      success: data => {
-        console.log(data);
-        displayBookingConfirmation(data.bookingInfo);
-      },
-      error: err => {
-        createErrorMessage(err.responseJSON.message);
+      dataType: "json",
+      timeout: 15000
+    })
+    .done((data, textStatus, jqXHR) => {
+      console.log(jqXHR);
+      displayBookingConfirmation(data.bookingInfo);
+    })
+    .fail((jqXHR, textStatus, errorThrown) => {
+      console.log(jqXHR, textStatus, errorThrown);
+
+      if (jqXHR.getResponseHeader("X-Authorization-Required") == "true") {
+        createErrorMessage("You must be logged in as a user in order to book vendors.")
         $('#bookSubmit').attr("disabled", "disabled");
+      } else if (jqXHR.readyState === 4) {
+        // HTTP error (can be checked by XMLHttpRequest.status and XMLHttpRequest.statusText)
+        if (jqXHR.responseJSON.message != null) {
+          createErrorMessage(jqXHR.responseJSON.message);
+        }
+
+        $('#bookSubmit').attr("disabled", "disabled");
+      } else if (jqXHR.readyState === 0) {
+        // Network error (i.e. connection refused, access denied due to CORS, etc.)
+        createErrorMessage("A network error occurred. Please try again at a later time.");
+      } else {
+        // something weird is happening
       }
     })
     .always(() => {
       $("#bookingQuickview").attr("data-submitted", true);
-      $('.quickview-overlay').fadeOut("fast");
+      $('.quickview .overlay').fadeOut("fast");
       $('#bookSubmit').removeClass('is-loading');
     });
   }
 
   function displayBookingConfirmation(data) {
-    const { bookDate, bookStartTime, bookEndTime, businessName, contactName, fullDay } = data;
+    const { bookDate, bookStartTime, bookEndTime, businessName, contactName, location, fullDay } = data;
     console.log(bookDate, bookStartTime, contactName);
 
     const $submitButton = $('#bookSubmit');
@@ -791,16 +835,80 @@ $(function() {
 
     const $bookInformationComponent = $(
       `<summary id="confirmationView">
-        <p>Congrats! Your booking for ${contactName} on ${bookDate} from ${bookStartTime} to ${bookEndTime} has been confirmed.</p> 
+        <h3 class="title is-4">Booking confirmed!</h3>
+        <p class="subtitle is-6">Your booking details are below:</p>
+        <hr>
+        <div class="notification is-primary-bold">
+          <div class="level is-vertical">
+            <div class="level-item spans-container">
+              <p class="heading">
+                <span class="icon is-small">
+                  <i class="mdi mdi-account"></i>
+                </span>
+                Vendor Information
+              </p>
+              <article class="media spans-container">
+                <figure class="media-left small-margin">
+                  <div class="image is-32x32 profile-picture-container is-borderless">
+                    <img src="http://placekitten.com/32/32">
+                  </div>
+                </figure>
+                <figure class="media-content">
+                  <div class="content">
+                    <p class="has-text-weight-bold is-marginless">${contactName}</p>
+                    <p class="is-size-7">${location}</p>
+                  </div>
+                </figure>
+              </article>
+            </div>
+            <div class="level-item">
+              <p class="heading">
+                <span class="icon is-small">
+                  <i class="mdi mdi-calendar"></i>
+                </span>
+                Date
+              </p>
+              <p class="has-text-weight-semibold">
+                ${bookDate}
+              </p>
+            </div>
+            <div class="level-item">
+              <p class="heading">
+                <span class="icon is-small">
+                  <i class="mdi mdi-clock"></i>
+                </span>
+                Start Time
+              </p>
+              <p class="has-text-weight-semibold">
+                ${bookStartTime}
+              </p>
+            </div>
+            <div class="level-item">
+              <p class="heading">
+                <span class="icon is-small">
+                  <i class="mdi mdi-clock"></i>
+                </span>
+                End Time
+              </p>
+              <p class="has-text-weight-semibold">
+                ${fullDay === true ? "End of day" : bookEndTime}
+              </p>
+            </div>
+          </div>
+        </div>
       </summary>`
     );
 
     $container.addClass("is-sliding").parent().toggleClass("is-clipped");
 
-    setTimeout(function() {
+    setTimeout(() => {
       $('#defaultView').hide(); // Empty container
       $container.append($bookInformationComponent); // Append confirmation message to container
       $container.removeClass("is-sliding").parent().toggleClass("is-clipped"); // Slide and fade the message up
+
+      setTimeout(() => {
+        $bookInformationComponent.find(".notification").addClass("is-shown");
+      }, 275);
     }, 275); // Controlling for 275ms transition
     
     // VENDOR_DATA.bookedVendors.push(id);

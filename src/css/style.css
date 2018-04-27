@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Abril+Fatface|Roboto:100,400,500,700");
 
-html, body {
+html {
   height: 100%;
 }
 
@@ -73,7 +73,7 @@ div.navbar-item > .icon:not(:last-child) {
   font-size: 14px;
 }
 
-.button.is-wide {
+.spans-container {
   width: 100%;
 }
 

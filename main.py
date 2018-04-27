@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, url_for, session, flash, jsonify, Markup, abort
+from flask import Flask, request, redirect, render_template, url_for, session, flash, jsonify, Markup, abort, make_response
 from flask_sqlalchemy import SQLAlchemy
 from whitenoise import WhiteNoise
 from hashutils import *
@@ -117,6 +117,7 @@ def require_login():
     if all([request.endpoint in blacklist, 'email' not in session, '/static/' not in request.path]):
         message = Markup("You must to be <strong>logged in</strong> to access this page.")
         flash(message, "is-danger")
+
         return redirect(url_for('login', next=request.endpoint))
 
 def bad_request(message, data=None):
@@ -211,7 +212,12 @@ def login():
             emailErrors = "That user doesn't exist."
 
         return render_template('login.html', errors=errors, email=email)
-    return render_template('login.html', errors=errors)
+
+    # Adding custom header to response for AJAX requests that don't inherently know how to handle redirects appropriately
+    response = make_response(render_template('login.html', errors=errors))
+    response.headers['X-Authorization-Required'] = "true"
+
+    return response 
 
 @app.route('/logout')
 def logout():
@@ -387,7 +393,7 @@ def organizer():
 
 @app.route('/book', methods=['POST'])
 def book():
-    if session['userType'] == "vendor":
+    if session.get('email') == None or session.get('userType') == "vendor":
         return bad_request("You must be logged in as a user to book a vendor.")
 
     form = request.form
@@ -430,6 +436,7 @@ def book():
     bookingInfo = {
         'contactName': vendor.contactName,
         'businessName': vendor.businessName,
+        'location': "{}, {}".format(vendor.city, vendor.state),
         'fullDay': fullDay,
         'bookDate': formattedDate,
         'bookStartTime': formattedStartTime,

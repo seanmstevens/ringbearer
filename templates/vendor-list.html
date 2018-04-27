@@ -2,7 +2,7 @@
 
 {% block head %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='vendorlist.762728dee122676b5f5b.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='vendorlist.3389febde4b976de7756.css') }}">
 
 {% endblock %}
 
@@ -11,7 +11,7 @@
   <section class="section">
     <div id="quickviewCloseLayer" class="quickview-close-layer" data-dismiss="quickview" data-target="#bookingQuickview"></div>
     <div id="bookingQuickview" class="quickview">
-      <div class="quickview-overlay is-overlay"></div>
+      <div class="overlay is-overlay"></div>
       <header class="quickview-header">
         <p class="title has-text-weight-bold">Book Vendor</p>
         <button id="quickviewCloseButton" class="delete is-inverted is-large" 
@@ -85,10 +85,10 @@
         </section>
       </div>
       <footer id="bookingFooter" class="quickview-footer">
-        <button id="bookSubmit" type="submit" class="button is-success is-wide" aria-disabled="true" disabled>Book Vendor</button>
+        <button id="bookSubmit" type="submit" class="button is-success spans-container" aria-disabled="true" disabled>Book Vendor</button>
       </footer>
     </div>
-    <div class="columns">
+    <main id="mainPageContent" class="columns">
       <div class="column is-2">
         <div class="sticky">
           <div class="sidenav-container">
@@ -190,19 +190,9 @@
             </svg>
           </div>
         </div>
-        <div class="level is-marginless">
-          <div class="level-left">
-            <div class="level-item">
-              <p class="results-count">
-                Viewing <span id="resultsIncrement">1 - 18</span> of <span id="vendorTotal">{{ vendor_total }}</span> vendors
-              </p>
-            </div>
-          </div>
-          <div class="level-right">
-            <div class="level-item pagination-container">
-            </div>
-          </div>
-        </div>
+        <p class="results-count">
+          Viewing <span id="resultsIncrement">1 - 18</span> of <span id="vendorTotal">{{ vendor_total }}</span> vendors
+        </p>
         <ul class="vendor-list-card-wrapper">
           <!-- Populated with vendors through AJAX calls -->
         </ul>
@@ -214,13 +204,13 @@
           </div>
         </div>
       </div>
-    </div>
+    </main>
   </section>
 </div>
 {% endblock %}
 
 {% block scripts %}
 
-<script type="text/javascript" src="{{ url_for('static', filename='vendorlist.762728dee122676b5f5b.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='vendorlist.3389febde4b976de7756.js') }}"></script>
 
 {% endblock %}
